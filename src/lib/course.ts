@@ -3,7 +3,11 @@ import { createElement, type ReactNode } from "react";
 import { ParadigmComparisonVisualizer, Module03Quiz } from "@/content/module03-types";
 import { AgglomerativeSimulator, Module04Quiz } from "@/content/module04-agglomerative";
 import { DianaSimulator, Module05Quiz } from "@/content/module05-divisive";
-import { SingleLinkageChainingVisualizer } from "@/content/module06-linkage";
+import {
+  SingleLinkageChainingVisualizer,
+  CentroidLinkageInversionVisualizer,
+  WardVarianceIncreaseCalculator,
+} from "@/content/module06-linkage";
 import {
   Compass,
   BookOpen,
@@ -1483,36 +1487,200 @@ Output:
       s(
         "Centroid Linkage (UPGMC)",
         c(
-          "Centroid Distance & Inversion Mechanics",
-          "Centroid Linkage—UPGMC (Unweighted Pair Group Method using Centroids)—defines the distance between two clusters as the Euclidean distance between their geometric centers of mass (centroids). Unlike Single, Complete, and Average linkage, Centroid Linkage is non-monotonic and can exhibit dendrogram inversions (covered in detail in Phase C.2).",
+          "Geometric Centroid Distance Formulation",
+          "Centroid Linkage—UPGMC (Unweighted Pair Group Method using Centroids)—defines the distance between two clusters as the standard Euclidean distance between their geometric centers of mass (centroids). Each cluster is represented by a single prototype vector μ, and the distance between clusters equals the distance between these prototypes.",
         ),
         m(
           "Centroid Linkage Formal Definition",
           String.raw`D(A, B) = \| \boldsymbol{\mu}_A - \boldsymbol{\mu}_B \|_2 = \sqrt{\sum_{k=1}^d (\mu_{A,k} - \mu_{B,k})^2}`,
-          "Where μ_A = (1 / |A|) ∑_{a ∈ A} a and μ_B = (1 / |B|) ∑_{b ∈ B} b are the cluster mean vectors.",
+          "Where μ_A = (1 / |A|) ∑_{a ∈ A} a and μ_B = (1 / |B|) ∑_{b ∈ B} b are the arithmetic mean vectors.",
         ),
-        d("Centroid distance and center-of-mass vector calculation"),
+        m(
+          "Squared Centroid Lance-Williams Recurrence",
+          String.raw`D^2(A \cup B, C) = \frac{n_A}{n_A + n_B} D^2(A, C) + \frac{n_B}{n_A + n_B} D^2(B, C) - \frac{n_A n_B}{(n_A + n_B)^2} D^2(A, B)`,
+          "Lance-Williams parameters for squared Euclidean distance: α_A = n_A/(n_A+n_B), α_B = n_B/(n_A+n_B), β = -n_A n_B / (n_A+n_B)², γ = 0. Notice the strictly negative β coefficient!",
+        ),
         c(
-          "Upcoming Phase C.2 Derivation",
-          "In Phase C.2, we will present the full mathematical derivation of centroid distance recurrence, cluster-size scaling, and a numerical counterexample demonstrating a dendrogram inversion.",
+          "Mathematical Analysis of Dendrogram Inversions (Reversals)",
+          "A fundamental mathematical property of hierarchical clustering is monotonicity: merge heights should never decrease as clusters grow larger (h_1 ≤ h_2 ≤ ... ≤ h_{N-1}). However, because Centroid Linkage possesses a strictly negative β coefficient in its recurrence, the distance between the newly formed centroid μ_{A ∪ B} and a third cluster C can be strictly LESS than the distance between A and B! When this occurs, the dendrogram exhibits an inversion: a higher-level branch is drawn lower than its child branches, causing the tree branches to intersect or fold backward.",
         ),
+        c(
+          "Concrete Numerical Counterexample (4-Point Inversion)",
+          "Consider 4 points in ℝ²: P₁(0.0, 0.0), P₂(1.0, 0.0), P₃(0.5, 0.1), P₄(0.7, 0.6). We trace their Centroid Linkage execution step-by-step:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Merge Stage",
+            "Clusters Merged",
+            "Centroid Vectors",
+            "Merge Distance (Height)",
+            "Monotonicity Evaluation",
+          ],
+          rows: ["Merge 1", "Merge 2", "Merge 3 (Root)"],
+          tableData: {
+            "Merge 1": [
+              "P₁(0,0) and P₃(0.5, 0.1)",
+              "μ₄ = ((0+0.5)/2, (0+0.1)/2) = (0.25, 0.05)",
+              "h₁ = √(0.5² + 0.1²) = √0.26 ≈ 0.5099",
+              "Initial baseline merge",
+            ],
+            "Merge 2": [
+              "P₂(1,0) and P₄(0.7, 0.6)",
+              "μ₅ = ((1+0.7)/2, (0+0.6)/2) = (0.85, 0.30)",
+              "h₂ = √((-0.3)² + 0.6²) = √0.45 ≈ 0.6708",
+              "Monotonic: h₂ (0.6708) > h₁ (0.5099)",
+            ],
+            "Merge 3 (Root)": [
+              "C₄ = {P₁, P₃} and C₅ = {P₂, P₄}",
+              "Distance between μ₄(0.25, 0.05) and μ₅(0.85, 0.30)",
+              "h₃ = √((0.85-0.25)² + (0.30-0.05)²) = √(0.60² + 0.25²) = √0.4225 = 0.6500",
+              "INVERSION: h₃ (0.6500) < h₂ (0.6708)! Height drops by 0.0208.",
+            ],
+          },
+        },
+        {
+          kind: "custom",
+          content: createElement(CentroidLinkageInversionVisualizer),
+        },
+        {
+          kind: "table",
+          columns: ["Dimension", "Characteristics of Centroid Linkage (UPGMC)"],
+          rows: [
+            "Mathematical Objective",
+            "Distance Basis",
+            "Lance-Williams β Parameter",
+            "Monotonicity",
+            "Practical Recommendation",
+          ],
+          tableData: {
+            "Mathematical Objective": [
+              "Measures geometric distance between cluster centers of mass.",
+            ],
+            "Distance Basis": [
+              "Requires Euclidean coordinates; meaningless for generic precomputed distance matrices.",
+            ],
+            "Lance-Williams β Parameter": ["Negative: β = -n_A n_B / (n_A + n_B)² < 0."],
+            Monotonicity: ["Non-monotonic: prone to dendrogram inversions / reversals."],
+            "Practical Recommendation": [
+              "Generally avoided in exploratory data analysis due to uninterpretable crossed dendrogram branches.",
+            ],
+          },
+        },
       ),
       s(
         "Ward's Minimum Variance Linkage",
         c(
-          "Variance Minimization Objective",
-          "Ward's Minimum Variance Linkage (Ward, 1963) adopts an analysis-of-variance objective: at each step, it merges the pair of clusters that minimizes the total increase in within-cluster error sum of squares (ESS).",
+          "Variance Minimization Philosophy",
+          "Ward's Minimum Variance Linkage (Joe H. Ward, Jr., 1963) reframes hierarchical clustering from a geometric distance problem into an analysis-of-variance optimization problem. Instead of measuring spatial proximity between points or prototypes, Ward's method merges the pair of clusters that minimizes the total increase in within-cluster error sum of squares (ESS).",
         ),
         m(
           "Within-Cluster Error Sum of Squares (ESS)",
-          String.raw`\text{ESS}(C) = \sum_{\mathbf{x} \in C} \| \mathbf{x} - \boldsymbol{\mu}_C \|^2, \quad \Delta \text{ESS}(A, B) = \frac{|A||B|}{|A| + |B|} \| \boldsymbol{\mu}_A - \boldsymbol{\mu}_B \|^2`,
-          "Ward selects the pair minimizing ΔESS. In Phase C.2, we derive the variance recurrence and explain SciPy's Ward.D2 scaling convention.",
+          String.raw`\text{ESS}(C) = \sum_{\mathbf{x}_i \in C} \| \mathbf{x}_i - \boldsymbol{\mu}_C \|^2, \quad \text{ESS}_{\text{total}}(\mathcal{P}) = \sum_{C \in \mathcal{P}} \text{ESS}(C)`,
+          "Where ESS(C) measures the dispersion of points around their cluster centroid μ_C. For singleton clusters, ESS({x_i}) = 0.",
         ),
-        d("Ward's variance increase and minimum sum-of-squares geometry"),
         c(
-          "Upcoming Phase C.2 Derivation",
-          "In Phase C.2, we will provide the complete mathematical derivation of the increase in within-cluster sum of squares and its Lance-Williams coefficients.",
+          "Rigorous Derivation of Ward's Variance Increase Formula",
+          "Let clusters A and B merge into A ∪ B. We derive the exact change in within-cluster sum of squares: ΔESS(A, B) = ESS(A ∪ B) - ESS(A) - ESS(B). For any set of points S and arbitrary reference vector c: ∑_{x ∈ S} ||x - c||² = ∑_{x ∈ S} ||x - μ_S + μ_S - c||² = ESS(S) + |S| ||μ_S - c||² + 2(μ_S - c)^T ∑_{x ∈ S} (x - μ_S). Because ∑_{x ∈ S} (x - μ_S) = 0 by definition of the centroid, the cross-term vanishes! Applying this identity to A and B with c = μ_{A ∪ B}: ESS(A ∪ B) = ESS(A) + |A| ||μ_A - μ_{A ∪ B}||² + ESS(B) + |B| ||μ_B - μ_{A ∪ B}||². Substituting μ_{A ∪ B} = (|A| μ_A + |B| μ_B) / (|A| + |B|) yields ||μ_A - μ_{A ∪ B}|| = (|B| / (|A| + |B|)) ||μ_A - μ_B|| and ||μ_B - μ_{A ∪ B}|| = (|A| / (|A| + |B|)) ||μ_A - μ_B||. Factoring terms produces: ΔESS(A, B) = [|A||B| / (|A| + |B|)] ||μ_A - μ_B||².",
         ),
+        m(
+          "Ward's Variance Increase Objective",
+          String.raw`\Delta \text{ESS}(A, B) = \frac{|A| |B|}{|A| + |B|} \| \boldsymbol{\mu}_A - \boldsymbol{\mu}_B \|_2^2`,
+          "At every merge step, Ward greedily chooses the cluster pair (A*, B*) that minimizes ΔESS(A, B).",
+        ),
+        m(
+          "Software Implementation Scaling: SciPy & R ward.D2",
+          String.raw`d_{\text{SciPy}}(A, B) = \sqrt{2 \cdot \Delta \text{ESS}(A, B)} = \sqrt{\frac{2 n_A n_B}{n_A + n_B}} \| \boldsymbol{\mu}_A - \boldsymbol{\mu}_B \|_2`,
+          "SciPy's `scipy.cluster.hierarchy.linkage(..., method='ward')` and R's `hclust(..., method='ward.D2')` scale merge heights by √2 so that for singletons (n_A=1, n_B=1), the merge distance equals the exact Euclidean distance ||x_A - x_B||.",
+        ),
+        m(
+          "Lance-Williams Recurrence for Ward's Method",
+          String.raw`D^2(A \cup B, C) = \frac{n_A + n_C}{n_A + n_B + n_C} D^2(A, C) + \frac{n_B + n_C}{n_A + n_B + n_C} D^2(B, C) - \frac{n_C}{n_A + n_B + n_C} D^2(A, B)`,
+          "Parameters in Lance-Williams recurrence: α_A = (n_A+n_C)/(n_A+n_B+n_C), α_B = (n_B+n_C)/(n_A+n_B+n_C), β = -n_C/(n_A+n_B+n_C), γ = 0. Operates on squared dissimilarities.",
+        ),
+        c(
+          "Worked Numerical Example (Deterministic 4-Point Benchmark)",
+          "Tracing Ward's method on P₁(1,2), P₂(2,3), P₃(6,5), P₄(7,6). Merge 1 combines P₁ and P₂ (||μ₁ - μ₂|| = √2, ΔESS = (1·1/2)·2 = 1.0, d_SciPy = √(2·1.0) = 1.4142). Merge 2 combines P₃ and P₄ (||μ₃ - μ₄|| = √2, ΔESS = 1.0, d_SciPy = 1.4142). Merge 3 combines C₄ and C₅:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Analytical Quantity",
+            "Formula & Mathematical Substitution",
+            "Exact Value",
+            "Interpretation",
+          ],
+          rows: [
+            "Centroid of C₄",
+            "Centroid of C₅",
+            "Centroid Separation Squared",
+            "Cluster Sizes",
+            "Variance Increase (ΔESS)",
+            "SciPy Linkage Distance",
+          ],
+          tableData: {
+            "Centroid of C₄": [
+              "μ₄ = ((1+2)/2, (2+3)/2)",
+              "(1.5, 2.5)",
+              "Center of mass of P₁ and P₂",
+            ],
+            "Centroid of C₅": [
+              "μ₅ = ((6+7)/2, (5+6)/2)",
+              "(6.5, 5.5)",
+              "Center of mass of P₃ and P₄",
+            ],
+            "Centroid Separation Squared": [
+              "||μ₄ - μ₅||² = (6.5 - 1.5)² + (5.5 - 2.5)² = 5² + 3²",
+              "25 + 9 = 34.0",
+              "Squared Euclidean distance between cluster centroids",
+            ],
+            "Cluster Sizes": [
+              "n₄ = 2, n₅ = 2",
+              "n₄ + n₅ = 4",
+              "Harmonic weight factor = (2·2) / (2+2) = 1.0",
+            ],
+            "Variance Increase (ΔESS)": [
+              "ΔESS = (n₄ · n₅ / (n₄ + n₅)) ||μ₄ - μ₅||² = 1.0 · 34.0",
+              "34.0000",
+              "Total increase in pooled within-cluster variance",
+            ],
+            "SciPy Linkage Distance": [
+              "d_SciPy = √(2 · ΔESS) = √(2 · 34.0) = √68",
+              "8.2462",
+              "SciPy linkage matrix Z height at root merge",
+            ],
+          },
+        },
+        {
+          kind: "custom",
+          content: createElement(WardVarianceIncreaseCalculator),
+        },
+        {
+          kind: "table",
+          columns: ["Dimension", "Characteristics of Ward's Method"],
+          rows: [
+            "Mathematical Objective",
+            "Cluster Geometry Tendency",
+            "Cluster Size Bias",
+            "Monotonicity",
+            "Ground Metric Requirement",
+          ],
+          tableData: {
+            "Mathematical Objective": ["Minimizes total within-cluster variance increase (ESS)."],
+            "Cluster Geometry Tendency": [
+              "Strongly favors spherical, compact, dense clusters (similar to K-Means).",
+            ],
+            "Cluster Size Bias": [
+              "Heavily penalizes merging large clusters; tends to produce balanced, equal-sized clusters.",
+            ],
+            Monotonicity: [
+              "Always strictly monotonic under Euclidean distances (no inversions possible).",
+            ],
+            "Ground Metric Requirement": [
+              "STRICTLY requires Euclidean distance; meaningless with non-Euclidean metrics like Cosine or Manhattan.",
+            ],
+          },
+        },
       ),
     ],
   },

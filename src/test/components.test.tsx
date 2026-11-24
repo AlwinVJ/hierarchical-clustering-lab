@@ -13,7 +13,11 @@ import {
 import { ParadigmComparisonVisualizer, Module03Quiz } from "@/content/module03-types";
 import { AgglomerativeSimulator, Module04Quiz } from "@/content/module04-agglomerative";
 import { DianaSimulator, Module05Quiz } from "@/content/module05-divisive";
-import { SingleLinkageChainingVisualizer } from "@/content/module06-linkage";
+import {
+  SingleLinkageChainingVisualizer,
+  CentroidLinkageInversionVisualizer,
+  WardVarianceIncreaseCalculator,
+} from "@/content/module06-linkage";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -106,5 +110,15 @@ describe("Reusable Lab Components", () => {
     const vizHtml = renderToString(<SingleLinkageChainingVisualizer />);
     expect(vizHtml).toContain("Single vs. Complete Linkage: Chaining Phenomenon Explorer");
     expect(vizHtml).toContain("Noise Bridge Points");
+  });
+
+  it("renders CentroidLinkageInversionVisualizer and WardVarianceIncreaseCalculator", () => {
+    const invHtml = renderToString(<CentroidLinkageInversionVisualizer />);
+    expect(invHtml).toContain("Centroid Linkage Inversion Demonstration");
+    expect(invHtml).toContain("NON-MONOTONIC INVERSION");
+
+    const wardHtml = renderToString(<WardVarianceIncreaseCalculator />);
+    expect(wardHtml).toContain("Variance Increase");
+    expect(wardHtml).toContain("Harmonic Weight Factor");
   });
 });
