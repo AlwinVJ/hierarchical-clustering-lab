@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { createElement, type ReactNode } from "react";
 import { ParadigmComparisonVisualizer, Module03Quiz } from "@/content/module03-types";
+import { AgglomerativeSimulator, Module04Quiz } from "@/content/module04-agglomerative";
 import {
   Compass,
   BookOpen,
@@ -565,39 +566,334 @@ export const pages: CoursePage[] = [
     title: "Agglomerative Clustering",
     group: "Core Algorithms",
     icon: GitMerge,
-    subtitle: "In-depth mechanical decomposition of the bottom-up clustering pipeline.",
+    subtitle:
+      "Mathematical formulation, the 8-stage execution algorithm, worked numerical walkthrough, and computational complexity.",
     sections: [
       s(
         "Working Mechanism",
-        c("Iterative nearest-pair merging pipeline"),
-        d("Agglomerative iterative flow"),
+        c(
+          "Bottom-Up Aggregation Pipeline",
+          "Agglomerative hierarchical clustering constructs an organized taxonomic tree by starting at the maximum possible granularity—where every observation forms an autonomous singleton cluster—and iteratively coalescing the most similar cluster pairs. Formally, for a dataset of N observations X = {x_1, ..., x_N}, the algorithm performs exactly N - 1 discrete merge steps to produce a fully nested hierarchy terminating at a single root cluster.",
+        ),
+        m(
+          "Agglomerative Partition Transition",
+          String.raw`\mathcal{P}_{t+1} = (\mathcal{P}_t \setminus \{A^*, B^*\}) \cup \{A^* \cup B^*\}`,
+          "At iteration t, active partition P_t is transformed into P_{t+1} by replacing the two optimal clusters A* and B* with their union.",
+        ),
+        m(
+          "Greedy Selection Objective",
+          String.raw`(A^*, B^*) = \arg\min_{A, B \in \mathcal{P}_t, A \neq B} \mathcal{D}(A, B)`,
+          "The merge pair is selected by finding the global minimum across the active pairwise inter-cluster dissimilarity matrix D.",
+        ),
+        n(
+          "Greedy Irreversibility Principle",
+          "Agglomerative clustering is strictly greedy and monotonic: merge decisions cannot be reconsidered or undone at subsequent iterations. If noise or bridge outliers cause an early sub-optimal merge, that error permanently affects the upper topology of the dendrogram.",
+        ),
       ),
-      s("Initialisation", c("Singleton cluster setup and initial distance matrix construction")),
       s(
-        "Distance Calculation",
-        c("Pairwise metric computation across all samples"),
-        m("Pairwise distance matrix"),
+        "The 8-Stage Execution Algorithm",
+        c(
+          "Step-by-Step Execution Lifecycle",
+          "Every agglomerative clustering implementation follows an invariant 8-stage operational pipeline from initial data ingestion to dendrogram output:",
+        ),
+        {
+          kind: "table",
+          columns: ["Stage", "Phase Name", "Mathematical Operation", "Computational State"],
+          rows: [
+            "Stage 1",
+            "Stage 2",
+            "Stage 3",
+            "Stage 4",
+            "Stage 5",
+            "Stage 6",
+            "Stage 7",
+            "Stage 8",
+          ],
+          tableData: {
+            "Stage 1": [
+              "Singleton Initialization",
+              "Initialize P_0 = {{x_1}, {x_2}, ..., {x_N}}; assign unique cluster IDs 0, ..., N-1",
+              "Active clusters: N; Linkage matrix Z is empty",
+            ],
+            "Stage 2": [
+              "Initial Distance Computation",
+              "Compute symmetric N × N pairwise distance matrix D_0 where D_{ij} = d(x_i, x_j) and D_{ii} = 0",
+              "Memory: N(N-1)/2 unique non-diagonal pairwise distances",
+            ],
+            "Stage 3": [
+              "Global Minimum Search",
+              "Locate (A*, B*) = argmin D(A, B) across all upper-triangular entries (i < j)",
+              "Time: O(N²) naive linear scan or O(log N) via priority queues",
+            ],
+            "Stage 4": [
+              "Deterministic Tie-Breaking",
+              "If multiple pairs share min distance, break ties lexicographically by smallest cluster ID min(i, j)",
+              "Ensures deterministic and reproducible hierarchy across runs",
+            ],
+            "Stage 5": [
+              "Composite Cluster Formation",
+              "Allocate new cluster ID C_{new} = N + t; assign membership C_{new} = A* ∪ B*; record size |C_{new}| = |A*| + |B*|",
+              "Active clusters reduced by 1: |P_{t+1}| = |P_t| - 1",
+            ],
+            "Stage 6": [
+              "Distance Matrix Updating",
+              "Compute distances D(C_{new}, K) for all remaining clusters K using chosen linkage; delete rows/cols of A* and B*",
+              "Matrix dimensions shrink from (N-t) × (N-t) to (N-t-1) × (N-t-1)",
+            ],
+            "Stage 7": [
+              "Convergence Evaluation",
+              "Check if |P_{t+1}| == 1 or distance threshold h_max exceeded; if not, increment t and repeat Stage 3",
+              "Iterates exactly N - 1 times for full dendrogram",
+            ],
+            "Stage 8": [
+              "Linkage Matrix & Tree Output",
+              "Format results into (N-1) × 4 matrix Z = [A*, B*, h, |C_{new}|] for dendrogram rendering",
+              "Output: Root cluster contains all N samples; complete ultrametric tree established",
+            ],
+          },
+        },
       ),
-      s("Cluster Assignment", c("Identification of the global minimum distance pair")),
       s(
-        "Cluster Merging",
-        c("Forming composite clusters and index remapping"),
-        d("Merge event visualization"),
-      ),
-      s(
-        "Updating Distances",
-        c("Updating distance matrix rows and columns using linkage"),
-        m("Matrix update formulation"),
+        "Worked Numerical Example",
+        c(
+          "Complete Deterministic 4-Point Walkthrough",
+          "To understand the exact arithmetic of agglomerative clustering, we trace our verified 4-point benchmark dataset in ℝ²: P₁(1,2), P₂(2,3), P₃(6,5), P₄(7,6).",
+        ),
+        m(
+          "Initial Distance Matrix D₀ (Step 0)",
+          String.raw`D_0 = \begin{pmatrix} 0 & 1.4142 & 5.8310 & 7.2111 \\ 1.4142 & 0 & 4.4721 & 5.8310 \\ 5.8310 & 4.4721 & 0 & 1.4142 \\ 7.2111 & 5.8310 & 1.4142 & 0 \end{pmatrix}`,
+          "Pairwise Euclidean distances: d(P₁, P₂) = √2 ≈ 1.4142, d(P₃, P₄) = √2 ≈ 1.4142, d(P₂, P₃) = √20 ≈ 4.4721, d(P₁, P₃) = d(P₂, P₄) = √34 ≈ 5.8310, d(P₁, P₄) = √52 ≈ 7.2111.",
+        ),
+        c(
+          "Step 1: First Merge & Matrix D₁ Construction",
+          "The minimum off-diagonal distance in D₀ is 1.4142, tied between (P₁, P₂) and (P₃, P₄). Applying deterministic lexicographical index tie-breaking selects (P₁, P₂). They merge into composite cluster C₄ = {P₁, P₂} at height h = 1.4142. Next, distance rows for C₄ to remaining singletons P₃ and P₄ are updated:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Linkage Method",
+            "d(C₄, P₃) Formula & Calculation",
+            "d(C₄, P₄) Formula & Calculation",
+            "Matrix D₁ Minimum Pair",
+          ],
+          rows: ["Single Linkage (Min)", "Complete Linkage (Max)", "Average Linkage (UPGMA)"],
+          tableData: {
+            "Single Linkage (Min)": [
+              "min(d(P₁, P₃), d(P₂, P₃)) = min(5.8310, 4.4721) = 4.4721",
+              "min(d(P₁, P₄), d(P₂, P₄)) = min(7.2111, 5.8310) = 5.8310",
+              "(P₃, P₄) at d = 1.4142",
+            ],
+            "Complete Linkage (Max)": [
+              "max(d(P₁, P₃), d(P₂, P₃)) = max(5.8310, 4.4721) = 5.8310",
+              "max(d(P₁, P₄), d(P₂, P₄)) = max(7.2111, 5.8310) = 7.2111",
+              "(P₃, P₄) at d = 1.4142",
+            ],
+            "Average Linkage (UPGMA)": [
+              "(d(P₁, P₃) + d(P₂, P₃)) / 2 = (5.8310 + 4.4721) / 2 = 5.1516",
+              "(d(P₁, P₄) + d(P₂, P₄)) / 2 = (7.2111 + 5.8310) / 2 = 6.5211",
+              "(P₃, P₄) at d = 1.4142",
+            ],
+          },
+        },
+        c(
+          "Step 2: Second Merge & Matrix D₂ Construction",
+          "In matrix D₁, the minimal distance is d(P₃, P₄) = 1.4142. Points P₃ and P₄ coalesce into composite cluster C₅ = {P₃, P₄} at height h = 1.4142. Now only two clusters remain: C₄ and C₅.",
+        ),
+        c(
+          "Step 3: Final Root Merge & Linkage Matrix Z",
+          "The final merge combines C₄ and C₅ into universal root cluster C₆ at the distance dictated by the linkage method:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Linkage Method",
+            "Final Merge Distance d(C₄, C₅)",
+            "SciPy Linkage Matrix Z Row 2",
+            "Resulting Tree Property",
+          ],
+          rows: ["Single Linkage", "Complete Linkage", "Average Linkage"],
+          tableData: {
+            "Single Linkage": [
+              "min {5.8310, 7.2111, 4.4721, 5.8310} = 4.4721",
+              "[4, 5, 4.4721, 4]",
+              "Measures nearest-neighbor gap; susceptible to chaining.",
+            ],
+            "Complete Linkage": [
+              "max {5.8310, 7.2111, 4.4721, 5.8310} = 7.2111",
+              "[4, 5, 7.2111, 4]",
+              "Measures diameter span between P₁ and P₄; produces compact clusters.",
+            ],
+            "Average Linkage": [
+              "(5.8310 + 7.2111 + 4.4721 + 5.8310) / 4 = 5.8363",
+              "[4, 5, 5.8363, 4]",
+              "Balances variance and inter-cluster separation.",
+            ],
+          },
+        },
       ),
       s(
         "Stopping Criteria",
-        c("Convergence when single root cluster or target threshold is reached"),
-        { kind: "note" },
+        c(
+          "Mechanisms for Halting Agglomeration",
+          "While the classical agglomerative algorithm runs for exactly N - 1 iterations to build a complete dendrogram terminating at a single root cluster, practical applications frequently employ early termination criteria:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Stopping Criterion",
+            "Mathematical Formulation",
+            "Use Case & Behavioral Impact",
+          ],
+          rows: [
+            "Root Convergence (k = 1)",
+            "Target Cluster Count (k = k_target)",
+            "Distance Threshold (h ≥ τ)",
+            "Variance Ratio / Acceleration",
+          ],
+          tableData: {
+            "Root Convergence (k = 1)": [
+              "|P_t| == 1 (after exactly N - 1 merge steps)",
+              "Full hierarchical tree construction; provides complete exploratory dendrogram.",
+            ],
+            "Target Cluster Count (k = k_target)": [
+              "|P_t| == k (halts after N - k merge steps)",
+              "Supervised cluster partitioning; directly implements Scikit-learn's `n_clusters` parameter.",
+            ],
+            "Distance Threshold (h ≥ τ)": [
+              "min D(A, B) > τ (stops when nearest pair distance exceeds τ)",
+              "Detects natural density barriers; implements Scikit-learn's `distance_threshold` parameter.",
+            ],
+            "Variance Ratio / Acceleration": [
+              "d²h / dt² maximum (knee/elbow in merge height progression)",
+              "Unsupervised determination of optimal cluster count based on merge acceleration.",
+            ],
+          },
+        },
       ),
-      s("Step-by-Step Algorithm Walkthrough", {
-        kind: "viz-large",
-        label: "Reserved step-by-step algorithm animation workspace",
-      }),
+      s(
+        "Algorithmic Pseudocode",
+        c(
+          "Language-Independent Algorithm Specification",
+          "The structured pseudocode below formalizes the complete agglomerative procedure with explicit distance updates and tie-breaking:",
+        ),
+        {
+          kind: "code",
+          label: "Agglomerative Hierarchical Clustering Pseudocode",
+          code: `Algorithm: AgglomerativeClustering(X, Metric, LinkageCriterion)
+Input:
+    X: Dataset of N feature vectors {x_1, x_2, ..., x_N}
+    Metric: Distance function d(u, v) (e.g., Euclidean)
+    LinkageCriterion: Inter-cluster dissimilarity rule D(A, B)
+Output:
+    Z: (N - 1) x 4 linkage matrix encoding the complete dendrogram
+
+1:  // Stage 1: Initialize active singleton clusters
+2:  Clusters = { {x_i} for i = 0 to N - 1 }
+3:  NextClusterId = N
+4:  Z = AllocateMatrix(rows = N - 1, cols = 4)
+5:
+6:  // Stage 2: Construct initial symmetric distance matrix
+7:  D = AllocateMatrix(rows = N, cols = N)
+8:  for i = 0 to N - 1 do
+9:      for j = i + 1 to N - 1 do
+10:         D[i, j] = Metric(x_i, x_j)
+11:         D[j, i] = D[i, j]
+12:
+13: // Main Agglomeration Loop (Stages 3 to 7)
+14: for t = 0 to N - 2 do:
+15:     // Stage 3 & 4: Find closest cluster pair with deterministic tie-breaking
+16:     (c_a, c_b, min_dist) = argmin_{i < j, i, j in Active} D[i, j]
+17:     // Tie-break rule: select pair with lexicographically smallest min(c_a, c_b)
+18:
+19:     // Stage 5: Form composite cluster
+20:     c_new = NextClusterId
+21:     NextClusterId = NextClusterId + 1
+22:     new_size = |Clusters[c_a]| + |Clusters[c_b]|
+23:     Clusters[c_new] = Clusters[c_a] U Clusters[c_b]
+24:     Z[t] = [c_a, c_b, min_dist, new_size]
+25:
+26:     // Stage 6: Update distance matrix for new cluster c_new
+27:     for each c_k in Active \\ {c_a, c_b} do:
+28:         D[c_new, c_k] = UpdateLinkage(D, c_a, c_b, c_k, LinkageCriterion)
+29:         D[c_k, c_new] = D[c_new, c_k]
+30:
+31:     // Deactivate merged clusters c_a and c_b; activate c_new
+32:     Active = (Active \\ {c_a, c_b}) U {c_new}
+33:
+34: // Stage 8: Terminate and return linkage matrix
+35: return Z`,
+        },
+      ),
+      s(
+        "Computational Complexity Analysis",
+        c(
+          "Time & Space Complexity Trade-Offs",
+          "Understanding the computational bottlenecks of agglomerative clustering is critical when scaling to large datasets:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Algorithm Variant",
+            "Time Complexity",
+            "Space Complexity",
+            "Algorithmic Mechanism & Feasibility",
+          ],
+          rows: [
+            "Naive Implementation",
+            "Priority Queue (Heap)",
+            "Nearest-Neighbor Chain",
+            "On-The-Fly Distance (SLINK)",
+          ],
+          tableData: {
+            "Naive Implementation": [
+              "O(N³)",
+              "O(N²)",
+              "Performs N - 1 steps; scans unindexed O(N²) matrix for the minimum at each step. Infeasible for N > 5,000.",
+            ],
+            "Priority Queue (Heap)": [
+              "O(N² log N)",
+              "O(N²)",
+              "Maintains min-heaps for cluster distance rows. Each deletion and insertion requires O(log N). Standard for complete/average linkage.",
+            ],
+            "Nearest-Neighbor Chain": [
+              "O(N²)",
+              "O(N²)",
+              "Maintains a stack of mutual nearest neighbors (Murtagh 1983). Feasible for reducible metrics (Single, Complete, Average, Ward).",
+            ],
+            "On-The-Fly Distance (SLINK)": [
+              "O(N²)",
+              "O(N)",
+              "Sibson's SLINK algorithm for single linkage computes distances dynamically without storing the full N × N matrix in RAM.",
+            ],
+          },
+        },
+      ),
+      s(
+        "Step-by-Step Algorithm Walkthrough",
+        c(
+          "Interactive Agglomerative Simulator",
+          "Experiment with Single, Complete, and Average linkage criteria on the 4-point benchmark dataset below. Step through each merge event to inspect the evolving distance matrix and the resulting SciPy linkage matrix Z:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(AgglomerativeSimulator),
+        },
+      ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Interactive Conceptual Evaluation",
+          "Test your understanding of the 8-stage execution algorithm, tie-breaking mechanics, linkage matrix formatting, and complexity:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(Module04Quiz),
+        },
+        c(
+          "Module References",
+          "Verified against Lance & Williams (1967); Murtagh & Contreras (2012); Kaufman & Rousseeuw (1990) Ch. 5; SciPy `scipy.cluster.hierarchy.linkage` documentation. See docs/references.md.",
+        ),
+      ),
     ],
   },
   {
