@@ -3533,8 +3533,117 @@ Conclusion: Both libraries yield identical 3-cluster partitions with 0.8151 Silh
       s(
         "Internal Validation Metrics",
         c(
-          "Internal Metric Formulations Placeholder",
-          "Detailed mathematical derivations, numerical examples, and Scikit-Learn implementations of the Silhouette Coefficient, Davies–Bouldin Index, and Calinski–Harabasz Index.",
+          "Geometric Foundations of Internal Cluster Validation",
+          "Internal validation metrics evaluate partition quality using only the geometry of the coordinate matrix X and cluster assignments C. They measure two competing geometric objectives: (1) Within-cluster Compactness (cohesion): data points belonging to the same cluster should be tightly concentrated near each other or their centroid; and (2) Between-cluster Separation (isolation): distinct clusters should be widely separated across empty space. We examine the mathematical formulation, geometric assumptions, and edge cases of the three premier internal metrics.",
+        ),
+        c(
+          "A. Silhouette Coefficient (Rousseeuw, 1987)",
+          "The Silhouette Coefficient evaluates how well each individual observation fits into its assigned cluster compared to the nearest alternative cluster. For each sample i assigned to cluster C_A:\n\n1. Intra-cluster distance a(i): The mean distance from sample i to all other observations within the same cluster C_A:\n   a(i) = [1 / (|C_A| - 1)] ∑_{j ∈ C_A, j ≠ i} d(i, j)\n\n2. Nearest-cluster distance b(i): The minimum mean distance from sample i to observations in any other cluster C_B (where B ≠ A):\n   b(i) = min_{B ≠ A} [1 / |C_B|] ∑_{j ∈ C_B} d(i, j)\n\nThe individual silhouette coefficient s(i) normalizes the difference between neighboring isolation b(i) and intra-cluster dispersion a(i) by their maximum.",
+        ),
+        m(
+          "Silhouette Coefficient Formal Definition",
+          String.raw`s(i) = \frac{b(i) - a(i)}{\max(a(i), b(i))}, \quad \text{where } s(i) \in [-1, +1]`,
+          "Where a(i) is mean intra-cluster distance, b(i) is mean nearest-cluster distance, and division by max(a(i), b(i)) guarantees normalization strictly within [-1, +1].",
+        ),
+        c(
+          "Interpretation, Edge Cases & Silhouette Plots",
+          "• Near +1 (Optimal Match): b(i) >> a(i). The observation is tightly bound to its own cluster and distant from neighboring groups.\n• Near 0 (Boundary Observation): a(i) ≈ b(i). The point lies directly on the decision boundary between two clusters.\n• Near -1 (Misclassified Point): a(i) >> b(i). The observation is closer to a neighboring cluster than to its assigned cluster, indicating an erroneous grouping.\n\nSingleton Cluster Handling: If a cluster contains exactly one observation (|C_A| = 1), a(i) is mathematically undefined (division by zero). By standard statistical convention (Rousseeuw 1987; Scikit-Learn), singleton observations are assigned s(i) = 0.\n\nSilhouette Plots: A silhouette plot graphs individual s(i) values horizontally, grouped by cluster and sorted in descending order. A healthy partition displays silhouette widths exceeding the dataset mean for all clusters, with few or no negative coefficients.",
+        ),
+        c(
+          "Worked Numerical Example: Silhouette on Benchmark Dataset",
+          "We evaluate our canonical 4-point benchmark partitioned into 2 clusters: C₁ = {P₁(1,2), P₂(2,3)} and C₂ = {P₃(6,5), P₄(7,6)}.\n\n• For P₁(1,2) ∈ C₁:\n  - a(P₁) = d(P₁, P₂) = √[(1-2)² + (2-3)²] = √2 ≈ 1.4142\n  - Distances to C₂: d(P₁, P₃) = √[(1-6)² + (2-5)²] = √34 ≈ 5.8310; d(P₁, P₄) = √[(1-7)² + (2-6)²] = √52 ≈ 7.2111\n  - b(P₁) = (5.8310 + 7.2111) / 2 = 6.5210\n  - s(P₁) = (6.5210 - 1.4142) / 6.5210 ≈ 0.7831\n\n• For P₂(2,3) ∈ C₁:\n  - a(P₂) = d(P₂, P₁) = √2 ≈ 1.4142\n  - Distances to C₂: d(P₂, P₃) = √20 ≈ 4.4721; d(P₂, P₄) = √34 ≈ 5.8310\n  - b(P₂) = (4.4721 + 5.8310) / 2 = 5.1515\n  - s(P₂) = (5.1515 - 1.4142) / 5.1515 ≈ 0.7255\n\n• By geometric symmetry across the midpoint: s(P₃) = s(P₂) ≈ 0.7255 and s(P₄) = s(P₁) ≈ 0.7831.\n• Overall Mean Dataset Silhouette Score: s̄ = (0.7831 + 0.7255 + 0.7255 + 0.7831) / 4 ≈ 0.7543.",
+        ),
+        c(
+          "B. Davies–Bouldin Index (Davies & Bouldin, 1979)",
+          "The Davies–Bouldin Index (DB) evaluates the similarity between each cluster and its most similar rival, balancing within-cluster scatter with between-centroid distance. For k clusters:\n\n1. Cluster Centroid μ_i: The arithmetic mean coordinate vector: μ_i = [1 / |C_i|] ∑_{x ∈ C_i} x\n2. Cluster Scatter S_i: The average Euclidean distance from all member points to their centroid: S_i = [1 / |C_i|] ∑_{x ∈ C_i} ||x - μ_i||\n3. Centroid Separation M_{ij}: The Euclidean distance between cluster centroids: M_{ij} = ||μ_i - μ_j||\n4. Cluster Similarity Ratio R_{ij}: The ratio of combined dispersions to centroid separation: R_{ij} = (S_i + S_j) / M_{ij}",
+        ),
+        m(
+          "Davies–Bouldin Index Formulation",
+          String.raw`DB = \frac{1}{k} \sum_{i=1}^k \max_{j \ne i} \left( \frac{S_i + S_j}{M_{ij}} \right), \quad DB \ge 0`,
+          "Where k is the number of clusters, S_i is the mean centroid distance in cluster i, and M_{ij} is the Euclidean distance between centroids μ_i and μ_j. Lower values indicate superior clustering.",
+        ),
+        c(
+          "Worked Numerical Example: Davies–Bouldin on Benchmark Dataset",
+          "Using our 2-cluster partition C₁ = {P₁(1,2), P₂(2,3)} and C₂ = {P₃(6,5), P₄(7,6)}:\n\n1. Centroids: μ₁ = (1.5, 2.5) and μ₂ = (6.5, 5.5)\n2. Within-cluster scatter:\n   - In C₁: d(P₁, μ₁) = √[(1-1.5)² + (2-2.5)²] = √0.5 ≈ 0.7071. d(P₂, μ₁) = √0.5 ≈ 0.7071. S₁ = √0.5 ≈ 0.7071.\n   - In C₂: S₂ = √0.5 ≈ 0.7071.\n3. Centroid separation M₁₂: ||μ₁ - μ₂|| = √[(1.5-6.5)² + (2.5-5.5)²] = √[25 + 9] = √34 ≈ 5.8310\n4. Similarity ratio R₁₂ = R₂₁ = (S₁ + S₂) / M₁₂ = (2 · √0.5) / √34 = √2 / √34 = 1 / √17 ≈ 0.2425\n5. Final DB Index: DB = (1/2) · (R₁₂ + R₂₁) = 1 / √17 ≈ 0.2425.",
+        ),
+        c(
+          "C. Calinski–Harabasz Index / Variance Ratio Criterion (1974)",
+          "The Calinski–Harabasz (CH) Index, also known as the Variance Ratio Criterion, evaluates the ratio of between-cluster dispersion to within-cluster dispersion, analogous to the F-statistic in analysis of variance (ANOVA). For n observations partitioned into k clusters:",
+        ),
+        m(
+          "Calinski–Harabasz Index Formulation",
+          String.raw`CH = \frac{\text{tr}(\mathbf{B}_k) / (k - 1)}{\text{tr}(\mathbf{W}_k) / (n - k)}`,
+          "Where tr(B_k) = ∑_{j=1}^k n_j ||μ_j - μ||² is between-cluster dispersion, tr(W_k) = ∑_{j=1}^k ∑_{x ∈ C_j} ||x - μ_j||² is within-cluster dispersion, and μ is the global dataset centroid.",
+        ),
+        c(
+          "Worked Numerical Example: Calinski–Harabasz on Benchmark Dataset",
+          "For our 4-point benchmark with n=4, k=2:\n\n1. Global dataset centroid: μ = [(1+2+6+7)/4, (2+3+5+6)/4] = (4.0, 4.0)\n2. Between-cluster dispersion tr(B_k):\n   - ||μ₁ - μ||² = (1.5 - 4)² + (2.5 - 4)² = (-2.5)² + (-1.5)² = 6.25 + 2.25 = 8.50\n   - ||μ₂ - μ||² = (6.5 - 4)² + (5.5 - 4)² = (2.5)² + (1.5)² = 6.25 + 2.25 = 8.50\n   - tr(B_k) = 2 · (8.50) + 2 · (8.50) = 17.0 + 17.0 = 34.0\n3. Within-cluster dispersion tr(W_k):\n   - In C₁: ||P₁ - μ₁||² + ||P₂ - μ₁||² = 0.5 + 0.5 = 1.0\n   - In C₂: ||P₃ - μ₂||² + ||P₄ - μ₂||² = 0.5 + 0.5 = 1.0\n   - tr(W_k) = 1.0 + 1.0 = 2.0\n4. Degrees of freedom: k - 1 = 2 - 1 = 1; n - k = 4 - 2 = 2\n5. Final CH Score: CH = (34.0 / 1) / (2.0 / 2) = 34.0 / 1.0 = 34.0.",
+        ),
+        tbl(
+          ["Metric", "What It Measures", "Preferred Direction", "Main Strength", "Main Limitation"],
+          ["Silhouette Coefficient", "Davies–Bouldin Index", "Calinski–Harabasz Index"],
+          {
+            "Silhouette Coefficient": [
+              "Per-sample contrast between intra-cluster distance and nearest-neighbor cluster distance.",
+              "Higher is better (bounded in [-1, +1]).",
+              "Provides intuitive observation-level diagnosis; handles arbitrary distances.",
+              "Computationally expensive O(n²); biased against non-convex manifolds.",
+            ],
+            "Davies–Bouldin Index": [
+              "Average similarity ratio of each cluster to its worst-case overlapping neighbor.",
+              "Lower is better (non-negative, DB ≥ 0).",
+              "Fast computation O(n · d); simple geometric centroid interpretation.",
+              "Strictly assumes spherical convex clusters; penalizes elongated shapes.",
+            ],
+            "Calinski–Harabasz Index": [
+              "Variance Ratio Criterion: ratio of between-cluster variance to within-cluster variance.",
+              "Higher is better (unbounded positive score).",
+              "Extremely fast O(n · d); mathematically grounded in ANOVA F-statistic.",
+              "Heavily favors convex spherical clusters; sensitive to data scale.",
+            ],
+          },
+        ),
+        c(
+          "Why Internal Metrics Disagree",
+          "The three internal metrics frequently disagree when applied to real-world datasets because they embody distinct mathematical philosophies:\n\n1. Local Distance vs. Global Centroids: Silhouette measures pairwise distances directly without reference to centroids, making it robust to irregular cluster densities. Conversely, Davies–Bouldin and Calinski–Harabasz rely entirely on Euclidean centroids, implicitly penalizing non-globular or curved clusters.\n\n2. Worst-Case vs. Average Overlap: Davies–Bouldin uses a maximum operator (max_{j ≠ i} R_{ij}) evaluating only the worst-case overlapping neighbor for each cluster. Silhouette averages across all points in the nearest neighbor cluster, while Calinski–Harabasz aggregates global variance across all clusters simultaneously.\n\n3. Sensitivity to Cluster Count k: Calinski–Harabasz naturally increases when clusters are split into smaller compact pieces, occasionally exhibiting monotonic inflation with k. Silhouette and Davies–Bouldin penalize unnecessary splits that create adjacent, overlapping partitions.",
+        ),
+        cd(
+          "Scikit-Learn Verification: Calculating All Internal Metrics in Python",
+          `import numpy as np
+from sklearn.metrics import silhouette_score, silhouette_samples, davies_bouldin_score, calinski_harabasz_score
+
+# Canonical 4-point benchmark dataset
+X = np.array([
+    [1.0, 2.0],  # P_1
+    [2.0, 3.0],  # P_2
+    [6.0, 5.0],  # P_3
+    [7.0, 6.0],  # P_4
+])
+labels = np.array([0, 0, 1, 1])
+
+# 1. Silhouette Coefficient
+samples_sil = silhouette_samples(X, labels)
+score_sil = silhouette_score(X, labels)
+
+# 2. Davies-Bouldin Index
+score_db = davies_bouldin_score(X, labels)
+
+# 3. Calinski-Harabasz Index
+score_ch = calinski_harabasz_score(X, labels)
+
+print("--- Internal Validation Metrics (k=2) ---")
+print(f"Sample Silhouettes:  {np.round(samples_sil, 4)}")
+print(f"Mean Silhouette:     {score_sil:.4f}  (Higher is better, range [-1, +1])")
+print(f"Davies-Bouldin:      {score_db:.4f}  (Lower is better, non-negative)")
+print(f"Calinski-Harabasz:   {score_ch:.4f} (Higher is better, F-ratio)")`,
+        ),
+        out(
+          "Console Output: Internal Validation Metrics",
+          `--- Internal Validation Metrics (k=2) ---
+Sample Silhouettes:  [0.7831 0.7255 0.7255 0.7831]
+Mean Silhouette:     0.7543  (Higher is better, range [-1, +1])
+Davies-Bouldin:      0.2425  (Lower is better, non-negative)
+Calinski-Harabasz:   34.0000 (Higher is better, F-ratio)`,
         ),
       ),
       s(
