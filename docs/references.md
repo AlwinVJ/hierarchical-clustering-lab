@@ -112,6 +112,42 @@ This documentation catalogs the foundational academic papers, peer-reviewed mono
   - **DOI/URL**: https://doi.org/10.1002/widm.53
   - **Verified Information**: Time and space complexity bounds: Naive agglomeration $O(N^3)$, nearest-neighbor chain algorithm (NN-chain) achieving $O(N^2)$ for reducible linkages (Ward, Single, Complete), space complexity $O(N^2)$ or $O(N)$ with on-the-fly metric computation.
 
+### Monotonicity & Ultrametric Hierarchy Conditions
+
+- **Title**: _Note on Ultrametric Hierarchical Clustering Algorithms_
+  - **Author**: Vladimir Batagelj
+  - **Journal**: _Psychometrika_, Vol. 46, No. 3 (1981), pp. 351–352.
+  - **DOI/URL**: https://doi.org/10.1007/BF02293735
+  - **Verified Information**: Necessary and sufficient Lance–Williams conditions for strict monotonicity ($h_1 \le h_2 \le \dots \le h_{N-1}$): $\alpha_A + \alpha_B + \beta \ge 1$, $\min(\alpha_A, \alpha_B) \ge \gamma$, $\gamma \ge -\min(\alpha_A, \alpha_B)$, and $\beta \ge 0$. Proves why Centroid Linkage produces dendrogram inversions due to $\beta < 0$.
+
+### High-Dimensional Distance Concentration & The Curse of Dimensionality
+
+- **Title**: _When Is "Nearest Neighbor" Meaningful?_
+  - **Authors**: Kevin Beyer, Jonathan Goldstein, Raghu Ramakrishnan, and Uri Shaft
+  - **Conference**: _International Conference on Database Theory (ICDT)_, 1999, LNCS 1540, pp. 217–235.
+  - **DOI/URL**: https://doi.org/10.1007/3-540-49257-7_15
+  - **Verified Information**: Distance concentration theorem $\lim_{d \to \infty} \frac{D_{\max} - D_{\min}}{D_{\min}} = 0$. Proves why pairwise distance contrast vanishes in high dimensions, causing distance-based clustering algorithms to degrade.
+- **Title**: _On the Surprising Behavior of Distance Metrics in High Dimensional Space_
+  - **Authors**: Charu C. Aggarwal, Alexander Hinneburg, and Daniel A. Keim
+  - **Conference**: _International Conference on Database Theory (ICDT)_, 2001, pp. 420–434.
+  - **DOI/URL**: https://doi.org/10.1007/3-540-44503-X_27
+  - **Verified Information**: Analysis of $L_p$ norms in high-dimensional spaces showing that lower values of $p$ ($p=1$ or fractional $p < 1$) preserve relative contrast significantly better than $L_2$ Euclidean distance.
+
+### Optimal Leaf Ordering for Dendrograms
+
+- **Title**: _Fast Optimal Leaf Ordering for Hierarchical Clustering_
+  - **Authors**: Ziv Bar-Joseph, David K. Gifford, and Tommi S. Jaakkola
+  - **Journal**: _Bioinformatics_, Vol. 17, Suppl. 1 (2001), pp. S22–S29.
+  - **DOI/URL**: https://doi.org/10.1093/bioinformatics/17.suppl_1.S22
+  - **Verified Information**: Formulation and dynamic programming solution for the optimal leaf ordering (OLO) problem, minimizing adjacent leaf distances among the $2^{N-1}$ valid branch rotations without altering dendrogram topology.
+
+### Mahalanobis Distance & Statistical Covariance
+
+- **Title**: _On the Generalized Distance in Statistics_
+  - **Author**: Prasanta Chandra Mahalanobis
+  - **Journal**: _Proceedings of the National Institute of Sciences of India_, Vol. 2, No. 1 (1936), pp. 49–55.
+  - **Verified Information**: Formulation of covariance-standardized distance $d_M(\mathbf{x}, \mathbf{y}) = \sqrt{(\mathbf{x} - \mathbf{y})^T \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \mathbf{y})}$ and ellipsoidal isodistance contours.
+
 ---
 
 ## 3. Module-to-Source Mapping
