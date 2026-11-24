@@ -7,6 +7,9 @@ import {
   Sparkles,
   AlertCircle,
   CheckCircle2,
+  HelpCircle,
+  AlertTriangle,
+  Table as TableIcon,
 } from "lucide-react";
 
 /** Interactive Chaining Phenomenon Visualizer for Single vs Complete Linkage */
@@ -1108,6 +1111,528 @@ export function WardVarianceIncreaseCalculator() {
           equal numbers of observations.
         </p>
       </div>
+    </div>
+  );
+}
+
+/** Interactive Lance-Williams Recurrence Parameter Explorer */
+export function LanceWilliamsExplorer() {
+  const [selectedMethod, setSelectedMethod] = useState<
+    "single" | "complete" | "average" | "centroid" | "ward"
+  >("average");
+  const [nA, setNA] = useState<number>(2);
+  const [nB, setNB] = useState<number>(3);
+  const [nC, setNC] = useState<number>(4);
+
+  const methodsData = {
+    single: {
+      name: "Single Linkage",
+      formula: "D(A ∪ B, C) = min(D(A, C), D(B, C))",
+      alphaA_str: "1/2",
+      alphaB_str: "1/2",
+      beta_str: "0",
+      gamma_str: "-1/2",
+      alphaA_val: 0.5,
+      alphaB_val: 0.5,
+      beta_val: 0.0,
+      gamma_val: -0.5,
+      isMonotonic: true,
+      dissimilarityType: "Linear Distance d(u, v)",
+      notes:
+        "Alpha and gamma terms simplify via the algebraic identity 0.5(u + v) - 0.5|u - v| = min(u, v). Independent of cluster cardinalities.",
+    },
+    complete: {
+      name: "Complete Linkage",
+      formula: "D(A ∪ B, C) = max(D(A, C), D(B, C))",
+      alphaA_str: "1/2",
+      alphaB_str: "1/2",
+      beta_str: "0",
+      gamma_str: "+1/2",
+      alphaA_val: 0.5,
+      alphaB_val: 0.5,
+      beta_val: 0.0,
+      gamma_val: 0.5,
+      isMonotonic: true,
+      dissimilarityType: "Linear Distance d(u, v)",
+      notes:
+        "Alpha and gamma terms simplify via 0.5(u + v) + 0.5|u - v| = max(u, v). Independent of cluster cardinalities.",
+    },
+    average: {
+      name: "Average Linkage (UPGMA)",
+      formula: "D(A ∪ B, C) = [n_A · D(A, C) + n_B · D(B, C)] / (n_A + n_B)",
+      alphaA_str: "n_A / (n_A + n_B)",
+      alphaB_str: "n_B / (n_A + n_B)",
+      beta_str: "0",
+      gamma_str: "0",
+      alphaA_val: nA / (nA + nB),
+      alphaB_val: nB / (nA + nB),
+      beta_val: 0.0,
+      gamma_val: 0.0,
+      isMonotonic: true,
+      dissimilarityType: "Linear Distance d(u, v)",
+      notes:
+        "A convex combination of existing cluster distances weighted by cluster cardinalities. Gamma and beta vanish.",
+    },
+    centroid: {
+      name: "Centroid Linkage (UPGMC)",
+      formula:
+        "D²(A ∪ B, C) = [n_A · D²(A, C) + n_B · D²(B, C)] / (n_A + n_B) - [n_A · n_B / (n_A + n_B)²] · D²(A, B)",
+      alphaA_str: "n_A / (n_A + n_B)",
+      alphaB_str: "n_B / (n_A + n_B)",
+      beta_str: "- (n_A · n_B) / (n_A + n_B)²",
+      gamma_str: "0",
+      alphaA_val: nA / (nA + nB),
+      alphaB_val: nB / (nA + nB),
+      beta_val: -(nA * nB) / Math.pow(nA + nB, 2),
+      gamma_val: 0.0,
+      isMonotonic: false,
+      dissimilarityType: "Squared Euclidean Distance d²(u, v)",
+      notes:
+        "CRITICAL: The beta coefficient is strictly negative! This subtractive term causes non-monotonicity and allows dendrogram inversions.",
+    },
+    ward: {
+      name: "Ward's Minimum Variance Linkage",
+      formula:
+        "D²(A ∪ B, C) = [(n_A + n_C)·D²(A, C) + (n_B + n_C)·D²(B, C) - n_C·D²(A, B)] / (n_A + n_B + n_C)",
+      alphaA_str: "(n_A + n_C) / (n_A + n_B + n_C)",
+      alphaB_str: "(n_B + n_C) / (n_A + n_B + n_C)",
+      beta_str: "- n_C / (n_A + n_B + n_C)",
+      gamma_str: "0",
+      alphaA_val: (nA + nC) / (nA + nB + nC),
+      alphaB_val: (nB + nC) / (nA + nB + nC),
+      beta_val: -nC / (nA + nB + nC),
+      gamma_val: 0.0,
+      isMonotonic: true,
+      dissimilarityType: "Squared Distance / Variance Increase (ΔESS)",
+      notes:
+        "Although beta is negative, alpha_A + alpha_B + beta = 1 and the objective minimizes within-cluster variance, guaranteeing strict monotonicity in Euclidean space.",
+    },
+  };
+
+  const curr = methodsData[selectedMethod];
+
+  // Monotonicity condition checks (Batagelj, 1981):
+  // 1. alpha_A + alpha_B + beta >= 1
+  const sumAlphaBeta = curr.alphaA_val + curr.alphaB_val + curr.beta_val;
+  const cond1 = sumAlphaBeta >= 0.999; // accounting for float rounding
+  // 2. min(alpha_A, alpha_B) >= gamma
+  const minAlpha = Math.min(curr.alphaA_val, curr.alphaB_val);
+  const cond2 = minAlpha >= curr.gamma_val;
+  // 3. gamma >= -min(alpha_A, alpha_B)
+  const cond3 = curr.gamma_val >= -minAlpha;
+  // 4. beta >= 0 (strictly required for metric distances without variance guarantees)
+  const cond4 = curr.beta_val >= 0;
+
+  return (
+    <div className="rounded-sm border border-border bg-card p-5 space-y-6">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <TableIcon className="h-4 w-4 text-teal" />
+            <h4 className="font-bold text-sm text-foreground">
+              Generalized Lance–Williams Recurrence & Parameter Explorer
+            </h4>
+          </div>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Evaluate α_A, α_B, β, and γ parameters across all five major linkage criteria with
+            dynamic cluster sizes.
+          </p>
+        </div>
+
+        {/* Method Selectors */}
+        <div className="flex flex-wrap gap-1 bg-muted/40 p-1 rounded-sm border border-border">
+          {(
+            [
+              ["single", "Single"],
+              ["complete", "Complete"],
+              ["average", "Average"],
+              ["centroid", "Centroid"],
+              ["ward", "Ward"],
+            ] as const
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setSelectedMethod(key)}
+              className={`px-2.5 py-1 text-xs rounded-sm transition-colors ${
+                selectedMethod === key
+                  ? "bg-navy text-primary-foreground font-semibold shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Cluster Sizes Control (for UPGMA, UPGMC, Ward) */}
+      <div className="bg-muted/20 border border-border p-4 rounded-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-foreground">
+            Dynamic Cluster Cardinalities (Affects UPGMA, UPGMC, and Ward):
+          </span>
+          <span className="text-[11px] text-muted-foreground font-mono">
+            n_A + n_B = {nA + nB} points
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Cluster A size (n_A):</span>
+              <span className="font-mono font-bold text-teal">{nA}</span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="20"
+              value={nA}
+              onChange={(e) => setNA(parseInt(e.target.value))}
+              className="w-full accent-teal cursor-pointer"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Cluster B size (n_B):</span>
+              <span className="font-mono font-bold text-teal">{nB}</span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="20"
+              value={nB}
+              onChange={(e) => setNB(parseInt(e.target.value))}
+              className="w-full accent-teal cursor-pointer"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Cluster C size (n_C):</span>
+              <span className="font-mono font-bold text-teal">{nC}</span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="20"
+              value={nC}
+              onChange={(e) => setNC(parseInt(e.target.value))}
+              className="w-full accent-teal cursor-pointer"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Parameters Output Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
+        <div className="border border-border rounded-sm p-3 bg-background space-y-1">
+          <span className="text-[10px] text-muted-foreground uppercase font-sans font-semibold">
+            Parameter α_A
+          </span>
+          <div className="text-base font-bold text-navy">{curr.alphaA_val.toFixed(4)}</div>
+          <div className="text-[11px] text-teal font-medium">{curr.alphaA_str}</div>
+        </div>
+
+        <div className="border border-border rounded-sm p-3 bg-background space-y-1">
+          <span className="text-[10px] text-muted-foreground uppercase font-sans font-semibold">
+            Parameter α_B
+          </span>
+          <div className="text-base font-bold text-navy">{curr.alphaB_val.toFixed(4)}</div>
+          <div className="text-[11px] text-teal font-medium">{curr.alphaB_str}</div>
+        </div>
+
+        <div className="border border-border rounded-sm p-3 bg-background space-y-1">
+          <span className="text-[10px] text-muted-foreground uppercase font-sans font-semibold">
+            Parameter β
+          </span>
+          <div
+            className={`text-base font-bold ${
+              curr.beta_val < 0 ? "text-red-600 dark:text-red-400" : "text-navy"
+            }`}
+          >
+            {curr.beta_val.toFixed(4)}
+          </div>
+          <div className="text-[11px] text-teal font-medium">{curr.beta_str}</div>
+        </div>
+
+        <div className="border border-border rounded-sm p-3 bg-background space-y-1">
+          <span className="text-[10px] text-muted-foreground uppercase font-sans font-semibold">
+            Parameter γ
+          </span>
+          <div className="text-base font-bold text-navy">{curr.gamma_val.toFixed(4)}</div>
+          <div className="text-[11px] text-teal font-medium">{curr.gamma_str}</div>
+        </div>
+      </div>
+
+      {/* Recurrence Equation & Dissimilarity Metric */}
+      <div className="border border-border rounded-sm p-4 bg-background space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-xs font-bold text-foreground">
+            Simplified Recurrence for {curr.name}:
+          </span>
+          <span className="text-[11px] font-mono bg-muted/60 px-2 py-0.5 rounded-xs text-muted-foreground border border-border">
+            Basis: {curr.dissimilarityType}
+          </span>
+        </div>
+
+        <div className="p-3 bg-muted/20 border border-border/80 rounded-xs font-mono text-xs text-foreground font-semibold overflow-x-auto">
+          {curr.formula}
+        </div>
+
+        <p className="text-xs text-muted-foreground leading-relaxed">{curr.notes}</p>
+      </div>
+
+      {/* Monotonicity Criteria Evaluation */}
+      <div className="bg-muted/20 border border-border p-4 rounded-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-foreground">
+            Batagelj (1981) Monotonicity Conditions:
+          </span>
+          <span
+            className={`text-xs font-mono font-semibold px-2.5 py-0.5 rounded-xs border ${
+              curr.isMonotonic
+                ? "bg-teal/10 text-teal border-teal/20"
+                : "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
+            }`}
+          >
+            {curr.isMonotonic
+              ? "Strictly Monotonic (No Inversions)"
+              : "Non-Monotonic (Inversion Prone)"}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div className="flex items-center justify-between p-2 rounded-xs border border-border bg-background">
+            <span className="text-muted-foreground font-mono">α_A + α_B + β ≥ 1</span>
+            <span className={`font-mono font-semibold ${cond1 ? "text-teal" : "text-red-500"}`}>
+              {sumAlphaBeta.toFixed(3)} ≥ 1 {cond1 ? "✓" : "✗"}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between p-2 rounded-xs border border-border bg-background">
+            <span className="text-muted-foreground font-mono">min(α_A, α_B) ≥ γ</span>
+            <span className={`font-mono font-semibold ${cond2 ? "text-teal" : "text-red-500"}`}>
+              {minAlpha.toFixed(3)} ≥ {curr.gamma_val.toFixed(3)} {cond2 ? "✓" : "✗"}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between p-2 rounded-xs border border-border bg-background">
+            <span className="text-muted-foreground font-mono">γ ≥ -min(α_A, α_B)</span>
+            <span className={`font-mono font-semibold ${cond3 ? "text-teal" : "text-red-500"}`}>
+              {curr.gamma_val.toFixed(3)} ≥ {(-minAlpha).toFixed(3)} {cond3 ? "✓" : "✗"}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between p-2 rounded-xs border border-border bg-background">
+            <span className="text-muted-foreground font-mono">β ≥ 0 (Standard Metric)</span>
+            <span className={`font-mono font-semibold ${cond4 ? "text-teal" : "text-amber-500"}`}>
+              {curr.beta_val.toFixed(3)} {cond4 ? "≥ 0 ✓" : "< 0 (subtractive)"}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Interactive Self-Assessment Quiz for Module 06 */
+export function Module06Quiz() {
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const questions = [
+    {
+      id: 1,
+      question: "What are the generalized Lance–Williams parameters for Complete Linkage?",
+      options: [
+        "α_A = 1/2, α_B = 1/2, β = 0, γ = -1/2",
+        "α_A = 1/2, α_B = 1/2, β = 0, γ = +1/2",
+        "α_A = n_A / (n_A + n_B), α_B = n_B / (n_A + n_B), β = 0, γ = 0",
+        "α_A = 1, α_B = 1, β = -1, γ = 0",
+      ],
+      correct: 1,
+      explanation:
+        "Complete Linkage computes max(D(A, C), D(B, C)) = 0.5 D(A, C) + 0.5 D(B, C) + 0.5 |D(A, C) - D(B, C)|, corresponding to α_A = 1/2, α_B = 1/2, β = 0, γ = +1/2.",
+    },
+    {
+      id: 2,
+      question: "Why does Centroid Linkage (UPGMC) exhibit dendrogram inversions (reversals)?",
+      options: [
+        "Because it cannot be computed with Euclidean distance.",
+        "Because its Lance–Williams recurrence possesses a strictly negative β coefficient: β = -n_A n_B / (n_A + n_B)² < 0.",
+        "Because cluster centroids always have negative coordinates.",
+        "Because it rounds merge heights to the nearest integer.",
+      ],
+      correct: 1,
+      explanation:
+        "The negative β parameter subtracts a fraction of D²(A, B) when computing distance to other clusters. Consequently, the distance from the new centroid to a third cluster can be strictly less than the distance between the two clusters that merged, causing merge height to drop.",
+    },
+    {
+      id: 3,
+      question:
+        "In Average Linkage (UPGMA), why is the cluster update formula D(A ∪ B, C) = (|A| D(A, C) + |B| D(B, C)) / (|A| + |B|) considered 'unweighted'?",
+      options: [
+        "Because cluster sizes are ignored during calculation.",
+        "Because every original observation pair (a, b) carries equal weight 1 / (|A||B|) in the overall arithmetic mean.",
+        "Because all distances are divided by zero.",
+        "Because it only applies to datasets with unit variance.",
+      ],
+      correct: 1,
+      explanation:
+        "The method is termed 'unweighted' at the observation level because each point pair contributes with equal 1/(|A||B|) weight. The cluster-level recurrence is cardinality-weighted precisely to preserve this equal observation weighting.",
+    },
+    {
+      id: 4,
+      question:
+        "How does Ward's Minimum Variance method scale merge distances in software implementations like SciPy and R's ward.D2?",
+      options: [
+        "d_SciPy = ΔESS / 2",
+        "d_SciPy = √(2 · ΔESS) = √[2 n_A n_B / (n_A + n_B)] · ||μ_A - μ_B||",
+        "d_SciPy = log(ΔESS)",
+        "d_SciPy = ||μ_A - μ_B||² without cluster sizes",
+      ],
+      correct: 1,
+      explanation:
+        "SciPy scales the increase in sum of squares by √(2 · ΔESS). This ensures that for two singletons (n_A = 1, n_B = 1), d_SciPy equals their exact Euclidean distance ||x_A - x_B||.",
+    },
+    {
+      id: 5,
+      question:
+        "Which graph-theoretic structure is mathematically equivalent to Single Linkage hierarchical clustering?",
+      options: [
+        "Dijkstra's Shortest Path Tree",
+        "Maximum Flow Cut",
+        "Kruskal's Minimum Spanning Tree (MST)",
+        "Bipartite Graph Matching",
+      ],
+      correct: 2,
+      explanation:
+        "Single Linkage merges clusters by finding the minimum edge between connected components, exactly mirroring Kruskal's algorithm for constructing a Minimum Spanning Tree.",
+    },
+  ];
+
+  const handleSelect = (qId: number, oIdx: number) => {
+    if (submitted) return;
+    setAnswers((prev) => ({ ...prev, [qId]: oIdx }));
+  };
+
+  const handleReset = () => {
+    setAnswers({});
+    setSubmitted(false);
+  };
+
+  const score = Object.entries(answers).reduce((acc, [qId, ans]) => {
+    const q = questions.find((item) => item.id === Number(qId));
+    return q && q.correct === ans ? acc + 1 : acc;
+  }, 0);
+
+  return (
+    <div className="rounded-sm border border-border bg-card p-5 space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+        <div>
+          <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
+            <HelpCircle className="h-4 w-4 text-teal" />
+            Module 06 Knowledge Check: Linkage Criteria & Lance–Williams
+          </h4>
+          <p className="text-xs text-muted-foreground">
+            Test your comprehension of Lance–Williams parameters, monotonicity criteria, centroid
+            inversions, and Ward's variance increase.
+          </p>
+        </div>
+        {submitted && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-sm bg-teal/10 text-teal border border-teal/20">
+              Score: {score} / {questions.length}
+            </span>
+            <button
+              onClick={handleReset}
+              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 border border-border px-2 py-1 rounded-sm"
+            >
+              <RotateCcw className="h-3 w-3" /> Retry
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        {questions.map((q) => {
+          const selected = answers[q.id];
+          const isCorrect = selected === q.correct;
+
+          return (
+            <div
+              key={q.id}
+              className="rounded-sm border border-border/70 p-4 bg-muted/15 space-y-3"
+            >
+              <p className="text-xs font-semibold text-foreground">
+                <span className="text-teal font-mono mr-1.5">Q{q.id}.</span>
+                {q.question}
+              </p>
+
+              <div className="space-y-1.5">
+                {q.options.map((opt, oIdx) => {
+                  let optStyle = "border-border hover:bg-muted/40 text-muted-foreground";
+
+                  if (selected === oIdx) {
+                    optStyle = "border-navy bg-navy/10 text-foreground font-medium";
+                  }
+
+                  if (submitted) {
+                    if (oIdx === q.correct) {
+                      optStyle = "border-teal bg-teal/15 text-teal font-semibold";
+                    } else if (selected === oIdx) {
+                      optStyle = "border-destructive bg-destructive/15 text-destructive";
+                    }
+                  }
+
+                  return (
+                    <button
+                      key={oIdx}
+                      onClick={() => handleSelect(q.id, oIdx)}
+                      disabled={submitted}
+                      className={`w-full text-left text-xs p-2.5 rounded-sm border transition-all flex items-center justify-between ${optStyle}`}
+                    >
+                      <span>{opt}</span>
+                      {submitted && oIdx === q.correct && (
+                        <CheckCircle2 className="h-3.5 w-3.5 text-teal shrink-0 ml-2" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {submitted && (
+                <div
+                  className={`text-xs p-2.5 rounded-sm flex items-start gap-2 ${
+                    isCorrect
+                      ? "bg-teal/10 text-teal-dark dark:text-teal border border-teal/20"
+                      : "bg-destructive/10 text-destructive border border-destructive/20"
+                  }`}
+                >
+                  {isCorrect ? (
+                    <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
+                  ) : (
+                    <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                  )}
+                  <p className="leading-relaxed">{q.explanation}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {!submitted && (
+        <button
+          onClick={() => setSubmitted(true)}
+          disabled={Object.keys(answers).length < questions.length}
+          className="w-full sm:w-auto px-4 py-2 bg-navy text-primary-foreground text-xs font-semibold rounded-sm hover:opacity-90 disabled:opacity-40 transition-opacity"
+        >
+          Check Answers ({Object.keys(answers).length}/{questions.length} completed)
+        </button>
+      )}
     </div>
   );
 }
