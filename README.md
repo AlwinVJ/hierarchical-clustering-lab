@@ -32,41 +32,44 @@ The learning experience progresses from fundamental clustering concepts to advan
 
 The platform is organized into 15 learning modules.
 
-| # | Module | Topics Covered |
-|:---:|---|---|
-| 01 | Introduction | Clustering fundamentals, unsupervised learning, applications |
-| 02 | Fundamentals | Similarity, dissimilarity, distance matrices, cluster formation |
-| 03 | Types of Hierarchical Clustering | Agglomerative and Divisive approaches |
-| 04 | Agglomerative Clustering | Initialization, merging, distance updates, stopping criteria |
-| 05 | Divisive Clustering | Top-down clustering, splitting mechanisms, DIANA |
-| 06 | Linkage Methods | Single, Complete, Average, Centroid, and Ward's Linkage |
-| 07 | Distance Metrics | Euclidean, Manhattan, Minkowski, Cosine, and Hamming distances |
-| 08 | Dendrograms | Construction, interpretation, cluster selection, cutting dendrograms |
-| 09 | Mathematical Foundation | Distance calculations, linkage formulas, variance minimization |
-| 10 | Practical Implementation | NumPy, SciPy, and Scikit-learn |
-| 11 | Model Evaluation | Silhouette Score, Davies-Bouldin Index, Cophenetic Correlation |
-| 12 | Algorithm Comparison | K-Means vs Hierarchical Clustering, DBSCAN vs Hierarchical Clustering |
-| 13 | Limitations | Computational complexity, scalability, outliers, feature sensitivity |
-| 14 | Real-World Applications | Customer segmentation, biological classification, document clustering |
-| 15 | Hands-on Projects | Practical clustering implementations and real-world datasets |
+|  #  | Module                           | Topics Covered                                                        |
+| :-: | -------------------------------- | --------------------------------------------------------------------- |
+| 01  | Introduction                     | Clustering fundamentals, unsupervised learning, applications          |
+| 02  | Fundamentals                     | Similarity, dissimilarity, distance matrices, cluster formation       |
+| 03  | Types of Hierarchical Clustering | Agglomerative and Divisive approaches                                 |
+| 04  | Agglomerative Clustering         | Initialization, merging, distance updates, stopping criteria          |
+| 05  | Divisive Clustering              | Top-down clustering, splitting mechanisms, DIANA                      |
+| 06  | Linkage Methods                  | Single, Complete, Average, Centroid, and Ward's Linkage               |
+| 07  | Distance Metrics                 | Euclidean, Manhattan, Minkowski, Cosine, and Hamming distances        |
+| 08  | Dendrograms                      | Construction, interpretation, cluster selection, cutting dendrograms  |
+| 09  | Mathematical Foundation          | Distance calculations, linkage formulas, variance minimization        |
+| 10  | Practical Implementation         | NumPy, SciPy, and Scikit-learn                                        |
+| 11  | Model Evaluation                 | Silhouette Score, Davies-Bouldin Index, Cophenetic Correlation        |
+| 12  | Algorithm Comparison             | K-Means vs Hierarchical Clustering, DBSCAN vs Hierarchical Clustering |
+| 13  | Limitations                      | Computational complexity, scalability, outliers, feature sensitivity  |
+| 14  | Real-World Applications          | Customer segmentation, biological classification, document clustering |
+| 15  | Hands-on Projects                | Practical clustering implementations and real-world datasets          |
 
 ## Key Learning Features
 
 The platform is being developed around the following learning experiences:
 
 ### 1. Structured Theoretical Learning
+
 - Beginner-friendly explanations of complex concepts.
 - Detailed algorithmic breakdowns.
 - Mathematical foundations and derivations.
 - Advantages, disadvantages, and practical considerations.
 
 ### 2. Mathematical Understanding
+
 - Step-by-step distance calculations.
 - Linkage calculations with numerical examples.
 - Distance matrix interpretation.
 - Understanding Ward's variance minimization approach.
 
 ### 3. Interactive Visualizations
+
 Planned interactive learning components include:
 
 - Agglomerative clustering simulation.
@@ -80,11 +83,11 @@ Planned interactive learning components include:
 
 Explore hierarchical clustering through three implementation approaches:
 
-| Implementation | Learning Objective |
-|---|---|
+| Implementation     | Learning Objective                                                          |
+| ------------------ | --------------------------------------------------------------------------- |
 | NumPy from Scratch | Understand the underlying algorithm without relying on clustering libraries |
-| SciPy | Learn hierarchical clustering and dendrogram generation using SciPy |
-| Scikit-learn | Apply hierarchical clustering using production-oriented ML APIs |
+| SciPy              | Learn hierarchical clustering and dendrogram generation using SciPy         |
+| Scikit-learn       | Apply hierarchical clustering using production-oriented ML APIs             |
 
 ### 5. Hands-on Projects
 
@@ -100,18 +103,18 @@ Planned projects include:
 
 The project uses the following technologies:
 
-| Technology | Purpose |
-|---|---|
-| React | Frontend development |
-| TypeScript | Type safety |
-| Vite | Development and build tooling |
-| Tailwind CSS | Styling and responsive layouts |
-| Lucide | Interface icons |
-| NumPy | Numerical computations and from-scratch implementation |
-| SciPy | Hierarchical clustering and dendrograms |
-| Scikit-learn | Machine learning implementation and evaluation |
+| Technology   | Purpose                                                |
+| ------------ | ------------------------------------------------------ |
+| React        | Frontend development                                   |
+| TypeScript   | Type safety                                            |
+| Vite         | Development and build tooling                          |
+| Tailwind CSS | Styling and responsive layouts                         |
+| Lucide       | Interface icons                                        |
+| NumPy        | Numerical computations and from-scratch implementation |
+| SciPy        | Hierarchical clustering and dendrograms                |
+| Scikit-learn | Machine learning implementation and evaluation         |
 
-*The Python libraries are used in the educational implementation examples; the website itself is designed as a static frontend application.*
+_The Python libraries are used in the educational implementation examples; the website itself is designed as a static frontend application._
 
 ## Getting Started
 
@@ -173,13 +176,13 @@ The deployment configuration must account for the repository-specific base path 
 
 The educational content prioritizes authoritative technical documentation and academic references.
 
-| Resource | Description |
-|---|---|
-| [Scikit-learn Documentation](https://scikit-learn.org/stable/modules/clustering.html) | Clustering algorithms and implementation |
-| [SciPy Hierarchical Clustering](https://docs.scipy.org/doc/scipy/reference/cluster.hierarchy.html) | Linkage algorithms and dendrograms |
-| [SciPy Distance Functions](https://docs.scipy.org/doc/scipy/reference/spatial.distance.html) | Distance metrics and dissimilarity calculations |
-| [NumPy Documentation](https://numpy.org/doc/stable/) | Numerical computing |
-| [Ward (1963)](https://doi.org/10.1080/01621459.1963.10500845) | Hierarchical grouping to optimize an objective function |
+| Resource                                                                                           | Description                                             |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| [Scikit-learn Documentation](https://scikit-learn.org/stable/modules/clustering.html)              | Clustering algorithms and implementation                |
+| [SciPy Hierarchical Clustering](https://docs.scipy.org/doc/scipy/reference/cluster.hierarchy.html) | Linkage algorithms and dendrograms                      |
+| [SciPy Distance Functions](https://docs.scipy.org/doc/scipy/reference/spatial.distance.html)       | Distance metrics and dissimilarity calculations         |
+| [NumPy Documentation](https://numpy.org/doc/stable/)                                               | Numerical computing                                     |
+| [Ward (1963)](https://doi.org/10.1080/01621459.1963.10500845)                                      | Hierarchical grouping to optimize an objective function |
 
 ## Project Goals
 

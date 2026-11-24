@@ -1,113 +1,339 @@
 import type { ReactNode } from "react";
-import { Info, Sigma, Code2, ImageIcon, MousePointerClick, Terminal } from "lucide-react";
+import {
+  Info,
+  Sigma,
+  Code2,
+  ImageIcon,
+  MousePointerClick,
+  Terminal,
+  FileText,
+  Table as TableIcon,
+} from "lucide-react";
 import type { Block } from "@/lib/course";
 
+/** Section Header for distinct educational modules */
 export function SectionHeader({ index, title }: { index?: number; title: string }) {
   return (
-    <div className="mb-4 flex items-baseline gap-3 border-b border-border pb-2">
-      {index !== undefined && <span className="font-mono text-sm text-lavender">{String(index).padStart(2, "0")}</span>}
-      <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+    <div className="mb-5 flex items-baseline gap-3 border-b border-border pb-3">
+      {index !== undefined && (
+        <span className="font-mono text-xs font-semibold tracking-wider text-teal">
+          {`SECTION ${String(index).padStart(2, "0")}`}
+        </span>
+      )}
+      <h2 className="text-xl font-bold tracking-tight text-foreground">{title}</h2>
     </div>
   );
 }
 
-export function ContentCard({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-md border border-border bg-card p-6 ${className}`}>{children}</section>;
+/** Academic Content Card Container */
+export function ContentCard({
+  children,
+  className = "",
+  id,
+}: {
+  children: ReactNode;
+  className?: string;
+  id?: string;
+}) {
+  return (
+    <section
+      id={id}
+      className={`rounded-sm border border-border bg-card p-6 shadow-none sm:p-7 transition-colors ${className}`}
+    >
+      {children}
+    </section>
+  );
 }
 
-function Tag({ children }: { children: ReactNode }) {
-  return <span className="font-mono text-xs font-semibold tracking-wide text-primary">{children}</span>;
+/** Explicit placeholder indicator pill */
+export function PlaceholderTag({
+  children,
+  variant = "content",
+}: {
+  children: ReactNode;
+  variant?: "content" | "math" | "diagram" | "code" | "viz";
+}) {
+  const variantStyles = {
+    content: "bg-secondary text-primary border-border",
+    math: "bg-navy/5 text-navy border-navy/20",
+    diagram: "bg-teal/10 text-teal border-teal/30",
+    code: "bg-ink/10 text-foreground border-border",
+    viz: "bg-teal/10 text-navy border-teal/40",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono text-[11px] font-semibold tracking-wider ${variantStyles[variant]}`}
+    >
+      {children}
+    </span>
+  );
 }
 
+/** Main Textual Content Placeholder */
 export function ContentPlaceholder({ label }: { label?: string | undefined }) {
   return (
-    <div className="space-y-2">
-      {label && <h3 className="text-sm font-semibold text-foreground">{label}</h3>}
-      <Tag>[CONTENT PLACEHOLDER]</Tag>
-      <div className="space-y-2 pt-1">
-        <div className="h-2 w-full rounded-sm bg-secondary" /><div className="h-2 w-11/12 rounded-sm bg-secondary" /><div className="h-2 w-3/5 rounded-sm bg-secondary" />
+    <div className="space-y-3 rounded-sm border border-dashed border-border bg-secondary/30 p-4">
+      <div className="flex items-center justify-between gap-2">
+        {label ? (
+          <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <FileText className="h-3.5 w-3.5 text-teal" />
+            {label}
+          </h3>
+        ) : (
+          <span className="text-xs font-medium text-muted-foreground">Explanatory Text Area</span>
+        )}
+        <PlaceholderTag variant="content">[CONTENT PLACEHOLDER]</PlaceholderTag>
+      </div>
+      <div className="space-y-2 pt-1 opacity-70">
+        <div className="h-2 w-full rounded-sm bg-border" />
+        <div className="h-2 w-11/12 rounded-sm bg-border" />
+        <div className="h-2 w-4/5 rounded-sm bg-border" />
+      </div>
+      <p className="font-mono text-[11px] text-muted-foreground/80">
+        Academic theory, conceptual definitions, and mechanical explanations will be added in Phase
+        2.
+      </p>
+    </div>
+  );
+}
+
+/** Mathematical Equation and Derivation Container */
+export function FormulaBox({ label }: { label?: string | undefined }) {
+  return (
+    <div className="rounded-sm border-l-4 border-navy bg-secondary/50 p-5">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-navy">
+          <Sigma className="h-4 w-4 text-navy" />
+          <span>{label ?? "Mathematical Derivation & Formulation"}</span>
+        </div>
+        <PlaceholderTag variant="math">[MATHEMATICAL EXPLANATION PLACEHOLDER]</PlaceholderTag>
+      </div>
+
+      <div className="my-4 flex flex-col items-center justify-center rounded-sm border border-border bg-background/80 py-6 px-4">
+        <div className="font-mono text-base font-medium text-foreground tracking-wide">
+          {"d(u, v) = min { dist(s, t) : s \u2208 u, t \u2208 v }"}
+        </div>
+        <span className="mt-2 text-xs text-muted-foreground font-mono">
+          [Formal mathematical equations, LaTeX proofs, and recurrence relations]
+        </span>
+      </div>
+
+      <p className="font-mono text-[11px] text-muted-foreground">
+        Formulas, variables definitions, and step-by-step mathematical proofs will be integrated
+        here.
+      </p>
+    </div>
+  );
+}
+
+/** Code Implementation Container with Syntax Styling */
+export function CodeBlock({ label }: { label?: string | undefined }) {
+  return (
+    <div className="overflow-hidden rounded-sm border border-border">
+      <div className="flex items-center justify-between bg-ink px-4 py-2 text-xs text-ink-foreground">
+        <div className="flex items-center gap-2">
+          <Code2 className="h-4 w-4 text-teal" />
+          <span className="font-mono font-medium">{label ?? "Python Implementation"}</span>
+          <span className="text-[10px] text-muted-foreground opacity-80">· Python 3.11</span>
+        </div>
+        <PlaceholderTag variant="code">[CODE IMPLEMENTATION PLACEHOLDER]</PlaceholderTag>
+      </div>
+      <div className="bg-ink/95 px-5 py-6">
+        <pre className="font-mono text-xs leading-relaxed text-ink-foreground/90">
+          <code>
+            {`# [CODE IMPLEMENTATION PLACEHOLDER]
+# Full algorithm implementation, NumPy vectorization, or library workflow
+# will be placed here in Phase 2.
+
+def hierarchical_clustering(data, linkage="single"):
+    """
+    [FUNCTION SPECIFICATION PLACEHOLDER]
+    """
+    raise NotImplementedError("Implementation placeholder")`}
+          </code>
+        </pre>
+      </div>
+      <div className="border-t border-ink/40 bg-ink/90 px-4 py-1.5 text-[11px] font-mono text-muted-foreground">
+        Interactive notebook execution and snippet copies will be available.
       </div>
     </div>
   );
 }
 
-export function FormulaBox({ label }: { label?: string | undefined }) {
+/** Output Container for Execution Logs and Results */
+export function OutputBlock({ label }: { label?: string | undefined }) {
   return (
-    <div className="rounded-sm border-l-2 border-primary bg-secondary/60 px-4 py-4">
-      <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground"><Sigma className="h-3.5 w-3.5 text-lavender" />{label ?? "Mathematics"}</div>
-      <Tag>[MATHEMATICAL EXPLANATION PLACEHOLDER]</Tag>
-      <div className="mt-3 text-center font-mono text-lg text-muted-foreground">f(x) = …</div>
+    <div className="rounded-sm border border-border bg-secondary/40 p-4">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+          <Terminal className="h-3.5 w-3.5 text-teal" />
+          <span>{label ?? "Standard Output & Diagnostics"}</span>
+        </div>
+        <PlaceholderTag variant="content">[CONTENT PLACEHOLDER]</PlaceholderTag>
+      </div>
+      <pre className="rounded-sm border border-border bg-background p-3 font-mono text-xs text-muted-foreground">
+        {`>>> [EXECUTION LOG PLACEHOLDER]
+>>> Computed cluster hierarchy: 4 clusters formed
+>>> Cophenetic correlation coefficient: 0.884`}
+      </pre>
     </div>
   );
 }
 
-export function CodeBlock({ label }: { label?: string | undefined }) {
+/** Static Diagram and Schematic Placeholder */
+export function DiagramPlaceholder({ label }: { label?: string | undefined }) {
   return (
-    <div className="overflow-hidden rounded-sm border border-ink">
-      <div className="flex items-center gap-2 bg-ink px-3 py-1.5 text-xs text-ink-foreground"><Code2 className="h-3.5 w-3.5" />{label ?? "Code"} · python</div>
-      <pre className="bg-ink/95 px-4 py-6 font-mono text-sm text-ink-foreground">[CODE IMPLEMENTATION PLACEHOLDER]</pre>
+    <div className="flex min-h-56 flex-col items-center justify-center gap-3 rounded-sm border-2 border-dashed border-border bg-secondary/30 p-6 text-center">
+      <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-background border border-border text-teal">
+        <ImageIcon className="h-6 w-6" />
+      </div>
+      <div className="space-y-1">
+        <div className="flex justify-center">
+          <PlaceholderTag variant="diagram">[DIAGRAM PLACEHOLDER]</PlaceholderTag>
+        </div>
+        <p className="text-sm font-semibold text-foreground">
+          {label ?? "Static Diagram & Conceptual Schema"}
+        </p>
+        <p className="text-xs text-muted-foreground font-mono">
+          Technical vector illustrations, cluster geometries, and dataflow schematics.
+        </p>
+      </div>
     </div>
   );
 }
 
-export function OutputBlock() {
+/** Interactive Visualization Workspace Placeholder */
+export function VizPlaceholder({
+  label,
+  large,
+}: {
+  label?: string | undefined;
+  large?: boolean | undefined;
+}) {
   return (
-    <div className="rounded-sm border border-border bg-background/50 px-4 py-3">
-      <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground"><Terminal className="h-3.5 w-3.5 text-lavender" />Output</div>
-      <pre className="font-mono text-xs text-muted-foreground">[CONTENT PLACEHOLDER]</pre>
+    <div
+      className={`relative flex flex-col items-center justify-center gap-3 rounded-sm border-2 border-dashed border-teal/40 bg-accent/30 p-8 text-center ${
+        large ? "min-h-[420px]" : "min-h-[260px]"
+      }`}
+    >
+      <div className="flex h-14 w-14 items-center justify-center rounded-sm bg-background border border-teal/40 text-navy shadow-none">
+        <MousePointerClick className="h-7 w-7 text-teal" />
+      </div>
+      <div className="max-w-md space-y-1.5">
+        <div className="flex justify-center">
+          <PlaceholderTag variant="viz">[INTERACTIVE VISUALIZATION PLACEHOLDER]</PlaceholderTag>
+        </div>
+        <h4 className="text-base font-bold text-foreground">
+          {label ??
+            (large ? "Reserved Interactive Simulation Workspace" : "Supporting Visualization")}
+        </h4>
+        <p className="text-xs text-muted-foreground">
+          Interactive parameters, dynamic dendrogram cuts, step-by-step merge animations, and
+          dataset controls will render in this area.
+        </p>
+      </div>
+      <div className="mt-2 inline-flex items-center gap-2 rounded-sm border border-border bg-background px-3 py-1 font-mono text-[11px] text-muted-foreground">
+        <span>Status:</span>
+        <span className="font-semibold text-teal">Canvas Dimensions Reserved</span>
+      </div>
     </div>
   );
 }
 
-function Frame({ icon, tag, label, tall }: { icon: ReactNode; tag: string; label: string; tall?: boolean | undefined }) {
+/** Important Academic Note / Callout Container */
+export function NoteBox({
+  title = "Key Concept Note",
+  children,
+}: {
+  title?: string;
+  children?: ReactNode;
+}) {
   return (
-    <div className={`grid-dots flex flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-lavender bg-background/40 ${tall ? "h-96" : "h-48"}`}>
-      <span className="text-lavender">{icon}</span>
-      <Tag>{tag}</Tag>
-      <span className="text-xs text-muted-foreground">{label}</span>
+    <div className="flex gap-3.5 rounded-sm border-l-4 border-teal bg-secondary/60 p-4">
+      <Info className="mt-0.5 h-4 w-4 shrink-0 text-teal" />
+      <div className="space-y-1 text-sm">
+        <p className="font-semibold text-foreground">{title}</p>
+        <div className="text-muted-foreground text-xs leading-relaxed">
+          {children ?? (
+            <div className="flex items-center gap-2">
+              <span>Core insight or critical distinction:</span>
+              <PlaceholderTag variant="content">[CONTENT PLACEHOLDER]</PlaceholderTag>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
-export const DiagramPlaceholder = ({ label }: { label?: string | undefined }) =>
-  <Frame icon={<ImageIcon className="h-6 w-6" />} tag="[DIAGRAM PLACEHOLDER]" label={label ?? "Static diagram"} />;
-export const VizPlaceholder = ({ label, large }: { label?: string | undefined; large?: boolean | undefined }) =>
-  <Frame icon={<MousePointerClick className="h-6 w-6" />} tag="[INTERACTIVE VISUALIZATION PLACEHOLDER]" label={label ?? (large ? "Reserved interactive workspace" : "Visualization")} tall={large} />;
 
-export function NoteBox({ children }: { children?: ReactNode }) {
-  return (
-    <div className="flex gap-3 rounded-sm border border-border bg-secondary px-4 py-3">
-      <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-      <div className="text-sm"><p className="font-semibold text-foreground">Important note</p><p className="text-muted-foreground">{children ?? "[CONTENT PLACEHOLDER]"}</p></div>
-    </div>
-  );
-}
-
+/** Structured Technical Comparison Table */
 export function ComparisonTable({ columns, rows }: { columns: string[]; rows: string[] }) {
   return (
-    <div className="overflow-x-auto rounded-sm border border-border">
-      <table className="w-full text-sm">
-        <thead className="bg-secondary text-left text-foreground"><tr>{columns.map((c) => <th key={c} className="px-4 py-2 font-semibold">{c}</th>)}</tr></thead>
-        <tbody>{rows.map((r) => (
-          <tr key={r} className="border-t border-border">
-            <td className="px-4 py-2 font-medium text-foreground">{r}</td>
-            {columns.slice(1).map((c) => <td key={c} className="px-4 py-2 font-mono text-xs text-muted-foreground">[CONTENT PLACEHOLDER]</td>)}
-          </tr>))}
-        </tbody>
-      </table>
+    <div className="overflow-hidden rounded-sm border border-border">
+      <div className="flex items-center justify-between bg-secondary/80 px-4 py-2 border-b border-border text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5 font-mono">
+          <TableIcon className="h-3.5 w-3.5 text-teal" />
+          <span>Technical Comparison Matrix</span>
+        </div>
+        <PlaceholderTag variant="content">[CONTENT PLACEHOLDER]</PlaceholderTag>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-secondary/40 text-xs font-semibold uppercase tracking-wider text-foreground">
+            <tr>
+              {columns.map((col, idx) => (
+                <th
+                  key={col}
+                  className={`px-4 py-3 border-b border-border ${
+                    idx === 0 ? "font-bold text-navy" : ""
+                  }`}
+                >
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {rows.map((row) => (
+              <tr key={row} className="hover:bg-secondary/20 transition-colors">
+                <td className="px-4 py-3 font-medium text-foreground whitespace-nowrap bg-secondary/10">
+                  {row}
+                </td>
+                {columns.slice(1).map((col) => (
+                  <td key={col} className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                    <span className="text-muted-foreground/70">[CONTENT PLACEHOLDER]</span>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
+/** Dynamic Block Dispatcher */
 export function BlockView({ block }: { block: Block }) {
   switch (block.kind) {
-    case "math": return <FormulaBox label={block.label} />;
-    case "diagram": return <DiagramPlaceholder label={block.label} />;
-    case "code": return <CodeBlock label={block.label} />;
-    case "output": return <OutputBlock />;
-    case "viz": return <VizPlaceholder label={block.label} />;
-    case "viz-large": return <VizPlaceholder large />;
-    case "table": return <ComparisonTable columns={block.columns ?? []} rows={block.rows ?? []} />;
-    case "note": return <NoteBox />;
-    default: return <ContentPlaceholder label={block.label} />;
+    case "math":
+      return <FormulaBox label={block.label} />;
+    case "diagram":
+      return <DiagramPlaceholder label={block.label} />;
+    case "code":
+      return <CodeBlock label={block.label} />;
+    case "output":
+      return <OutputBlock label={block.label} />;
+    case "viz":
+      return <VizPlaceholder label={block.label} />;
+    case "viz-large":
+      return <VizPlaceholder large label={block.label} />;
+    case "table":
+      return <ComparisonTable columns={block.columns ?? []} rows={block.rows ?? []} />;
+    case "note":
+      return <NoteBox />;
+    default:
+      return <ContentPlaceholder label={block.label} />;
   }
 }
