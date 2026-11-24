@@ -33,6 +33,7 @@ import {
 import { MathematicalPlayground, Module09Quiz } from "@/content/module09-mathematics";
 import { ImplementationExplorer, Module10Quiz } from "@/content/module10-implementation";
 import { EvaluationPlayground, Module11Quiz } from "@/content/module11-evaluation";
+import { DendrogramCuttingLab, Module12Quiz } from "@/content/module12-selection";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -208,5 +209,19 @@ describe("Reusable Lab Components", () => {
     const quizHtml = renderToString(<Module11Quiz />);
     expect(quizHtml).toContain("Module 11 Knowledge Check: Cluster Evaluation");
     expect(quizHtml).toContain("Check Answers");
+  });
+
+  it("renders DendrogramCuttingLab and Module12Quiz", () => {
+    const labHtml = renderToString(<DendrogramCuttingLab />);
+    expect(labHtml).toContain("Hierarchical Cluster Extraction");
+    expect(labHtml).toContain("Inconsistency Studio");
+    expect(labHtml).toContain("Dataset Preset");
+    expect(labHtml).toContain("Linkage Criterion");
+    expect(labHtml).toContain("Slicing Paradigm");
+    expect(labHtml).toContain("Interactive Dendrogram Slicing");
+
+    const quizHtml = renderToString(<Module12Quiz />);
+    expect(quizHtml).toContain("Module 12: Cluster Selection");
+    expect(quizHtml).toContain("Submit Answers");
   });
 });

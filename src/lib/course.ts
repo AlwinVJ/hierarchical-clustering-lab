@@ -23,6 +23,7 @@ import {
 import { MathematicalPlayground, Module09Quiz } from "@/content/module09-mathematics";
 import { ImplementationExplorer, Module10Quiz } from "@/content/module10-implementation";
 import { EvaluationPlayground, Module11Quiz } from "@/content/module11-evaluation";
+import { DendrogramCuttingLab, Module12Quiz } from "@/content/module12-selection";
 import {
   Compass,
   BookOpen,
@@ -4076,15 +4077,17 @@ Recommended k by Lowest Davies-Bouldin: k = 3`,
       s(
         "Interactive Dendrogram Cutting Laboratory",
         c(
-          "Dendrogram Cutting Lab Placeholder",
-          "Interactive laboratory for exploring dynamic cut thresholds, inconsistency coefficients, and cluster count extraction.",
+          "Dynamic Slicing, Inconsistency & Cluster Extraction Engine",
+          "Experiment with distance threshold cuts (height t) and cluster count constraints (target k). Inspect real-time subtree recoloring, analyze merge-height gap leaps (Δh), and inspect exact SciPy inconsistency coefficients (sch.inconsistent) across deterministic datasets.",
         ),
+        cust(createElement(DendrogramCuttingLab)),
       ),
       s(
         "Knowledge Check & Self-Assessment",
+        cust(createElement(Module12Quiz)),
         c(
-          "Module 12 Self-Assessment Placeholder",
-          "Interactive quiz testing understanding of merge gaps, inconsistency calculations, and multi-criterion selection.",
+          "Module References",
+          "Verified against SciPy 1.14+ hierarchical clustering documentation (scipy.cluster.hierarchy.fcluster, inconsistent, dendrogram), Murtagh & Contreras (2012), and established cluster validation literature. See docs/references.md.",
         ),
       ),
     ],
