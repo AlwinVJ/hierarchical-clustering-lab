@@ -149,7 +149,25 @@ describe("App routing and Course Structure", () => {
 
     // Page 11: Implementation
     const impl = pages.find((p) => p.slug === "implementation")!;
-    expect(impl.sections.length).toBe(3);
+    expect(impl.sections.length).toBe(8);
+    expect(impl.sections.map((s) => s.title)).toContain(
+      "Python Environment & Ecosystem Architecture",
+    );
+    expect(impl.sections.map((s) => s.title)).toContain(
+      "Implementing Agglomerative Clustering from Scratch with NumPy",
+    );
+    expect(impl.sections.map((s) => s.title)).toContain(
+      "Hierarchical Clustering in SciPy (scipy.cluster.hierarchy)",
+    );
+    expect(impl.sections.map((s) => s.title)).toContain(
+      "Hierarchical Clustering in Scikit-learn (AgglomerativeClustering)",
+    );
+    expect(impl.sections.map((s) => s.title)).toContain(
+      "SciPy vs. Scikit-learn: Architectural Comparison",
+    );
+    expect(impl.sections.map((s) => s.title)).toContain("End-to-End Practical Clustering Project");
+    expect(impl.sections.map((s) => s.title)).toContain("Interactive Implementation Explorer");
+    expect(impl.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
 
     // Page 12: Model Evaluation
     const evalPage = pages.find((p) => p.slug === "evaluation")!;
