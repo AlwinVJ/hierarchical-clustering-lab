@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import katex from "katex";
 import {
   Info,
   Sigma,
@@ -10,6 +11,32 @@ import {
   Table as TableIcon,
 } from "lucide-react";
 import type { Block } from "@/lib/course";
+
+/** KaTeX Mathematical Expression Component */
+export function MathFormula({
+  tex,
+  display = true,
+  className = "",
+}: {
+  tex: string;
+  display?: boolean;
+  className?: string;
+}) {
+  try {
+    const html = katex.renderToString(tex, {
+      displayMode: display,
+      throwOnError: false,
+    });
+    return (
+      <span
+        className={`inline-block overflow-x-auto max-w-full align-middle ${className}`}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
+  } catch {
+    return <code className={`font-mono text-xs ${className}`}>{tex}</code>;
+  }
+}
 
 /** Section Header for distinct educational modules */
 export function SectionHeader({ index, title }: { index?: number; title: string }) {
@@ -70,8 +97,28 @@ export function PlaceholderTag({
   );
 }
 
-/** Main Textual Content Placeholder */
-export function ContentPlaceholder({ label }: { label?: string | undefined }) {
+/** Main Textual Content Container / Placeholder */
+export function ContentPlaceholder({
+  label,
+  children,
+}: {
+  label?: string | undefined;
+  children?: ReactNode;
+}) {
+  if (children) {
+    return (
+      <div className="space-y-3 rounded-sm border border-border bg-card p-5 text-sm leading-relaxed text-foreground">
+        {label && (
+          <h3 className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-teal">
+            <FileText className="h-3.5 w-3.5 text-teal" />
+            {label}
+          </h3>
+        )}
+        <div className="space-y-3 text-foreground/90">{children}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3 rounded-sm border border-dashed border-border bg-secondary/30 p-4">
       <div className="flex items-center justify-between gap-2">
@@ -99,7 +146,19 @@ export function ContentPlaceholder({ label }: { label?: string | undefined }) {
 }
 
 /** Mathematical Equation and Derivation Container */
-export function FormulaBox({ label }: { label?: string | undefined }) {
+export function FormulaBox({
+  label,
+  tex,
+  description,
+  children,
+}: {
+  label?: string | undefined;
+  tex?: string | undefined;
+  description?: string | undefined;
+  children?: ReactNode;
+}) {
+  const defaultTex = tex ?? String.raw`d(u, v) = \min \{ \text{dist}(s, t) : s \in u, t \in v \}`;
+
   return (
     <div className="rounded-sm border-l-4 border-navy bg-secondary/50 p-5">
       <div className="mb-3 flex items-center justify-between gap-2">
@@ -107,42 +166,44 @@ export function FormulaBox({ label }: { label?: string | undefined }) {
           <Sigma className="h-4 w-4 text-navy" />
           <span>{label ?? "Mathematical Derivation & Formulation"}</span>
         </div>
-        <PlaceholderTag variant="math">[MATHEMATICAL EXPLANATION PLACEHOLDER]</PlaceholderTag>
+        {!tex && !children && (
+          <PlaceholderTag variant="math">[MATHEMATICAL EXPLANATION PLACEHOLDER]</PlaceholderTag>
+        )}
       </div>
 
-      <div className="my-4 flex flex-col items-center justify-center rounded-sm border border-border bg-background/80 py-6 px-4">
-        <div className="font-mono text-base font-medium text-foreground tracking-wide">
-          {"d(u, v) = min { dist(s, t) : s \u2208 u, t \u2208 v }"}
-        </div>
-        <span className="mt-2 text-xs text-muted-foreground font-mono">
-          [Formal mathematical equations, LaTeX proofs, and recurrence relations]
-        </span>
+      <div className="my-4 flex flex-col items-center justify-center rounded-sm border border-border bg-background/90 py-5 px-4 overflow-x-auto">
+        <MathFormula tex={defaultTex} display={true} />
       </div>
 
-      <p className="font-mono text-[11px] text-muted-foreground">
-        Formulas, variables definitions, and step-by-step mathematical proofs will be integrated
-        here.
-      </p>
+      {description && (
+        <p className="text-xs text-muted-foreground leading-relaxed mt-2">{description}</p>
+      )}
+
+      {children && <div className="mt-3 text-xs text-foreground/90 space-y-2">{children}</div>}
+
+      {!tex && !children && !description && (
+        <p className="font-mono text-[11px] text-muted-foreground">
+          Formulas, variables definitions, and step-by-step mathematical proofs will be integrated
+          here.
+        </p>
+      )}
     </div>
   );
 }
 
 /** Code Implementation Container with Syntax Styling */
-export function CodeBlock({ label }: { label?: string | undefined }) {
-  return (
-    <div className="overflow-hidden rounded-sm border border-border">
-      <div className="flex items-center justify-between bg-ink px-4 py-2 text-xs text-ink-foreground">
-        <div className="flex items-center gap-2">
-          <Code2 className="h-4 w-4 text-teal" />
-          <span className="font-mono font-medium">{label ?? "Python Implementation"}</span>
-          <span className="text-[10px] text-muted-foreground opacity-80">· Python 3.11</span>
-        </div>
-        <PlaceholderTag variant="code">[CODE IMPLEMENTATION PLACEHOLDER]</PlaceholderTag>
-      </div>
-      <div className="bg-ink/95 px-5 py-6">
-        <pre className="font-mono text-xs leading-relaxed text-ink-foreground/90">
-          <code>
-            {`# [CODE IMPLEMENTATION PLACEHOLDER]
+export function CodeBlock({
+  label,
+  code,
+  language = "python",
+}: {
+  label?: string | undefined;
+  code?: string | undefined;
+  language?: string | undefined;
+}) {
+  const codeContent =
+    code ??
+    `# [CODE IMPLEMENTATION PLACEHOLDER]
 # Full algorithm implementation, NumPy vectorization, or library workflow
 # will be placed here in Phase 2.
 
@@ -150,19 +211,44 @@ def hierarchical_clustering(data, linkage="single"):
     """
     [FUNCTION SPECIFICATION PLACEHOLDER]
     """
-    raise NotImplementedError("Implementation placeholder")`}
-          </code>
+    raise NotImplementedError("Implementation placeholder")`;
+
+  return (
+    <div className="overflow-hidden rounded-sm border border-border">
+      <div className="flex items-center justify-between bg-ink px-4 py-2 text-xs text-ink-foreground">
+        <div className="flex items-center gap-2">
+          <Code2 className="h-4 w-4 text-teal" />
+          <span className="font-mono font-medium">{label ?? "Python Implementation"}</span>
+          <span className="text-[10px] text-muted-foreground opacity-80">· {language}</span>
+        </div>
+        {!code && <PlaceholderTag variant="code">[CODE IMPLEMENTATION PLACEHOLDER]</PlaceholderTag>}
+      </div>
+      <div className="bg-ink/95 px-5 py-4 overflow-x-auto">
+        <pre className="font-mono text-xs leading-relaxed text-ink-foreground/90">
+          <code>{codeContent}</code>
         </pre>
       </div>
       <div className="border-t border-ink/40 bg-ink/90 px-4 py-1.5 text-[11px] font-mono text-muted-foreground">
-        Interactive notebook execution and snippet copies will be available.
+        Verified executable Python reference implementation.
       </div>
     </div>
   );
 }
 
 /** Output Container for Execution Logs and Results */
-export function OutputBlock({ label }: { label?: string | undefined }) {
+export function OutputBlock({
+  label,
+  output,
+}: {
+  label?: string | undefined;
+  output?: string | undefined;
+}) {
+  const outputContent =
+    output ??
+    `>>> [EXECUTION LOG PLACEHOLDER]
+>>> Computed cluster hierarchy: 4 clusters formed
+>>> Cophenetic correlation coefficient: 0.884`;
+
   return (
     <div className="rounded-sm border border-border bg-secondary/40 p-4">
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -170,12 +256,10 @@ export function OutputBlock({ label }: { label?: string | undefined }) {
           <Terminal className="h-3.5 w-3.5 text-teal" />
           <span>{label ?? "Standard Output & Diagnostics"}</span>
         </div>
-        <PlaceholderTag variant="content">[CONTENT PLACEHOLDER]</PlaceholderTag>
+        {!output && <PlaceholderTag variant="content">[CONTENT PLACEHOLDER]</PlaceholderTag>}
       </div>
-      <pre className="rounded-sm border border-border bg-background p-3 font-mono text-xs text-muted-foreground">
-        {`>>> [EXECUTION LOG PLACEHOLDER]
->>> Computed cluster hierarchy: 4 clusters formed
->>> Cophenetic correlation coefficient: 0.884`}
+      <pre className="rounded-sm border border-border bg-background p-3 font-mono text-xs text-foreground/90 overflow-x-auto">
+        {outputContent}
       </pre>
     </div>
   );
@@ -268,7 +352,15 @@ export function NoteBox({
 }
 
 /** Structured Technical Comparison Table */
-export function ComparisonTable({ columns, rows }: { columns: string[]; rows: string[] }) {
+export function ComparisonTable({
+  columns,
+  rows,
+  tableData,
+}: {
+  columns: string[];
+  rows: string[];
+  tableData?: Record<string, string[]>;
+}) {
   return (
     <div className="overflow-hidden rounded-sm border border-border">
       <div className="flex items-center justify-between bg-secondary/80 px-4 py-2 border-b border-border text-xs text-muted-foreground">
@@ -276,7 +368,7 @@ export function ComparisonTable({ columns, rows }: { columns: string[]; rows: st
           <TableIcon className="h-3.5 w-3.5 text-teal" />
           <span>Technical Comparison Matrix</span>
         </div>
-        <PlaceholderTag variant="content">[CONTENT PLACEHOLDER]</PlaceholderTag>
+        {!tableData && <PlaceholderTag variant="content">[CONTENT PLACEHOLDER]</PlaceholderTag>}
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
@@ -295,18 +387,27 @@ export function ComparisonTable({ columns, rows }: { columns: string[]; rows: st
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {rows.map((row) => (
-              <tr key={row} className="hover:bg-secondary/20 transition-colors">
-                <td className="px-4 py-3 font-medium text-foreground whitespace-nowrap bg-secondary/10">
-                  {row}
-                </td>
-                {columns.slice(1).map((col) => (
-                  <td key={col} className="px-4 py-3 font-mono text-xs text-muted-foreground">
-                    <span className="text-muted-foreground/70">[CONTENT PLACEHOLDER]</span>
+            {rows.map((row) => {
+              const rowValues = tableData?.[row];
+              return (
+                <tr key={row} className="hover:bg-secondary/20 transition-colors">
+                  <td className="px-4 py-3 font-medium text-foreground whitespace-nowrap bg-secondary/10">
+                    {row}
                   </td>
-                ))}
-              </tr>
-            ))}
+                  {columns.slice(1).map((col, cIdx) => (
+                    <td key={col} className="px-4 py-3 text-xs text-foreground/90 leading-relaxed">
+                      {rowValues && rowValues[cIdx] ? (
+                        rowValues[cIdx]
+                      ) : (
+                        <span className="font-mono text-muted-foreground/70">
+                          [CONTENT PLACEHOLDER]
+                        </span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -318,22 +419,34 @@ export function ComparisonTable({ columns, rows }: { columns: string[]; rows: st
 export function BlockView({ block }: { block: Block }) {
   switch (block.kind) {
     case "math":
-      return <FormulaBox label={block.label} />;
+      return (
+        <FormulaBox label={block.label} tex={block.tex} description={block.description}>
+          {block.content}
+        </FormulaBox>
+      );
     case "diagram":
       return <DiagramPlaceholder label={block.label} />;
     case "code":
-      return <CodeBlock label={block.label} />;
+      return <CodeBlock label={block.label} code={block.code} />;
     case "output":
-      return <OutputBlock label={block.label} />;
+      return <OutputBlock label={block.label} output={block.output} />;
     case "viz":
       return <VizPlaceholder label={block.label} />;
     case "viz-large":
       return <VizPlaceholder large label={block.label} />;
     case "table":
-      return <ComparisonTable columns={block.columns ?? []} rows={block.rows ?? []} />;
+      return (
+        <ComparisonTable
+          columns={block.columns ?? []}
+          rows={block.rows ?? []}
+          tableData={block.tableData}
+        />
+      );
     case "note":
-      return <NoteBox />;
+      return <NoteBox title={block.noteTitle ?? block.label}>{block.content}</NoteBox>;
+    case "custom":
+      return <>{block.content}</>;
     default:
-      return <ContentPlaceholder label={block.label} />;
+      return <ContentPlaceholder label={block.label}>{block.content}</ContentPlaceholder>;
   }
 }

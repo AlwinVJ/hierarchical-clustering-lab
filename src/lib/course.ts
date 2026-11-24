@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import {
   Compass,
   BookOpen,
@@ -19,13 +20,31 @@ import {
 } from "lucide-react";
 
 export type BlockKind =
-  "content" | "math" | "diagram" | "code" | "viz" | "viz-large" | "output" | "table" | "note";
+  | "content"
+  | "math"
+  | "diagram"
+  | "code"
+  | "viz"
+  | "viz-large"
+  | "output"
+  | "table"
+  | "note"
+  | "custom";
+
 export interface Block {
   kind: BlockKind;
   label?: string;
   columns?: string[];
   rows?: string[];
+  tex?: string;
+  description?: string;
+  content?: ReactNode;
+  code?: string;
+  output?: string;
+  noteTitle?: string;
+  tableData?: Record<string, string[]>;
 }
+
 export interface Section {
   title: string;
   description?: string;
@@ -40,9 +59,23 @@ export interface CoursePage {
   sections: Section[];
 }
 
-const c = (label?: string): Block => ({ kind: "content", ...(label ? { label } : {}) });
-const m = (label?: string): Block => ({ kind: "math", ...(label ? { label } : {}) });
+const c = (label?: string, content?: ReactNode): Block => ({
+  kind: "content",
+  ...(label ? { label } : {}),
+  ...(content ? { content } : {}),
+});
+const m = (label?: string, tex?: string, description?: string): Block => ({
+  kind: "math",
+  ...(label ? { label } : {}),
+  ...(tex ? { tex } : {}),
+  ...(description ? { description } : {}),
+});
 const d = (label?: string): Block => ({ kind: "diagram", ...(label ? { label } : {}) });
+const n = (title: string, content?: ReactNode): Block => ({
+  kind: "note",
+  noteTitle: title,
+  ...(content ? { content } : {}),
+});
 const s = (title: string, ...blocks: Block[]): Section => ({
   title,
   blocks: blocks.length ? blocks : [c()],
@@ -115,21 +148,139 @@ export const pages: CoursePage[] = [
     subtitle:
       "Core intuition, foundational concepts, and landscape of hierarchical clustering in unsupervised machine learning.",
     sections: [
-      s("Introduction", c("Overview of unsupervised learning and clustering")),
+      s(
+        "Introduction",
+        c(
+          "Foundations of Unsupervised Learning",
+          "In machine learning, clustering is the fundamental unsupervised task of partitioning unlabeled observations into natural groupings based on geometric or statistical affinity. Unlike supervised learning, where an explicit response variable guides model optimization, clustering models explore the geometry of feature space directly without ground-truth supervisory signals.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Dimension",
+            "Supervised Learning",
+            "Partition-Based (K-Means)",
+            "Hierarchical Clustering",
+          ],
+          rows: [
+            "Ground Truth Labels",
+            "Cluster Count (k)",
+            "Output Topology",
+            "Optimization Determinism",
+            "Computational Complexity",
+          ],
+          tableData: {
+            "Ground Truth Labels": [
+              "Required (labels y)",
+              "None (explores feature space)",
+              "None (discovers multi-level manifolds)",
+            ],
+            "Cluster Count (k)": [
+              "Pre-fixed by class labels",
+              "Must be specified upfront",
+              "Discovered post-hoc via tree cuts",
+            ],
+            "Output Topology": [
+              "Decision boundary functions",
+              "Flat Voronoi partitioning",
+              "Nested tree hierarchy (dendrogram)",
+            ],
+            "Optimization Determinism": [
+              "Deterministic once converged",
+              "Non-deterministic (random seeds)",
+              "Fully deterministic on distance matrix",
+            ],
+            "Computational Complexity": [
+              "O(N · d) per epoch",
+              "O(N · k · d · i) linear in N",
+              "O(N²) space, O(N² log N) to O(N³) compute",
+            ],
+          },
+        },
+      ),
       s(
         "What is Clustering?",
-        c("Definition and partitioning intuition"),
-        d("Clustering concept overview"),
+        c(
+          "Mathematical Objective of Cluster Analysis",
+          "Mathematically, clustering maps N observation vectors into K disjoint subsets such that observations assigned to the same subset exhibit high mutual similarity, while observations assigned to distinct subsets exhibit high mutual dissimilarity.",
+        ),
+        m(
+          "Objective Intuition: Within-Cluster Dispersion",
+          String.raw`W(C) = \frac{1}{2} \sum_{k=1}^K \sum_{i, j \in C_k} \|\mathbf{x}_i - \mathbf{x}_j\|^2`,
+          "Clustering seeks partitions that minimize within-cluster pairwise dissimilarity W(C) while maximizing separation between cluster boundaries.",
+        ),
+        d("Feature space partitioning and cluster boundary geometries"),
       ),
       s(
         "What is Hierarchical Clustering?",
-        c("Tree-structured cluster organization"),
-        d("Hierarchy illustration"),
+        c(
+          "Multi-Scale Nested Partition Sequences",
+          "Hierarchical clustering builds an entire hierarchy of nested clusters from individual observations up to a single universal root. Because all intermediate granularities are preserved in a tree structure, domain experts can inspect macro-clusters and micro-clusters simultaneously without choosing a single arbitrary k in advance.",
+        ),
+        m(
+          "Formal Sequence of Nested Partitions",
+          String.raw`\mathcal{P}_0 = \{\{1\}, \dots, \{N\}\} \prec \mathcal{P}_1 \prec \dots \prec \mathcal{P}_{N-1} = \{S\}`,
+          "A hierarchical clustering of N observations forms a sequence of N nested partitions where each stage merges two existing clusters or splits an existing cluster.",
+        ),
+        n(
+          "Agglomerative vs. Divisive Paradigms",
+          "Hierarchical algorithms proceed in one of two opposite directions: Agglomerative (bottom-up, iteratively merging the closest pair of clusters from N singletons) or Divisive (top-down, recursively splitting a single universal cluster until N singletons remain).",
+        ),
       ),
-      s("Applications", c("Key domains benefiting from hierarchical representations")),
-      s("Key Concepts", c("Dendrograms, proximity matrices, and nested clusters"), {
-        kind: "note",
-      }),
+      s(
+        "Applications",
+        c(
+          "Cross-Disciplinary Real-World Applications",
+          "Hierarchical clustering is widely applied where data naturally conforms to taxonomies or multi-scale groupings:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Domain",
+            "Application",
+            "Distance / Linkage Strategy",
+            "Typical Value Delivered",
+          ],
+          rows: ["Bioinformatics", "Document NLP", "Marketing", "Geospatial"],
+          tableData: {
+            Bioinformatics: [
+              "Phylogenetic tree reconstruction & gene co-expression",
+              "Correlation distance + Average / Complete linkage",
+              "Uncovers evolutionary lineages and shared regulatory pathways",
+            ],
+            "Document NLP": [
+              "Topic taxonomy construction & ontology mining",
+              "Cosine distance + Complete / Ward linkage",
+              "Builds multi-tier hierarchical category taxonomies from text embeddings",
+            ],
+            Marketing: [
+              "Multi-tier customer behavioral segmentation",
+              "Standardized Euclidean + Ward's linkage",
+              "Identifies macro-segments (e.g. enterprise vs retail) and micro-personas",
+            ],
+            Geospatial: [
+              "Urban transit zone & regional facility grouping",
+              "Manhattan / Haversine distance + Single linkage",
+              "Reveals commuter corridors and geographical catchment areas",
+            ],
+          },
+        },
+      ),
+      s(
+        "Key Concepts",
+        c(
+          "The Four Foundational Pillars",
+          "To master hierarchical clustering, four core components must be understood: 1) The Proximity Matrix (symmetric observation distances), 2) Linkage Criteria (how distances between entire clusters are calculated), 3) The Dendrogram (the tree graph recording merge history), and 4) Tree Cutting (the horizontal slice that produces discrete clusters).",
+        ),
+        n(
+          "Critical Heuristic: Greedy Irreversibility",
+          "A fundamental property of classical hierarchical clustering is greedy irreversibility: once two clusters merge in agglomerative clustering, that merge is permanent and immutable for all higher levels. Early merge errors propagate upward.",
+        ),
+        c(
+          "Authoritative Academic References",
+          "Verified against Kaufman & Rousseeuw (1990) Ch. 1 & 6; Murtagh & Contreras (2012); Scikit-learn User Guide §2.3. See docs/references.md for complete bibliographical citations.",
+        ),
+      ),
     ],
   },
   {
@@ -142,29 +293,87 @@ export const pages: CoursePage[] = [
     sections: [
       s(
         "Hierarchical Structure",
-        c("Nested partitions and tree topology"),
-        d("Hierarchical tree decomposition"),
+        c(
+          "Feature Space Representations",
+          "Every observation is represented as a d-dimensional coordinate vector in feature space. Spatial proximity between points serves as a proxy for semantic similarity in the domain problem.",
+        ),
+        m(
+          "Dataset Matrix Representation",
+          String.raw`X = \begin{bmatrix} \mathbf{x}_1^T \\ \mathbf{x}_2^T \\ \vdots \\ \mathbf{x}_N^T \end{bmatrix} \in \mathbb{R}^{N \times d}, \quad \mathbf{x}_i = (x_{i1}, x_{i2}, \dots, x_{id}) \in \mathbb{R}^d`,
+          "Each row of matrix X represents an observation, and each column represents a measured feature.",
+        ),
+        d("Decomposition of continuous feature space into nested hierarchical partitions"),
       ),
       s(
         "Distance Between Data Points",
-        c("Point-to-point proximity representations"),
-        m("Pointwise distance formulation"),
+        c(
+          "Similarity, Dissimilarity, and Metric Axioms",
+          "A distance function d(x, y) quantifies the dissimilarity between two observation vectors. To qualify as a formal metric, it must satisfy four fundamental axioms: Non-negativity, Identity of indiscernibles, Symmetry, and the Triangle inequality.",
+        ),
+        m(
+          "The Four Metric Axioms",
+          String.raw`d(\mathbf{x}, \mathbf{y}) \ge 0; \quad d(\mathbf{x}, \mathbf{y})=0 \iff \mathbf{x}=\mathbf{y}; \quad d(\mathbf{x}, \mathbf{y})=d(\mathbf{y}, \mathbf{x}); \quad d(\mathbf{x}, \mathbf{z}) \le d(\mathbf{x}, \mathbf{y}) + d(\mathbf{y}, \mathbf{z})`,
+          "These four properties guarantee coherent geometric behavior without topological contradictions.",
+        ),
+        m(
+          "Euclidean Distance (L2 Norm)",
+          String.raw`d_2(\mathbf{x}_i, \mathbf{x}_j) = \|\mathbf{x}_i - \mathbf{x}_j\|_2 = \sqrt{\sum_{k=1}^d (x_{ik} - x_{jk})^2}`,
+          "The standard straight-line metric in Euclidean space.",
+        ),
+        m(
+          "Manhattan Distance (L1 Norm)",
+          String.raw`d_1(\mathbf{x}_i, \mathbf{x}_j) = \|\mathbf{x}_i - \mathbf{x}_j\|_1 = \sum_{k=1}^d |x_{ik} - x_{jk}|`,
+          "Sum of absolute coordinate differences, robust against moderate outliers.",
+        ),
       ),
       s(
         "Distance Between Clusters",
-        c("Pairwise cluster distance concepts"),
-        m("Cluster distance formulation"),
-        d("Inter-cluster distance geometry"),
+        c(
+          "Observation Distance vs. Cluster Distance: The Conceptual Leap",
+          "While observation distance measures the gap between two single points, cluster distance measures the gap between two sets of points. Defining this inter-set gap requires a linkage criterion.",
+        ),
+        m(
+          "Generalized Cluster Linkage Function",
+          String.raw`\mathcal{D}(C_A, C_B) = f(\{d(\mathbf{x}_i, \mathbf{x}_j) : \mathbf{x}_i \in C_A, \mathbf{x}_j \in C_B\})`,
+          "The linkage function f maps pairwise observation distances into a single scalar dissimilarity between clusters C_A and C_B.",
+        ),
+        d("Geometric visualization of inter-cluster distance definitions"),
       ),
       s(
         "Linkage Criteria",
-        c("Role of linkage in forming cluster geometries"),
-        m("Generalized linkage metric"),
+        c(
+          "Linkage Criteria & Induced Cluster Geometries",
+          "The linkage criterion directly determines which clusters are considered closest at every step. Single linkage uses minimum pairwise distance, complete linkage uses maximum distance, average linkage uses mean distance, and Ward's method minimizes within-cluster variance increase.",
+        ),
+        m(
+          "Lance-Williams Generalized Recurrence",
+          String.raw`D(A \cup B, C) = \alpha_A D(A, C) + \alpha_B D(B, C) + \beta D(A, B) + \gamma |D(A, C) - D(B, C)|`,
+          "Lance and Williams (1967) proved that all major linkages update distances using this single linear recurrence equation.",
+        ),
+        n(
+          "Geometric Biases of Linkages",
+          "Single linkage can follow elongated, non-globular paths but is prone to chaining noise bridges. Complete linkage and Ward's linkage enforce compact, roughly spherical clusters.",
+        ),
       ),
       s(
         "Dendrogram Fundamentals",
-        c("Anatomy of the dendrogram diagram"),
-        d("Dendrogram components and axes"),
+        c(
+          "Anatomy of the Dendrogram & Verified 4-Point Numerical Example",
+          "A dendrogram maps the complete merge history: observations are positioned on the leaf axis at height 0, and horizontal bars connect clusters at vertical heights equal to their merge dissimilarity.",
+        ),
+        m(
+          "Verified 4-Point Distance Matrix",
+          String.raw`\mathbf{D} = \begin{bmatrix} 0.0000 & 1.4142 & 5.8310 & 7.2111 \\ 1.4142 & 0.0000 & 4.4721 & 5.8310 \\ 5.8310 & 4.4721 & 0.0000 & 1.4142 \\ 7.2111 & 5.8310 & 1.4142 & 0.0000 \end{bmatrix}`,
+          "Verified pairwise Euclidean distance matrix for P_1(1,2), P_2(2,3), P_3(6,5), P_4(7,6). Global minimum distance is 1.4142, merging (P_1, P_2) first.",
+        ),
+        n(
+          "Condensed Distance Vectors in SciPy",
+          "SciPy avoids storing redundant NxN matrices by utilizing a condensed 1D array of size N(N-1)/2. For N=4, this requires exactly 6 values: [1.4142, 5.8310, 7.2111, 4.4721, 5.8310, 1.4142], indexed by k = N·i - i(i+1)/2 + j - i - 1.",
+        ),
+        c(
+          "Chapter References",
+          "References: Sokal & Rohlf (1962); Lance & Williams (1967); SciPy Spatial Distance Documentation. See docs/references.md.",
+        ),
       ),
     ],
   },
