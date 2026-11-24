@@ -96,7 +96,23 @@ describe("App routing and Course Structure", () => {
 
     // Page 8: Distance metrics
     const metrics = pages.find((p) => p.slug === "distance-metrics")!;
-    expect(metrics.sections.length).toBe(4);
+    expect(metrics.sections.length).toBe(8);
+    expect(metrics.sections.map((s) => s.title)).toContain(
+      "Metric Space Axioms & Mathematical Foundations",
+    );
+    expect(metrics.sections.map((s) => s.title)).toContain("Euclidean Distance (L₂ Norm)");
+    expect(metrics.sections.map((s) => s.title)).toContain("Manhattan Distance (L₁ Norm)");
+    expect(metrics.sections.map((s) => s.title)).toContain("Minkowski Distance & Chebyshev Limit");
+    expect(metrics.sections.map((s) => s.title)).toContain(
+      "Cosine Similarity and Angular Distance",
+    );
+    expect(metrics.sections.map((s) => s.title)).toContain(
+      "Mahalanobis Distance & Feature Covariance",
+    );
+    expect(metrics.sections.map((s) => s.title)).toContain(
+      "Curse of Dimensionality & Distance Concentration",
+    );
+    expect(metrics.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
 
     // Page 11: Implementation
     const impl = pages.find((p) => p.slug === "implementation")!;

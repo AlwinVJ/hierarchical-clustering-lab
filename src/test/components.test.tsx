@@ -20,6 +20,11 @@ import {
   LanceWilliamsExplorer,
   Module06Quiz,
 } from "@/content/module06-linkage";
+import {
+  DistanceMetricExplorer,
+  CurseOfDimensionalitySimulator,
+  Module07Quiz,
+} from "@/content/module07-metrics";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -131,6 +136,20 @@ describe("Reusable Lab Components", () => {
 
     const quizHtml = renderToString(<Module06Quiz />);
     expect(quizHtml).toContain("Module 06 Knowledge Check");
+    expect(quizHtml).toContain("Check Answers");
+  });
+
+  it("renders DistanceMetricExplorer, CurseOfDimensionalitySimulator, and Module07Quiz", () => {
+    const metricHtml = renderToString(<DistanceMetricExplorer />);
+    expect(metricHtml).toContain("Interactive Distance Metric");
+    expect(metricHtml).toContain("Calculated Distance");
+
+    const simHtml = renderToString(<CurseOfDimensionalitySimulator />);
+    expect(simHtml).toContain("Distance Concentration Simulator");
+    expect(simHtml).toContain("Beyer et al. (1999)");
+
+    const quizHtml = renderToString(<Module07Quiz />);
+    expect(quizHtml).toContain("Module 07 Knowledge Check");
     expect(quizHtml).toContain("Check Answers");
   });
 });

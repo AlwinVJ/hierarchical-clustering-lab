@@ -11,6 +11,11 @@ import {
   Module06Quiz,
 } from "@/content/module06-linkage";
 import {
+  DistanceMetricExplorer,
+  CurseOfDimensionalitySimulator,
+  Module07Quiz,
+} from "@/content/module07-metrics";
+import {
   Compass,
   BookOpen,
   Layers,
@@ -1849,12 +1854,271 @@ Output:
     group: "Core Algorithms",
     icon: Ruler,
     subtitle:
-      "Formulations and geometric implications of metrics used to compute similarity between points.",
+      "Metric space axioms, geometric norm balls, angular divergence, covariance whitening, and high-dimensional distance concentration.",
     sections: [
-      metric("Euclidean Distance"),
-      metric("Manhattan Distance"),
-      metric("Minkowski Distance"),
-      metric("Cosine Distance"),
+      s(
+        "Metric Space Axioms & Mathematical Foundations",
+        c(
+          "The Role of Distance in Hierarchical Clustering",
+          "Hierarchical clustering algorithms do not operate directly on raw observations; they operate on pairwise dissimilarity matrices D ∈ ℝ^{N × N}. The choice of the ground distance function d(x, y) establishes the underlying geometry of the feature space, dictating how proximity is perceived before any linkage criterion is applied. For a distance function to constitute a rigorous mathematical metric, it must satisfy four universal axioms.",
+        ),
+        m(
+          "Metric Space Axioms (Fréchet, 1906)",
+          String.raw`\begin{aligned}
+1. \; &\text{Non-Negativity:} \quad d(\mathbf{x}, \mathbf{y}) \ge 0 \\
+2. \; &\text{Identity of Indiscernibles:} \quad d(\mathbf{x}, \mathbf{y}) = 0 \iff \mathbf{x} = \mathbf{y} \\
+3. \; &\text{Symmetry:} \quad d(\mathbf{x}, \mathbf{y}) = d(\mathbf{y}, \mathbf{x}) \\
+4. \; &\text{Triangle Inequality:} \quad d(\mathbf{x}, \mathbf{z}) \le d(\mathbf{x}, \mathbf{y}) + d(\mathbf{y}, \mathbf{z})
+\end{aligned}`,
+          "A pair (X, d) satisfying all four axioms forms a metric space. If axiom 2 is relaxed such that d(x, y) = 0 for distinct points, d is a pseudometric. If axiom 4 (triangle inequality) is violated, d is a semimetric or generic dissimilarity function.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Mathematical Space",
+            "Axioms Satisfied",
+            "Machine Learning Examples",
+            "Hierarchical Clustering Compatibility",
+          ],
+          rows: [
+            "Strict Metric Space",
+            "Pseudometric Space",
+            "Semimetric (Dissimilarity)",
+            "Ultrametric Space",
+          ],
+          tableData: {
+            "Strict Metric Space": [
+              "Non-negativity, Identity, Symmetry, Triangle Inequality",
+              "Euclidean (L₂), Manhattan (L₁), Minkowski (L_p, p ≥ 1), Mahalanobis",
+              "Fully supported across all linkage criteria (Single, Complete, Average, Ward)",
+            ],
+            "Pseudometric Space": [
+              "Non-negativity, Symmetry, Triangle Inequality (d(x,y)=0 possible for x ≠ y)",
+              "Rank correlation distance, subspace projection distance",
+              "Permitted; identical points coalesce into initial zero-height clusters",
+            ],
+            "Semimetric (Dissimilarity)": [
+              "Non-negativity, Symmetry (VIOLATES Triangle Inequality)",
+              "Cosine distance (1 - cos θ), Jaccard dissimilarity, KL divergence",
+              "Requires careful linkage choice; Ward's variance minimization is invalid",
+            ],
+            "Ultrametric Space": [
+              "Non-negativity, Identity, Symmetry, Strong Triangle Inequality: d(x, z) ≤ max(d(x, y), d(y, z))",
+              "Dendrogram cophenetic distance matrix",
+              "The exact target mathematical representation produced by hierarchical clustering",
+            ],
+          },
+        },
+      ),
+      s(
+        "Euclidean Distance (L₂ Norm)",
+        c(
+          "Straight-Line Spatial Separation",
+          "Euclidean distance represents the standard straight-line ruler distance between two vectors in d-dimensional Euclidean space ℝᵈ. Rooted in the Pythagorean theorem, it measures the magnitude (L₂ norm) of the difference vector between two observations.",
+        ),
+        m(
+          "Euclidean Distance Formal Definition",
+          String.raw`d_2(\mathbf{x}, \mathbf{y}) = \| \mathbf{x} - \mathbf{y} \|_2 = \sqrt{\sum_{k=1}^d (x_k - y_k)^2}`,
+          "Where x_k and y_k denote the coordinate values along the k-th feature dimension.",
+        ),
+        c(
+          "Geometric Invariance and Scale Sensitivity",
+          "Euclidean distance possesses rotational invariance: rotating the coordinate axes by an orthogonal transformation matrix R (where RᵀR = I) leaves all pairwise distances strictly unchanged (||Rx - Ry||₂ = ||x - y||₂). However, Euclidean distance is NOT scale invariant. If one feature is measured in millimeters and another in kilometers, the larger-scale feature will completely dominate the distance calculation. Consequently, feature standardization (z-score normalization: z = (x - μ) / σ) is mandatory prior to computing Euclidean hierarchical clustering.",
+        ),
+        c(
+          "Deterministic Benchmark Numerical Calculations",
+          "Evaluating Euclidean pairwise distances on our canonical 4-point benchmark P₁(1,2), P₂(2,3), P₃(6,5), P₄(7,6):",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Point Pair",
+            "Coordinate Differences (Δx, Δy)",
+            "Squared Sum (Δx² + Δy²)",
+            "Exact Euclidean Distance d₂",
+          ],
+          rows: ["P₁ to P₂", "P₁ to P₃", "P₁ to P₄", "P₂ to P₃", "P₂ to P₄", "P₃ to P₄"],
+          tableData: {
+            "P₁ to P₂": ["Δx = 2-1 = 1, Δy = 3-2 = 1", "1² + 1² = 1 + 1 = 2", "√2 ≈ 1.4142"],
+            "P₁ to P₃": ["Δx = 6-1 = 5, Δy = 5-2 = 3", "5² + 3² = 25 + 9 = 34", "√34 ≈ 5.8310"],
+            "P₁ to P₄": ["Δx = 7-1 = 6, Δy = 6-2 = 4", "6² + 4² = 36 + 16 = 52", "√52 ≈ 7.2111"],
+            "P₂ to P₃": ["Δx = 6-2 = 4, Δy = 5-3 = 2", "4² + 2² = 16 + 4 = 20", "√20 ≈ 4.4721"],
+            "P₂ to P₄": ["Δx = 7-2 = 5, Δy = 6-3 = 3", "5² + 3² = 25 + 9 = 34", "√34 ≈ 5.8310"],
+            "P₃ to P₄": ["Δx = 7-6 = 1, Δy = 6-5 = 1", "1² + 1² = 1 + 1 = 2", "√2 ≈ 1.4142"],
+          },
+        },
+      ),
+      s(
+        "Manhattan Distance (L₁ Norm)",
+        c(
+          "City Block & Taxicab Geometry",
+          "Manhattan distance—also designated as taxicab distance, city block distance, or the L₁ norm—measures the path length between two points when traversal is strictly constrained to orthogonal coordinate grid axes, analogous to a taxi navigating the rectangular street grid of Manhattan.",
+        ),
+        m(
+          "Manhattan Distance Formal Definition",
+          String.raw`d_1(\mathbf{x}, \mathbf{y}) = \| \mathbf{x} - \mathbf{y} \|_1 = \sum_{k=1}^d |x_k - y_k|`,
+          "Sums absolute coordinate differences without squaring.",
+        ),
+        c(
+          "Robustness to Extreme Outliers",
+          "Because Manhattan distance sums absolute differences |x_k - y_k| rather than squared differences (x_k - y_k)², it does not disproportionately penalize large single-dimension discrepancies. An extreme outlier in a single feature exerts a linear rather than quadratic influence, making L₁ clustering significantly more robust against noisy sensor data or corrupted feature values.",
+        ),
+        c(
+          "Geometric Bounds & Relationship to Euclidean Norm",
+          "In any d-dimensional real space, the Manhattan and Euclidean distances are related by rigorous geometric inequalities: d₂(x, y) ≤ d₁(x, y) ≤ √d · d₂(x, y). The lower bound holds with equality when the difference vector aligns perfectly with a single coordinate axis; the upper bound holds when differences are equal across all d dimensions.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Point Pair",
+            "Absolute Sum (|Δx| + |Δy|)",
+            "Exact Manhattan Distance d₁",
+            "Comparison with Euclidean d₂",
+          ],
+          rows: ["P₁ to P₂", "P₁ to P₃", "P₁ to P₄", "P₂ to P₃", "P₂ to P₄", "P₃ to P₄"],
+          tableData: {
+            "P₁ to P₂": ["|1| + |1| = 1 + 1", "2.0000", "d₁ (2.0000) > d₂ (1.4142)"],
+            "P₁ to P₃": ["|5| + |3| = 5 + 3", "8.0000", "d₁ (8.0000) > d₂ (5.8310)"],
+            "P₁ to P₄": ["|6| + |4| = 6 + 4", "10.0000", "d₁ (10.0000) > d₂ (7.2111)"],
+            "P₂ to P₃": ["|4| + |2| = 4 + 2", "6.0000", "d₁ (6.0000) > d₂ (4.4721)"],
+            "P₂ to P₄": ["|5| + |3| = 5 + 3", "8.0000", "d₁ (8.0000) > d₂ (5.8310)"],
+            "P₃ to P₄": ["|1| + |1| = 1 + 1", "2.0000", "d₁ (2.0000) > d₂ (1.4142)"],
+          },
+        },
+      ),
+      s(
+        "Minkowski Distance & Chebyshev Limit",
+        c(
+          "Generalized Vector p-Norm Framework",
+          "Hermann Minkowski (1910) introduced a parametric family of metrics that subsumes both Manhattan and Euclidean distances as special cases. For any real parameter p ≥ 1, the Minkowski distance defines a valid normed metric space.",
+        ),
+        m(
+          "Minkowski Distance Formulation",
+          String.raw`d_p(\mathbf{x}, \mathbf{y}) = \| \mathbf{x} - \mathbf{y} \|_p = \left( \sum_{k=1}^d |x_k - y_k|^p \right)^{1/p}`,
+          "Valid metric for all p ≥ 1 by the Minkowski inequality. When p < 1, the triangle inequality fails, producing a non-convex quasi-metric.",
+        ),
+        m(
+          "Chebyshev Distance (L_∞ Limiting Norm)",
+          String.raw`d_\infty(\mathbf{x}, \mathbf{y}) = \lim_{p \to \infty} \left( \sum_{k=1}^d |x_k - y_k|^p \right)^{1/p} = \max_{k=1, \dots, d} |x_k - y_k|`,
+          "Also known as the maximum metric or chessboard distance (representing the minimum number of moves a king requires to travel between squares).",
+        ),
+        c(
+          "Geometric Morphology of Unit Norm Balls",
+          "The unit ball B_p = {x ∈ ℝ² : ||x||_p ≤ 1} illustrates how the metric parameter p governs distance topology: for p = 1, B₁ is a diamond tilted at 45°; for p = 2, B₂ is the classical circle; as p → ∞, B_p expands into a square aligned with the coordinate axes. When p < 1 (fractional norms), the unit ball indents into a concave 4-pointed star, violating convexity and the triangle inequality.",
+        ),
+        {
+          kind: "custom",
+          content: createElement(DistanceMetricExplorer),
+        },
+      ),
+      s(
+        "Cosine Similarity and Angular Distance",
+        c(
+          "Directional Similarity Independent of Vector Magnitude",
+          "In many machine learning applications—such as natural language processing (TF-IDF, word embeddings), information retrieval, and gene expression profiling—the absolute magnitude (length) of a feature vector reflects document size or observation intensity rather than semantic identity. Cosine similarity computes the cosine of the angle θ between two non-zero vectors, evaluating directional alignment regardless of vector scale.",
+        ),
+        m(
+          "Cosine Similarity and Cosine Distance",
+          String.raw`S_C(\mathbf{x}, \mathbf{y}) = \frac{\mathbf{x} \cdot \mathbf{y}}{\| \mathbf{x} \|_2 \| \mathbf{y} \|_2} = \cos \theta, \quad d_{\cos}(\mathbf{x}, \mathbf{y}) = 1 - S_C(\mathbf{x}, \mathbf{y}) = 1 - \frac{\sum_{k=1}^d x_k y_k}{\sqrt{\sum x_k^2} \sqrt{\sum y_k^2}}`,
+          "For non-negative vectors, S_C ∈ [0, 1] and d_cos ∈ [0, 1]. For general real vectors, S_C ∈ [-1, 1] and d_cos ∈ [0, 2].",
+        ),
+        n(
+          "CRITICAL: Why Cosine Distance Violates the Triangle Inequality",
+          "Standard Cosine Distance d_cos(x, y) = 1 - cos θ is NOT a proper metric because it violates the triangle inequality! For example, let three 2D unit vectors be u at 0°, v at 60°, and w at 120°. Then d_cos(u, v) = 1 - cos(60°) = 1 - 0.5 = 0.5, d_cos(v, w) = 1 - 0.5 = 0.5, but d_cos(u, w) = 1 - cos(120°) = 1 - (-0.5) = 1.5. Because 1.5 > 0.5 + 0.5, the triangle inequality fails! To obtain a strict metric, one must use Normalized Angular Distance: d_θ(x, y) = arccos(S_C(x, y)) / π, which maps the angular arc onto [0, 1] and rigorously satisfies all metric axioms.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Vector Pair",
+            "Dot Product (u · v)",
+            "Magnitudes (||u||, ||v||)",
+            "Cosine Similarity S_C",
+            "Cosine Distance d_cos",
+          ],
+          rows: ["P₁ and P₂", "P₁ and P₃", "P₁ and P₄", "P₃ and P₄"],
+          tableData: {
+            "P₁ and P₂": [
+              "1·2 + 2·3 = 8.0",
+              "√5 ≈ 2.2361, √13 ≈ 3.6056",
+              "8 / √65 ≈ 0.9923",
+              "0.0077 (Near-parallel vectors)",
+            ],
+            "P₁ and P₃": [
+              "1·6 + 2·5 = 16.0",
+              "√5 ≈ 2.2361, √61 ≈ 7.8102",
+              "16 / √305 ≈ 0.9162",
+              "0.0838 (Moderate angular divergence)",
+            ],
+            "P₁ and P₄": [
+              "1·7 + 2·6 = 19.0",
+              "√5 ≈ 2.2361, √85 ≈ 9.2195",
+              "19 / √425 ≈ 0.9216",
+              "0.0784 (Angle θ ≈ 22.8°)",
+            ],
+            "P₃ and P₄": [
+              "6·7 + 5·6 = 72.0",
+              "√61 ≈ 7.8102, √85 ≈ 9.2195",
+              "72 / √5185 ≈ 0.9999",
+              "0.0001 (Virtually collinear vectors)",
+            ],
+          },
+        },
+      ),
+      s(
+        "Mahalanobis Distance & Feature Covariance",
+        c(
+          "Covariance-Standardized Statistical Proximity",
+          "Prasanta Chandra Mahalanobis (1936) formulated a statistical distance metric that accounts for feature variance and inter-feature correlations. When features are correlated, Euclidean distance distorts cluster boundaries by double-counting shared variance along the principal correlation axis.",
+        ),
+        m(
+          "Mahalanobis Distance Formal Formulation",
+          String.raw`d_M(\mathbf{x}, \mathbf{y}) = \sqrt{(\mathbf{x} - \mathbf{y})^T \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \mathbf{y})}`,
+          "Where Σ is the d × d sample covariance matrix, and Σ⁻¹ is the precision (inverse covariance) matrix. Requires det(Σ) > 0 (non-singular covariance).",
+        ),
+        c(
+          "Geometric Interpretation: Whitening and Ellipsoidal Contours",
+          "Mahalanobis distance geometrically corresponds to applying a whitening transformation (Σ^{-1/2}) to the feature space and then calculating standard Euclidean distance: d_M(x, y) = || Σ^{-1/2} (x - y) ||₂. Under Mahalanobis distance, isodistance loci form ellipsoids whose principal axes align with the eigenvectors of Σ and whose axis lengths are proportional to the square roots of the eigenvalues. When features are uncorrelated and standardized (Σ = I), Mahalanobis distance simplifies exactly to Euclidean distance.",
+        ),
+      ),
+      s(
+        "Curse of Dimensionality & Distance Concentration",
+        c(
+          "The High-Dimensional Geometry Breakdown",
+          "In high-dimensional spaces (d > 50, 100, 1000), standard geometric intuition derived from 2D and 3D completely fails. Richard Bellman coined the term 'Curse of Dimensionality' in 1961 to describe the exponential volume expansion of feature spaces. For distance-based machine learning and hierarchical clustering in particular, the most devastating consequence is the phenomenon of distance concentration.",
+        ),
+        m(
+          "High-Dimensional Distance Concentration Theorem (Beyer et al., 1999)",
+          String.raw`\lim_{d \to \infty} \frac{D_{\max} - D_{\min}}{D_{\min}} = 0`,
+          "Under mild distributional assumptions (such as i.i.d. feature components), the relative contrast between the farthest neighbor D_max and nearest neighbor D_min converges to zero as dimensionality d approaches infinity.",
+        ),
+        c(
+          "Why Pairwise Distances Concentrate",
+          "Consider the squared Euclidean distance between two random points: D² = ∑_{k=1}^d (x_k - y_k)². By the Central Limit Theorem and Law of Large Numbers, D² is the sum of d independent random variables. Its expected value scales linearly with dimension E[D²] = d · σ_diff², so the mean distance scales as μ_D ∝ √d. However, its standard deviation scales only as σ_D ∝ O(1). Consequently, the relative variance σ_D / μ_D ∝ 1 / √d → 0! Pairwise distances collapse into an ultra-narrow spherical shell, causing every data point to appear virtually equidistant from every other data point.",
+        ),
+        n(
+          "Catastrophic Impact on Hierarchical Linkage Criteria",
+          "Distance concentration undermines the core premise of hierarchical clustering: Single Linkage becomes hypersensitive to minuscule numerical noise and collapses into a continuous chaining sequence; Complete Linkage creates spurious, arbitrary cluster splits; and Ward's method suffers from severe cluster size distortion. Remediation requires dimensionality reduction (PCA, UMAP, t-SNE) or feature selection before hierarchical clustering.",
+        ),
+        {
+          kind: "custom",
+          content: createElement(CurseOfDimensionalitySimulator),
+        },
+      ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Interactive Conceptual Evaluation",
+          "Test your comprehension of metric space axioms, norm ball morphology, cosine angular divergence, Mahalanobis covariance whitening, and high-dimensional distance concentration:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(Module07Quiz),
+        },
+        c(
+          "Module 07 References & Further Reading",
+          "Fréchet, M. (1906). Sur quelques points du calcul fonctionnel. Rendiconti del Circolo Matematico di Palermo, 22(1), 1–72. | Minkowski, H. (1910). Geometrie der Zahlen. Teubner. | Mahalanobis, P. C. (1936). On the generalized distance in statistics. Proceedings of the National Institute of Sciences of India, 2(1), 49–55. | Beyer, K., Goldstein, J., Ramakrishnan, R., & Shaft, U. (1999). When Is 'Nearest Neighbor' Meaningful? ICDT 1999, LNCS 1540, 217–235. | Aggarwal, C. C., Hinneburg, A., & Keim, D. A. (2001). On the Surprising Behavior of Distance Metrics in High Dimensional Space. ICDT 2001, 420–434.",
+        ),
+      ),
     ],
   },
   {
