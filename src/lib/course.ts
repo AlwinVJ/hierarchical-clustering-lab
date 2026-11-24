@@ -2360,31 +2360,358 @@ c_{N-2,1} & c_{N-2,2} & h_{N-2} & N
     group: "Theory & Practice",
     icon: Sigma,
     subtitle:
-      "Formal mathematical formulation of distance updates, Lance-Williams recurrences, and numerical proofs.",
+      "Formal matrix representations, metric space axioms, WSS variance derivations, Ward's objective, and complexity bounds.",
     sections: [
       s(
-        "Distance Calculations",
-        c("Metric spaces, distance properties, and matrix properties"),
-        m("Normed distance properties"),
-        m("Pairwise distance matrix formulation"),
+        "Mathematical Representation of Data",
+        c(
+          "Dataset Matrix Representation",
+          "In mathematical cluster analysis, a dataset containing n observations described by d numerical variables is formalized as a real-valued matrix X ∈ ℝ^{n × d}. Each row vector x_i^T represents an individual observation in d-dimensional Euclidean space ℝ^d, while each column represents a measured feature dimension.",
+        ),
+        m(
+          "Data Matrix and Observation Vector Notation",
+          String.raw`\mathbf{X} = \begin{bmatrix}
+x_{1,1} & x_{1,2} & \cdots & x_{1,d} \\
+x_{2,1} & x_{2,2} & \cdots & x_{2,d} \\
+\vdots & \vdots & \ddots & \vdots \\
+x_{n,1} & x_{n,2} & \cdots & x_{n,d}
+\end{bmatrix} = \begin{bmatrix} \mathbf{x}_1^T \\ \mathbf{x}_2^T \\ \vdots \\ \mathbf{x}_n^T \end{bmatrix}, \quad \mathbf{x}_i = \begin{bmatrix} x_{i,1} \\ x_{i,2} \\ \vdots \\ x_{i,d} \end{bmatrix} \in \mathbb{R}^d`,
+          "Where n denotes sample cardinality, d denotes feature space dimensionality, and x_i is the column feature vector of observation i.",
+        ),
+        c(
+          "Clusters as Disjoint Partitions",
+          "At any discrete stage of the hierarchical clustering process, the dataset X is partitioned into k non-empty, mutually disjoint subsets called clusters: P = {C_1, C_2, ..., C_k}. The partition satisfies two fundamental axioms: (1) Total Coverage: ⋃_{j=1}^k C_j = X, and (2) Mutual Exclusivity: C_a ∩ C_b = ∅ for all a ≠ b. The number of observations in cluster C_j is its cardinality, denoted |C_j| or n_j, satisfying ∑_{j=1}^k n_j = n.",
+        ),
+        c(
+          "Concrete Benchmark Dataset Representation",
+          "Throughout this lab, we trace our canonical 4-point benchmark in ℝ²: P₁(1,2), P₂(2,3), P₃(6,5), P₄(7,6). Its matrix representation is:",
+        ),
+        m(
+          "Benchmark Matrix X (n=4, d=2)",
+          String.raw`\mathbf{X} = \begin{bmatrix} 1.0 & 2.0 \\ 2.0 & 3.0 \\ 6.0 & 5.0 \\ 7.0 & 6.0 \end{bmatrix}, \quad \mathbf{x}_1 = \begin{bmatrix} 1.0 \\ 2.0 \end{bmatrix}, \; \mathbf{x}_2 = \begin{bmatrix} 2.0 \\ 3.0 \end{bmatrix}, \; \mathbf{x}_3 = \begin{bmatrix} 6.0 \\ 5.0 \end{bmatrix}, \; \mathbf{x}_4 = \begin{bmatrix} 7.0 \\ 6.0 \end{bmatrix}`,
+          "Observations x_1 and x_2 form a localized lower cluster; observations x_3 and x_4 form an upper cluster separated by Euclidean distance.",
+        ),
       ),
       s(
-        "Linkage Calculations",
-        c("Lance-Williams recurrence equation for updating distances between clusters"),
-        m("General Lance-Williams recurrence formula"),
-        m("Parameter table for common linkages"),
+        "Distance and Dissimilarity Foundations",
+        c(
+          "Metric Spaces vs. General Dissimilarity Matrices",
+          "Hierarchical clustering transforms an n × d feature matrix X into an n × n pairwise dissimilarity matrix D. A function d: X × X → ℝ is formally classified as a metric if and only if it satisfies the four classical Fréchet axioms for all points x, y, z ∈ X:",
+        ),
+        m(
+          "The Four Metric Space Axioms (Fréchet, 1906)",
+          String.raw`\begin{aligned}
+1. \; &\text{Non-Negativity:} \quad d(\mathbf{x}, \mathbf{y}) \ge 0 \\
+2. \; &\text{Identity of Indiscernibles:} \quad d(\mathbf{x}, \mathbf{y}) = 0 \iff \mathbf{x} = \mathbf{y} \\
+3. \; &\text{Symmetry:} \quad d(\mathbf{x}, \mathbf{y}) = d(\mathbf{y}, \mathbf{x}) \\
+4. \; &\text{Triangle Inequality:} \quad d(\mathbf{x}, \mathbf{z}) \le d(\mathbf{x}, \mathbf{y}) + d(\mathbf{y}, \mathbf{z})
+\end{aligned}`,
+          "If axiom 4 fails, d is a semimetric or general dissimilarity. If axiom 2 allows d(x, y) = 0 for distinct points, d is a pseudometric.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Distance Measure",
+            "Mathematical Definition",
+            "Metric Status",
+            "Geometric Property & Sensitivity",
+            "Recommended Use Cases",
+          ],
+          rows: [
+            "Euclidean (L₂)",
+            "Squared Euclidean (L₂²)",
+            "Manhattan (L₁)",
+            "Minkowski (L_p)",
+            "Cosine Dissimilarity",
+            "Mahalanobis",
+          ],
+          tableData: {
+            "Euclidean (L₂)": [
+              "d_2(x, y) = √(∑ (x_k - y_k)²)",
+              "Strict Metric",
+              "Rotational invariant, sensitive to feature scale",
+              "Standard physical measurements with standardized scales",
+            ],
+            "Squared Euclidean (L₂²)": [
+              "d_2²(x, y) = ∑ (x_k - y_k)²",
+              "NOT a Metric (Violates Triangle Inequality)",
+              "Quadratic penalty on large differences; strictly convex",
+              "Mathematical basis of Ward's method and K-Means variance",
+            ],
+            "Manhattan (L₁)": [
+              "d_1(x, y) = ∑ |x_k - y_k|",
+              "Strict Metric",
+              "Taxicab grid traversal; linear outlier sensitivity",
+              "Robust clustering in the presence of extreme outliers",
+            ],
+            "Minkowski (L_p)": [
+              "d_p(x, y) = (∑ |x_k - y_k|^p)^{1/p}",
+              "Metric for p ≥ 1; Quasi-metric for p < 1",
+              "Parametric norm; unit ball shape interpolates diamond to square",
+              "Exploratory metric tuning; fractional norms in high dimensions",
+            ],
+            "Cosine Dissimilarity": [
+              "d_cos(x, y) = 1 - (x · y) / (||x|| ||y||)",
+              "NOT a Metric (Violates Triangle Inequality)",
+              "Scale-invariant; evaluates angular orientation θ",
+              "Text TF-IDF, sparse document vectors, embedding vectors",
+            ],
+            Mahalanobis: [
+              "d_M(x, y) = √((x - y)^T Σ⁻¹ (x - y))",
+              "Strict Metric (for non-singular Σ)",
+              "Covariance whitening; rotation and scale invariant",
+              "Highly correlated multivariate data; sensor telemetry",
+            ],
+          },
+        },
+        n(
+          "Why Cosine Distance Violates the Triangle Inequality",
+          "Standard Cosine Dissimilarity d_cos(u, v) = 1 - cos(θ) fails the triangle inequality. Consider 2D unit vectors at angles θ_u = 0°, θ_v = 60°, and θ_w = 120°. The pairwise cosine distances are: d_cos(u, v) = 1 - cos(60°) = 0.5, d_cos(v, w) = 1 - cos(60°) = 0.5, but d_cos(u, w) = 1 - cos(120°) = 1 - (-0.5) = 1.5! Because 1.5 > 0.5 + 0.5, the triangle inequality d(u, w) ≤ d(u, v) + d(v, w) is violated. The Normalized Angular Distance d_ang(u, v) = arccos(cos θ) / π restores the metric property.",
+        ),
+        c(
+          "Impact of Feature Scaling",
+          "Distance functions implicitly weight each feature equally. If feature 1 has variance σ₁² = 10,000 (e.g., annual income) and feature 2 has variance σ₂² = 1 (e.g., age), Euclidean distances will be dominated by feature 1 by a factor of 100:1. Therefore, features must be standardized to zero mean and unit variance z_{i,k} = (x_{i,k} - μ_k) / σ_k prior to hierarchical clustering, unless differing variances reflect genuine physical importance.",
+        ),
       ),
       s(
-        "Cluster Merging Calculations",
-        c("Centroid displacement and within-cluster sum of squares update"),
-        m("Ward's variance update derivation"),
-        d("Geometric variance reduction"),
+        "Cluster Centroids and Within-Cluster Variation",
+        c(
+          "Centroid of a Cluster Prototype",
+          "The centroid μ_C of a cluster C is the arithmetic mean vector of all points assigned to that cluster, representing the cluster's geometric center of mass in ℝ^d:",
+        ),
+        m(
+          "Cluster Centroid Formula",
+          String.raw`\boldsymbol{\mu}_C = \frac{1}{|C|} \sum_{\mathbf{x}_i \in C} \mathbf{x}_i = \begin{bmatrix} \frac{1}{|C|} \sum_{i} x_{i,1} \\ \vdots \\ \frac{1}{|C|} \sum_{i} x_{i,d} \end{bmatrix}`,
+          "The centroid is the unique point in ℝ^d that minimizes the sum of squared Euclidean distances to all members of C.",
+        ),
+        c(
+          "Within-Cluster Sum of Squares (WSS)",
+          "The compactness of a cluster C is quantified by its Within-Cluster Sum of Squares (WSS), also known as Error Sum of Squares (ESS). WSS measures the total squared dispersion of points around their centroid:",
+        ),
+        m(
+          "Within-Cluster Sum of Squares (WSS / ESS)",
+          String.raw`\text{WSS}(C) = \sum_{\mathbf{x}_i \in C} \| \mathbf{x}_i - \boldsymbol{\mu}_C \|_2^2 = \sum_{\mathbf{x}_i \in C} \sum_{k=1}^d (x_{i,k} - \mu_{C,k})^2`,
+          "For a singleton cluster C = {x_i}, WSS({x_i}) = 0. For any cluster with |C| ≥ 2, WSS(C) > 0 unless all points are identical.",
+        ),
+        c(
+          "Huygens' Theorem & Total Variance Decomposition",
+          "When two disjoint clusters A and B merge into A ∪ B, the new centroid is the weighted average μ_{A ∪ B} = (|A| μ_A + |B| μ_B) / (|A| + |B|). By Huygens' theorem of classical mechanics, the total sum of squares decomposes into within-cluster variance and between-cluster variance:",
+        ),
+        m(
+          "Huygens' Variance Decomposition",
+          String.raw`\text{WSS}(A \cup B) = \text{WSS}(A) + \text{WSS}(B) + \frac{n_A n_B}{n_A + n_B} \| \boldsymbol{\mu}_A - \boldsymbol{\mu}_B \|_2^2`,
+          "Where n_A = |A| and n_B = |B|. The term Between Sum of Squares (BSS) = [n_A n_B / (n_A + n_B)] ||μ_A - μ_B||² measures the variance introduced by the separation of the two centroids.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Analytical Quantity",
+            "Formula / Algebraic Expression",
+            "Benchmark Numerical Value",
+            "Interpretation",
+          ],
+          rows: [
+            "Cluster A Centroid",
+            "Cluster A WSS",
+            "Cluster B Centroid",
+            "Cluster B WSS",
+            "Merged Centroid μ_{A∪B}",
+            "Merged WSS(A∪B)",
+            "Variance Increase ΔWSS",
+          ],
+          tableData: {
+            "Cluster A Centroid": [
+              "μ_A = (P₁ + P₂) / 2 = ((1+2)/2, (2+3)/2)",
+              "(1.5, 2.5)",
+              "Center of mass of P₁(1,2) and P₂(2,3)",
+            ],
+            "Cluster A WSS": [
+              "||P₁ - μ_A||² + ||P₂ - μ_A||² = 2 · (0.5² + 0.5²)",
+              "1.0000",
+              "Variance within initial lower pair",
+            ],
+            "Cluster B Centroid": [
+              "μ_B = (P₃ + P₄) / 2 = ((6+7)/2, (5+6)/2)",
+              "(6.5, 5.5)",
+              "Center of mass of P₃(6,5) and P₄(7,6)",
+            ],
+            "Cluster B WSS": [
+              "||P₃ - μ_B||² + ||P₄ - μ_B||² = 2 · (0.5² + 0.5²)",
+              "1.0000",
+              "Variance within initial upper pair",
+            ],
+            "Merged Centroid μ_{A∪B}": [
+              "μ_{A∪B} = (μ_A + μ_B) / 2 = ((1.5+6.5)/2, (2.5+5.5)/2)",
+              "(4.0, 4.0)",
+              "Global center of mass of all 4 points",
+            ],
+            "Merged WSS(A∪B)": [
+              "∑_{i=1}^4 ||P_i - (4,4)||² = 3² + 2² + 2² + 1² + 2² + 1² + 3² + 2²",
+              "36.0000",
+              "Total pooled variance of unified dataset",
+            ],
+            "Variance Increase ΔWSS": [
+              "WSS(A∪B) - WSS(A) - WSS(B) = 36.0 - 1.0 - 1.0",
+              "34.0000",
+              "Exact increase in within-cluster error sum of squares",
+            ],
+          },
+        },
       ),
       s(
-        "Worked Numerical Examples",
-        c("Complete manual calculation on a synthetic 4-point dataset"),
-        m("Initial distance matrix calculation"),
-        m("First merge step and distance table update"),
+        "Ward's Minimum Variance Criterion",
+        c(
+          "Objective Function & Merging Philosophy",
+          "Introduced by Joe H. Ward, Jr. (1963), Ward's method seeks at every agglomerative iteration to minimize the total increase in within-cluster variance. Instead of evaluating geometric distances between boundaries or centroids, Ward greedily chooses the cluster pair (A*, B*) that minimizes ΔWSS(A, B).",
+        ),
+        m(
+          "Ward's Merging Criterion Derivation",
+          String.raw`\begin{aligned}
+\Delta \text{WSS}(A, B) &= \text{WSS}(A \cup B) - \text{WSS}(A) - \text{WSS}(B) \\
+&= \sum_{\mathbf{x} \in A \cup B} \| \mathbf{x} - \boldsymbol{\mu}_{A \cup B} \|^2 - \sum_{\mathbf{a} \in A} \| \mathbf{a} - \boldsymbol{\mu}_A \|^2 - \sum_{\mathbf{b} \in B} \| \mathbf{b} - \boldsymbol{\mu}_B \|^2
+\end{aligned}`,
+          "Starting from the fundamental definition of variance increase.",
+        ),
+        c(
+          "Rigorous Proof of the Variance Increase Formula",
+          "For any arbitrary reference vector c and subset S, the identity ∑_{x ∈ S} ||x - c||² = WSS(S) + |S| ||μ_S - c||² + 2(μ_S - c)^T ∑_{x ∈ S} (x - μ_S) holds. By definition of the centroid, ∑_{x ∈ S} (x - μ_S) = 0, so the cross-term vanishes identically! Applying this identity to clusters A and B with reference c = μ_{A ∪ B} yields: WSS(A ∪ B) = WSS(A) + n_A ||μ_A - μ_{A ∪ B}||² + WSS(B) + n_B ||μ_B - μ_{A ∪ B}||². Substituting the center-of-mass formula μ_{A ∪ B} = (n_A μ_A + n_B μ_B) / (n_A + n_B) gives: μ_A - μ_{A ∪ B} = [n_B / (n_A + n_B)] (μ_A - μ_B) and μ_B - μ_{A ∪ B} = [n_A / (n_A + n_B)] (μ_B - μ_A). Squaring norms and factoring terms produces the celebrated result:",
+        ),
+        m(
+          "Ward's Analytical Variance Increase Theorem",
+          String.raw`\Delta \text{WSS}(A, B) = \frac{n_A n_B}{n_A + n_B} \| \boldsymbol{\mu}_A - \boldsymbol{\mu}_B \|_2^2`,
+          "Where (n_A n_B)/(n_A + n_B) is the harmonic weight factor governing cluster size penalty.",
+        ),
+        c(
+          "Why Cluster Sizes Matter (The Harmonic Weight Penalty)",
+          "Notice that ΔWSS depends not only on the spatial distance between centroids ||μ_A - μ_B||², but also on the harmonic factor (n_A n_B)/(n_A + n_B). If two singleton clusters (n_A = 1, n_B = 1) merge, the weight factor is 0.5. If two large clusters of size 100 merge, the factor is 50.0. Ward's criterion heavily penalizes merging large clusters, actively promoting balanced, equal-sized, spherical clusters.",
+        ),
+        n(
+          "Software Implementation Scaling: SciPy vs. R",
+          "In academic literature, Ward's distance is defined as ΔWSS. However, SciPy's `scipy.cluster.hierarchy.linkage(..., method='ward')` scales merge heights by √2: d_SciPy = √(2 · ΔWSS) = √[2 n_A n_B / (n_A + n_B)] ||μ_A - μ_B||. This scaling ensures that for two singletons (n_A = 1, n_B = 1), d_SciPy equals the standard Euclidean distance ||x_A - x_B||. In R, `hclust(..., method='ward.D2')` uses the exact ΔWSS formulation, whereas legacy `method='ward.D'` erroneously fed unsquared distances into Ward's formula.",
+        ),
+      ),
+      s(
+        "Lance–Williams Recurrence",
+        c(
+          "Universal Distance Update Framework (Lance & Williams, 1967)",
+          "The Lance–Williams recurrence allows agglomerative hierarchical clustering to update the distance from a newly merged cluster (A ∪ B) to any remaining cluster C in strictly O(1) arithmetic operations per cluster, using only the existing pairwise dissimilarities:",
+        ),
+        m(
+          "Generalized Lance–Williams Recurrence Equation",
+          String.raw`D(A \cup B, C) = \alpha_A D(A, C) + \alpha_B D(B, C) + \beta D(A, B) + \gamma |D(A, C) - D(B, C)|`,
+          "Where coefficients α_A, α_B, β, γ are specified by the linkage criterion and cluster sizes n_A, n_B, n_C.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Linkage Method",
+            "α_A Parameter",
+            "α_B Parameter",
+            "β Parameter",
+            "γ Parameter",
+            "Dissimilarity Domain",
+          ],
+          rows: [
+            "Single Linkage",
+            "Complete Linkage",
+            "Average (UPGMA)",
+            "Centroid (UPGMC)",
+            "Ward's Minimum Variance",
+            "Weighted Average (WPGMA)",
+          ],
+          tableData: {
+            "Single Linkage": ["1/2", "1/2", "0", "-1/2", "Linear Distance d(u, v)"],
+            "Complete Linkage": ["1/2", "1/2", "0", "+1/2", "Linear Distance d(u, v)"],
+            "Average (UPGMA)": [
+              "n_A / (n_A + n_B)",
+              "n_B / (n_A + n_B)",
+              "0",
+              "0",
+              "Linear Distance d(u, v)",
+            ],
+            "Centroid (UPGMC)": [
+              "n_A / (n_A + n_B)",
+              "n_B / (n_A + n_B)",
+              "- (n_A · n_B) / (n_A + n_B)²",
+              "0",
+              "Squared Euclidean Distance d²",
+            ],
+            "Ward's Minimum Variance": [
+              "(n_A + n_C) / (n_A + n_B + n_C)",
+              "(n_B + n_C) / (n_A + n_B + n_C)",
+              "- n_C / (n_A + n_B + n_C)",
+              "0",
+              "Squared Distance / Variance ΔWSS",
+            ],
+            "Weighted Average (WPGMA)": ["1/2", "1/2", "0", "0", "Linear Distance d(u, v)"],
+          },
+        },
+        c(
+          "Worked Numerical Example of Lance–Williams Update",
+          "Tracing Ward's recurrence: Let A = {P₁}, B = {P₂}, C = {P₃}. Here n_A = 1, n_B = 1, n_C = 1. The squared distances are D²(A, C) = ||P₁ - P₃||² = 34.0, D²(B, C) = ||P₂ - P₃||² = 20.0, D²(A, B) = ||P₁ - P₂||² = 2.0. The Lance–Williams parameters are α_A = (1+1)/(1+1+1) = 2/3, α_B = 2/3, β = -1/3, γ = 0. Substituting: D²(A ∪ B, C) = (2/3)(34.0) + (2/3)(20.0) - (1/3)(2.0) = (68/3) + (40/3) - (2/3) = 106/3 ≈ 35.3333. Scaled by 2: 2 · 35.3333 = 70.6667, matching the exact variance calculation!",
+        ),
+      ),
+      s(
+        "Computational Complexity",
+        c(
+          "Asymptotic Analysis Across Algorithmic Phases",
+          "Understanding the computational cost of hierarchical clustering requires examining both space (memory) and time (compute) complexity across each phase of execution:",
+        ),
+        m(
+          "Unique Pairwise Distance Count Formula",
+          String.raw`N_{\text{pairs}} = \binom{n}{2} = \frac{n(n - 1)}{2} = \mathcal{O}(n^2)`,
+          "A dataset of n = 10,000 observations contains 49,995,000 unique pairs, requiring ~400 MB of RAM for double-precision float storage.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Algorithmic Phase",
+            "Naive Implementation",
+            "Optimized Implementation (Priority Queue / Heaps)",
+            "NN-Chain Algorithm (Murtagh, 1983)",
+            "SLINK / CLINK (Single / Complete)",
+          ],
+          rows: [
+            "1. Distance Matrix Computation",
+            "2. Pairwise Distance Storage",
+            "3. Merging & Minimum Search",
+            "4. Distance Matrix Updates",
+            "Overall Time Complexity",
+            "Overall Space Complexity",
+          ],
+          tableData: {
+            "1. Distance Matrix Computation": [
+              "O(n² d)",
+              "O(n² d)",
+              "O(n² d)",
+              "O(n² d) or on-the-fly O(n d)",
+            ],
+            "2. Pairwise Distance Storage": ["O(n²)", "O(n²)", "O(n²)", "O(n) for SLINK"],
+            "3. Merging & Minimum Search": [
+              "O(n³) (Linear search per step)",
+              "O(n² log n) (Binary heap min-extraction)",
+              "O(n²) (Nearest-neighbor chain stack)",
+              "O(n²) (Pointer-based update)",
+            ],
+            "4. Distance Matrix Updates": [
+              "O(n²) (O(n) per merge via Lance–Williams)",
+              "O(n² log n) (Heap key updates)",
+              "O(n²) (Lance–Williams updates on active clusters)",
+              "O(n²)",
+            ],
+            "Overall Time Complexity": [
+              "O(n³ + n² d)",
+              "O(n² log n + n² d)",
+              "O(n² + n² d)",
+              "O(n²) time for SLINK",
+            ],
+            "Overall Space Complexity": ["O(n²)", "O(n²)", "O(n²)", "O(n) space for SLINK"],
+          },
+        },
+        c(
+          "Why General Hierarchical Clustering Scales as O(n²)",
+          "Unlike K-Means (which scales linearly as O(n · k · d · i)), standard hierarchical clustering is inherently constrained by the quadratic O(n²) size of the pairwise distance matrix. For massive datasets (n > 100,000), full hierarchical clustering is memory-prohibitive without approximate nearest-neighbor graphs or hybrid two-stage clustering.",
+        ),
       ),
     ],
   },

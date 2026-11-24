@@ -131,6 +131,20 @@ describe("App routing and Course Structure", () => {
     expect(dendrograms.sections.map((s) => s.title)).toContain("Interactive Dendrogram Workspace");
     expect(dendrograms.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
 
+    // Page 10: Mathematics
+    const mathPage = pages.find((p) => p.slug === "mathematics")!;
+    expect(mathPage.sections.length).toBeGreaterThanOrEqual(6);
+    expect(mathPage.sections.map((s) => s.title)).toContain("Mathematical Representation of Data");
+    expect(mathPage.sections.map((s) => s.title)).toContain(
+      "Distance and Dissimilarity Foundations",
+    );
+    expect(mathPage.sections.map((s) => s.title)).toContain(
+      "Cluster Centroids and Within-Cluster Variation",
+    );
+    expect(mathPage.sections.map((s) => s.title)).toContain("Ward's Minimum Variance Criterion");
+    expect(mathPage.sections.map((s) => s.title)).toContain("Lance–Williams Recurrence");
+    expect(mathPage.sections.map((s) => s.title)).toContain("Computational Complexity");
+
     // Page 11: Implementation
     const impl = pages.find((p) => p.slug === "implementation")!;
     expect(impl.sections.length).toBe(3);
