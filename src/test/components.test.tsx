@@ -13,6 +13,7 @@ import {
 import { ParadigmComparisonVisualizer, Module03Quiz } from "@/content/module03-types";
 import { AgglomerativeSimulator, Module04Quiz } from "@/content/module04-agglomerative";
 import { DianaSimulator, Module05Quiz } from "@/content/module05-divisive";
+import { SingleLinkageChainingVisualizer } from "@/content/module06-linkage";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -99,5 +100,11 @@ describe("Reusable Lab Components", () => {
     const quizHtml = renderToString(<Module05Quiz />);
     expect(quizHtml).toContain("Module 05 Knowledge Check");
     expect(quizHtml).toContain("Check Answers");
+  });
+
+  it("renders SingleLinkageChainingVisualizer", () => {
+    const vizHtml = renderToString(<SingleLinkageChainingVisualizer />);
+    expect(vizHtml).toContain("Single vs. Complete Linkage: Chaining Phenomenon Explorer");
+    expect(vizHtml).toContain("Noise Bridge Points");
   });
 });

@@ -3,6 +3,7 @@ import { createElement, type ReactNode } from "react";
 import { ParadigmComparisonVisualizer, Module03Quiz } from "@/content/module03-types";
 import { AgglomerativeSimulator, Module04Quiz } from "@/content/module04-agglomerative";
 import { DianaSimulator, Module05Quiz } from "@/content/module05-divisive";
+import { SingleLinkageChainingVisualizer } from "@/content/module06-linkage";
 import {
   Compass,
   BookOpen,
@@ -1216,13 +1217,303 @@ Output:
     group: "Core Algorithms",
     icon: Link2,
     subtitle:
-      "Mathematical definitions, geometrical behaviors, and trade-offs of major cluster linkage criteria.",
+      "Mathematical definitions, geometrical behaviors, Lance-Williams recurrences, and trade-offs of major linkage criteria.",
     sections: [
-      linkage("Single Linkage"),
-      linkage("Complete Linkage"),
-      linkage("Average Linkage (UPGMA)"),
-      linkage("Centroid Linkage (UPGMC)"),
-      linkage("Ward's Minimum Variance Linkage"),
+      s(
+        "Single Linkage",
+        c(
+          "Nearest-Neighbor Proximity Formulation",
+          "In hierarchical clustering, calculating distance between individual observations d(x_i, x_j) is trivial using standard vector metrics. However, once clusters coalesce to contain multiple observations, a mathematical linkage criterion D(A, B) is required to evaluate the dissimilarity between entire sets of points. Single Linkage (also called nearest-neighbor linkage or minimum method) defines the distance between two clusters as the minimum pairwise distance between any observation in cluster A and any observation in cluster B.",
+        ),
+        m(
+          "Single Linkage Formal Definition",
+          String.raw`D(A, B) = \min \{ d(\mathbf{a}, \mathbf{b}) : \mathbf{a} \in A, \, \mathbf{b} \in B \}`,
+          "Where A and B are disjoint cluster subsets of X, and d(a, b) is the underlying ground metric (e.g., Euclidean distance).",
+        ),
+        m(
+          "Lance-Williams Recurrence Form for Single Linkage",
+          String.raw`D(A \cup B, C) = \min(D(A, C), D(B, C)) = \frac{1}{2} D(A, C) + \frac{1}{2} D(B, C) - \frac{1}{2} |D(A, C) - D(B, C)|`,
+          "Parameters in the generalized recurrence: α_A = 1/2, α_B = 1/2, β = 0, γ = -1/2. Distance updates require only O(1) operations per remaining cluster.",
+        ),
+        c(
+          "Worked Numerical Example (Deterministic 4-Point Benchmark)",
+          "Tracing Single Linkage on P₁(1,2), P₂(2,3), P₃(6,5), P₄(7,6). Initial minimum is d(P₁, P₂) = 1.4142. They merge into C₄ = {P₁, P₂}. The distance matrix is updated:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Cluster Pair",
+            "Formula Evaluation",
+            "Updated Linkage Distance",
+            "Next Decision State",
+          ],
+          rows: ["D(C₄, P₃)", "D(C₄, P₄)", "D(P₃, P₄)", "D(C₄, C₅)"],
+          tableData: {
+            "D(C₄, P₃)": [
+              "min(d(P₁, P₃), d(P₂, P₃)) = min(5.8310, 4.4721)",
+              "4.4721",
+              "Evaluated for next merge search",
+            ],
+            "D(C₄, P₄)": [
+              "min(d(P₁, P₄), d(P₂, P₄)) = min(7.2111, 5.8310)",
+              "5.8310",
+              "Evaluated for next merge search",
+            ],
+            "D(P₃, P₄)": [
+              "d(P₃, P₄) = √((7-6)² + (6-5)²) = √2",
+              "1.4142",
+              "Global minimum in D₁ → Merges into C₅ = {P₃, P₄}",
+            ],
+            "D(C₄, C₅)": [
+              "min(D(C₄, P₃), D(C₄, P₄)) = min(4.4721, 5.8310)",
+              "4.4721",
+              "Final root merge combining all 4 points",
+            ],
+          },
+        },
+        c(
+          "The Chaining Phenomenon & Minimum Spanning Trees",
+          "Single Linkage is mathematically equivalent to Kruskal's algorithm for constructing a Minimum Spanning Tree (MST). Because it considers only the nearest pair of points between two sets, single linkage can successfully recover non-convex, elongated, and concentric manifold structures. However, it is fatally susceptible to 'chaining': a sparse sequence of noise points bridging two disparate clusters will cause them to merge prematurely at low heights.",
+        ),
+        {
+          kind: "custom",
+          content: createElement(SingleLinkageChainingVisualizer),
+        },
+        {
+          kind: "table",
+          columns: ["Dimension", "Characteristics of Single Linkage"],
+          rows: [
+            "Mathematical Objective",
+            "Geometric Shape Tendency",
+            "Outlier Sensitivity",
+            "Monotonicity",
+            "Primary ML Use Cases",
+          ],
+          tableData: {
+            "Mathematical Objective": [
+              "Minimizes the nearest-neighbor gap between cluster boundaries.",
+            ],
+            "Geometric Shape Tendency": [
+              "Arbitrary, non-globular, serpentine, and concentric ribbon clusters.",
+            ],
+            "Outlier Sensitivity": [
+              "High vulnerability to noise bridges (chaining); low sensitivity to isolated distant outliers.",
+            ],
+            Monotonicity: [
+              "Always monotonic: merge heights are non-decreasing (h_1 ≤ h_2 ≤ ... ≤ h_{N-1}).",
+            ],
+            "Primary ML Use Cases": [
+              "Manifold learning, geographic road networks, astronomy filament detection, biological phylogeny.",
+            ],
+          },
+        },
+      ),
+      s(
+        "Complete Linkage",
+        c(
+          "Farthest-Neighbor Diameter Formulation",
+          "Complete Linkage (also called farthest-neighbor linkage or maximum method) adopts the diametrically opposed philosophy of Single Linkage: the distance between two clusters is defined as the MAXIMUM pairwise distance between any observation in cluster A and any observation in cluster B. Mathematically, this corresponds to the diameter of the combined cluster.",
+        ),
+        m(
+          "Complete Linkage Formal Definition",
+          String.raw`D(A, B) = \max \{ d(\mathbf{a}, \mathbf{b}) : \mathbf{a} \in A, \, \mathbf{b} \in B \}`,
+          "D(A, B) represents the diameter of the bipartite graph spanning clusters A and B.",
+        ),
+        m(
+          "Lance-Williams Recurrence Form for Complete Linkage",
+          String.raw`D(A \cup B, C) = \max(D(A, C), D(B, C)) = \frac{1}{2} D(A, C) + \frac{1}{2} D(B, C) + \frac{1}{2} |D(A, C) - D(B, C)|`,
+          "Parameters in the generalized recurrence: α_A = 1/2, α_B = 1/2, β = 0, γ = +1/2. Update requires O(1) operations per remaining cluster.",
+        ),
+        c(
+          "Worked Numerical Example (Deterministic 4-Point Benchmark)",
+          "Tracing Complete Linkage on P₁(1,2), P₂(2,3), P₃(6,5), P₄(7,6). Initial minimum merge is (P₁, P₂) into C₄ = {P₁, P₂}. Updated distances:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Cluster Pair",
+            "Formula Evaluation",
+            "Updated Linkage Distance",
+            "Contrast with Single Linkage",
+          ],
+          rows: ["D(C₄, P₃)", "D(C₄, P₄)", "D(P₃, P₄)", "D(C₄, C₅)"],
+          tableData: {
+            "D(C₄, P₃)": [
+              "max(d(P₁, P₃), d(P₂, P₃)) = max(5.8310, 4.4721)",
+              "5.8310",
+              "Much larger than Single Linkage (4.4721); penalizes cluster spread",
+            ],
+            "D(C₄, P₄)": [
+              "max(d(P₁, P₄), d(P₂, P₄)) = max(7.2111, 5.8310)",
+              "7.2111",
+              "Measures farthest point span across P₁ and P₄",
+            ],
+            "D(P₃, P₄)": [
+              "d(P₃, P₄) = √((7-6)² + (6-5)²) = √2",
+              "1.4142",
+              "Next minimum in D₁ → Merges into C₅ = {P₃, P₄}",
+            ],
+            "D(C₄, C₅)": [
+              "max(D(C₄, P₃), D(C₄, P₄)) = max(5.8310, 7.2111)",
+              "7.2111",
+              "Final merge height: 7.2111 (vs. 4.4721 for single linkage)",
+            ],
+          },
+        },
+        n(
+          "Compact Cluster Tendency & Extreme Outlier Sensitivity",
+          "Because Complete Linkage penalizes large cluster diameters, it strongly favors compact, spherical clusters of approximately equal diameter. However, it is hyper-sensitive to outliers: even a single outlying point assigned to a cluster drastically inflates its distance to all other clusters, distorting dendrogram merge heights.",
+        ),
+        {
+          kind: "table",
+          columns: ["Dimension", "Characteristics of Complete Linkage"],
+          rows: [
+            "Mathematical Objective",
+            "Geometric Shape Tendency",
+            "Outlier Sensitivity",
+            "Monotonicity",
+            "Primary ML Use Cases",
+          ],
+          tableData: {
+            "Mathematical Objective": ["Minimizes the maximum diameter of merged clusters."],
+            "Geometric Shape Tendency": [
+              "Compact, roughly spherical, equal-diameter globular clusters.",
+            ],
+            "Outlier Sensitivity": [
+              "Extremely sensitive: a single distant point inflates the entire cluster distance.",
+            ],
+            Monotonicity: [
+              "Always monotonic: merge heights are non-decreasing (h_1 ≤ h_2 ≤ ... ≤ h_{N-1}).",
+            ],
+            "Primary ML Use Cases": [
+              "Market customer segmentation, gene expression co-expression profiling where compact groups are desired.",
+            ],
+          },
+        },
+      ),
+      s(
+        "Average Linkage (UPGMA)",
+        c(
+          "Unweighted Pair Group Method with Arithmetic Mean",
+          "Average Linkage—historically introduced by Sokal and Michener (1958) as UPGMA (Unweighted Pair Group Method with Arithmetic Mean)—strikes an elegant balance between the extreme conservatism of Single Linkage (minimum distance) and Complete Linkage (maximum distance). It defines the dissimilarity between two clusters as the arithmetic average of all pairwise distances between observations across the two clusters.",
+        ),
+        m(
+          "Average Linkage Formal Definition",
+          String.raw`D(A, B) = \frac{1}{|A| |B|} \sum_{\mathbf{a} \in A} \sum_{\mathbf{b} \in B} d(\mathbf{a}, \mathbf{b})`,
+          "Every observation pair (a, b) carries equal weight 1 / (|A||B|), making the dissimilarity robust against individual outlier pairs.",
+        ),
+        m(
+          "Derivation of the UPGMA Distance Update Formula",
+          String.raw`D(A \cup B, C) = \frac{|A| D(A, C) + |B| D(B, C)}{|A| + |B|} = \frac{n_A}{n_A + n_B} D(A, C) + \frac{n_B}{n_A + n_B} D(B, C)`,
+          "Lance-Williams parameters: α_A = n_A/(n_A+n_B), α_B = n_B/(n_A+n_B), β = 0, γ = 0. Notice this is a weighted average of cluster distances, which ensures that all underlying observation pairs remain equally unweighted.",
+        ),
+        c(
+          "Mathematical Derivation of the Cluster Update",
+          "Why is the formula a weighted combination of cluster distances when the method is called 'unweighted'? Consider merging clusters A and B into A ∪ B. The distance to cluster C is: D(A ∪ B, C) = (1 / (|A ∪ B||C|)) ∑_{u ∈ A ∪ B} ∑_{c ∈ C} d(u, c). Splitting the sum yields ∑_{a ∈ A} ∑_{c ∈ C} d(a, c) + ∑_{b ∈ B} ∑_{c ∈ C} d(b, c). Because ∑_{a ∈ A} ∑_{c ∈ C} d(a, c) = |A||C| D(A, C) and ∑_{b ∈ B} ∑_{c ∈ C} d(b, c) = |B||C| D(B, C), dividing by (|A| + |B|)|C| cancels |C| exactly, proving D(A ∪ B, C) = (|A| D(A, C) + |B| D(B, C)) / (|A| + |B|).",
+        ),
+        c(
+          "Worked Numerical Example (Deterministic 4-Point Benchmark)",
+          "Tracing Average Linkage on P₁(1,2), P₂(2,3), P₃(6,5), P₄(7,6). Initial merge is (P₁, P₂) into C₄ = {P₁, P₂} (|C₄| = 2). Distance updates:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Cluster Pair",
+            "Formula Evaluation",
+            "Updated Linkage Distance",
+            "Comparative Intermediate Height",
+          ],
+          rows: ["D(C₄, P₃)", "D(C₄, P₄)", "D(P₃, P₄)", "D(C₄, C₅)"],
+          tableData: {
+            "D(C₄, P₃)": [
+              "(1 · d(P₁, P₃) + 1 · d(P₂, P₃)) / 2 = (5.8310 + 4.4721) / 2",
+              "5.1516",
+              "Strictly bounded between Single (4.4721) and Complete (5.8310)",
+            ],
+            "D(C₄, P₄)": [
+              "(1 · d(P₁, P₄) + 1 · d(P₂, P₄)) / 2 = (7.2111 + 5.8310) / 2",
+              "6.5211",
+              "Strictly bounded between Single (5.8310) and Complete (7.2111)",
+            ],
+            "D(P₃, P₄)": [
+              "d(P₃, P₄) = √((7-6)² + (6-5)²) = √2",
+              "1.4142",
+              "Next minimum in D₁ → Merges into C₅ = {P₃, P₄}",
+            ],
+            "D(C₄, C₅)": [
+              "(2 · D(C₄, P₃) + 2 · D(C₄, P₄)) / 4 = (5.1516 + 6.5211) / 2",
+              "5.8363",
+              "Final merge height: 5.8363 (Single: 4.4721, Complete: 7.2111)",
+            ],
+          },
+        },
+        n(
+          "Average Linkage vs. Centroid Linkage",
+          "Do not confuse Average Linkage with Centroid Linkage: Average Linkage averages all pairwise distances between individual observations, whereas Centroid Linkage computes the Euclidean distance between the center-of-mass vectors. Average Linkage is always monotonic; Centroid Linkage can produce inversions.",
+        ),
+        {
+          kind: "table",
+          columns: ["Dimension", "Characteristics of Average Linkage (UPGMA)"],
+          rows: [
+            "Mathematical Objective",
+            "Geometric Shape Tendency",
+            "Outlier Sensitivity",
+            "Monotonicity",
+            "Primary ML Use Cases",
+          ],
+          tableData: {
+            "Mathematical Objective": [
+              "Minimizes average cross-cluster distance across all point pairs.",
+            ],
+            "Geometric Shape Tendency": [
+              "Moderately compact clusters with balanced variance; less rigid than Complete Linkage.",
+            ],
+            "Outlier Sensitivity": [
+              "Robust against individual noise points due to arithmetic averaging across all pairs.",
+            ],
+            Monotonicity: [
+              "Always monotonic: merge heights are non-decreasing (h_1 ≤ h_2 ≤ ... ≤ h_{N-1}).",
+            ],
+            "Primary ML Use Cases": [
+              "Phylogenetic tree construction, bioinformatics, computational taxonomy, ecology.",
+            ],
+          },
+        },
+      ),
+      s(
+        "Centroid Linkage (UPGMC)",
+        c(
+          "Centroid Distance & Inversion Mechanics",
+          "Centroid Linkage—UPGMC (Unweighted Pair Group Method using Centroids)—defines the distance between two clusters as the Euclidean distance between their geometric centers of mass (centroids). Unlike Single, Complete, and Average linkage, Centroid Linkage is non-monotonic and can exhibit dendrogram inversions (covered in detail in Phase C.2).",
+        ),
+        m(
+          "Centroid Linkage Formal Definition",
+          String.raw`D(A, B) = \| \boldsymbol{\mu}_A - \boldsymbol{\mu}_B \|_2 = \sqrt{\sum_{k=1}^d (\mu_{A,k} - \mu_{B,k})^2}`,
+          "Where μ_A = (1 / |A|) ∑_{a ∈ A} a and μ_B = (1 / |B|) ∑_{b ∈ B} b are the cluster mean vectors.",
+        ),
+        d("Centroid distance and center-of-mass vector calculation"),
+        c(
+          "Upcoming Phase C.2 Derivation",
+          "In Phase C.2, we will present the full mathematical derivation of centroid distance recurrence, cluster-size scaling, and a numerical counterexample demonstrating a dendrogram inversion.",
+        ),
+      ),
+      s(
+        "Ward's Minimum Variance Linkage",
+        c(
+          "Variance Minimization Objective",
+          "Ward's Minimum Variance Linkage (Ward, 1963) adopts an analysis-of-variance objective: at each step, it merges the pair of clusters that minimizes the total increase in within-cluster error sum of squares (ESS).",
+        ),
+        m(
+          "Within-Cluster Error Sum of Squares (ESS)",
+          String.raw`\text{ESS}(C) = \sum_{\mathbf{x} \in C} \| \mathbf{x} - \boldsymbol{\mu}_C \|^2, \quad \Delta \text{ESS}(A, B) = \frac{|A||B|}{|A| + |B|} \| \boldsymbol{\mu}_A - \boldsymbol{\mu}_B \|^2`,
+          "Ward selects the pair minimizing ΔESS. In Phase C.2, we derive the variance recurrence and explain SciPy's Ward.D2 scaling convention.",
+        ),
+        d("Ward's variance increase and minimum sum-of-squares geometry"),
+        c(
+          "Upcoming Phase C.2 Derivation",
+          "In Phase C.2, we will provide the complete mathematical derivation of the increase in within-cluster sum of squares and its Lance-Williams coefficients.",
+        ),
+      ),
     ],
   },
   {
