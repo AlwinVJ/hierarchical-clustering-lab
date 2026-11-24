@@ -20,6 +20,7 @@ import {
   UltrametricPropertyVisualizer,
   Module08Quiz,
 } from "@/content/module08-dendrograms";
+import { MathematicalPlayground, Module09Quiz } from "@/content/module09-mathematics";
 import {
   Compass,
   BookOpen,
@@ -2711,6 +2712,32 @@ x_{n,1} & x_{n,2} & \cdots & x_{n,d}
         c(
           "Why General Hierarchical Clustering Scales as O(n²)",
           "Unlike K-Means (which scales linearly as O(n · k · d · i)), standard hierarchical clustering is inherently constrained by the quadratic O(n²) size of the pairwise distance matrix. For massive datasets (n > 100,000), full hierarchical clustering is memory-prohibitive without approximate nearest-neighbor graphs or hybrid two-stage clustering.",
+        ),
+      ),
+      s(
+        "Interactive Mathematical Playground",
+        c(
+          "Hands-on Calculation & Formula Verification",
+          "Experiment with distance metrics, centroid displacement, within-cluster variance increases (WSS), Ward's objective, Lance–Williams parameter updates, and quadratic memory growth:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(MathematicalPlayground),
+        },
+      ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Interactive Conceptual Evaluation",
+          "Test your comprehension of metric space axioms, Huygens' variance theorem, Ward's harmonic size penalty, and pairwise distance growth:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(Module09Quiz),
+        },
+        c(
+          "Module 09 References & Further Reading",
+          "Fréchet, M. (1906). Sur quelques points du calcul fonctionnel. Rendiconti del Circolo Matematico di Palermo, 22(1), 1–72. | Ward, J. H. (1963). Hierarchical Grouping to Optimize an Objective Function. JASA, 58(301), 236–244. | Lance, G. N., & Williams, W. T. (1967). A General Theory of Classificatory Sorting Strategies: 1. Hierarchical Systems. The Computer Journal, 9(4), 373–380. | Murtagh, F. (1983). A survey of recent advances in hierarchical clustering algorithms. The Computer Journal, 26(4), 354–359.",
         ),
       ),
     ],

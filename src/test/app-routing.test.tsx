@@ -133,7 +133,7 @@ describe("App routing and Course Structure", () => {
 
     // Page 10: Mathematics
     const mathPage = pages.find((p) => p.slug === "mathematics")!;
-    expect(mathPage.sections.length).toBeGreaterThanOrEqual(6);
+    expect(mathPage.sections.length).toBe(8);
     expect(mathPage.sections.map((s) => s.title)).toContain("Mathematical Representation of Data");
     expect(mathPage.sections.map((s) => s.title)).toContain(
       "Distance and Dissimilarity Foundations",
@@ -144,6 +144,8 @@ describe("App routing and Course Structure", () => {
     expect(mathPage.sections.map((s) => s.title)).toContain("Ward's Minimum Variance Criterion");
     expect(mathPage.sections.map((s) => s.title)).toContain("Lance–Williams Recurrence");
     expect(mathPage.sections.map((s) => s.title)).toContain("Computational Complexity");
+    expect(mathPage.sections.map((s) => s.title)).toContain("Interactive Mathematical Playground");
+    expect(mathPage.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
 
     // Page 11: Implementation
     const impl = pages.find((p) => p.slug === "implementation")!;

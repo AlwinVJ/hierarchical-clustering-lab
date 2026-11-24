@@ -30,6 +30,7 @@ import {
   UltrametricPropertyVisualizer,
   Module08Quiz,
 } from "@/content/module08-dendrograms";
+import { MathematicalPlayground, Module09Quiz } from "@/content/module09-mathematics";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -169,6 +170,16 @@ describe("Reusable Lab Components", () => {
 
     const quizHtml = renderToString(<Module08Quiz />);
     expect(quizHtml).toContain("Module 08 Knowledge Check");
+    expect(quizHtml).toContain("Check Answers");
+  });
+
+  it("renders MathematicalPlayground and Module09Quiz", () => {
+    const mathHtml = renderToString(<MathematicalPlayground />);
+    expect(mathHtml).toContain("Interactive Mathematical Playground");
+    expect(mathHtml).toContain("Two-Point Distance");
+
+    const quizHtml = renderToString(<Module09Quiz />);
+    expect(quizHtml).toContain("Module 09 Knowledge Check");
     expect(quizHtml).toContain("Check Answers");
   });
 });
