@@ -3874,21 +3874,218 @@ COMPLETE            0.8732          0.7543               0.2425                 
   },
   {
     slug: "comparison",
-    title: "Algorithm Comparison",
+    title: "Optimal Cluster Selection and Dendrogram Slicing",
     group: "Theory & Practice",
     icon: Scale,
     subtitle:
-      "Side-by-side benchmarking against centroid-based and density-based clustering paradigms.",
+      "Methodologies for cutting dendrograms, merge-height gap analysis, SciPy inconsistency coefficients, and multi-criterion cluster count sweeps.",
     sections: [
       s(
-        "K-Means vs Hierarchical Clustering",
-        c("Comparison across clustering philosophy, speed, and rigidity"),
-        cmp("K-Means"),
+        "The Cluster Selection Problem",
+        c(
+          "From Hierarchy to Partitions: The Core Challenge",
+          "A defining attribute of Hierarchical Clustering is that it does not return a single, definitive cluster partition. Instead, it yields a multi-scale tree (dendrogram) representing nested cluster solutions at every possible level of granularity—from n individual singleton observations at the bottom to 1 monolithic root cluster at the top.\n\nWhile this provides rich exploratory insight into nested data structures, real-world applications (such as assigning marketing personas, allocating medical therapies, or configuring network topologies) ultimately require discrete, flat cluster assignments. The critical engineering challenge is therefore deciding where to cut the hierarchy.",
+        ),
+        c(
+          "Two Complementary Slicing Paradigms",
+          "Practitioners can extract discrete cluster partitions using two complementary paradigms:\n\n1. Distance Threshold Cut (Height t): Slices the dendrogram horizontally at a fixed cophenetic distance height t. Every branch that merges at or below height t forms a distinct cluster. This is appropriate when domain requirements dictate a maximum allowable intra-cluster dissimilarity (e.g., maximum allowable travel distance between postal routes).\n\n2. Target Cluster Count (k): Selects an exact target number of clusters k. Slicing starts at the root of the tree and sequentially severs the k - 1 highest merges until exactly k branches remain. This is appropriate when business constraints dictate a specific number of operational segments (e.g., exactly 3 tier categories for customer campaigns).",
+        ),
+        c(
+          "The Contextual Nature of 'True' Cluster Counts",
+          "In real-world data science, there is rarely a single, objectively 'correct' number of clusters. Consider biological taxonomy: grouping living organisms into kingdoms, orders, families, genera, or species are all valid hierarchical partitions of the identical phylogenetic tree. Similarly, in customer analytics, a high-level cut may reveal 3 overarching customer segments (Budget, Regular, VIP), while a deeper cut reveals 12 specialized behavioral personas. The choice of cut height must always be guided by both mathematical stability and practical domain utility.",
+        ),
       ),
       s(
-        "DBSCAN vs Hierarchical Clustering",
-        c("Comparison across noise tolerance, non-globular shapes, and density variations"),
-        cmp("DBSCAN"),
+        "Dendrogram-Based Selection & Merge-Height Gaps",
+        c(
+          "Heuristic Analysis of Vertical Stems",
+          "The most classic and intuitive cluster selection strategy is visual inspection of vertical branch lengths in the dendrogram. In a dendrogram, vertical stem height directly reflects the cophenetic merge distance between subclusters.\n\nA long vertical branch that persists across a substantial range of heights indicates that no cluster merges occurred within that dissimilarity window. This demonstrates geometric stability: the cluster partition remains invariant across a broad range of threshold choices.",
+        ),
+        c(
+          "Identifying Abrupt Merge-Distance Jumps",
+          "When inspecting the sequence of merge heights h₁, h₂, ..., h_{n-1} in the linkage matrix Z, an abrupt jump in distance (Δh_k = h_k - h_{k-1}) strongly signals that the algorithm has finished coalescing naturally cohesive, compact groups and is now being forced to merge two distinct, well-separated clusters.\n\nCutting the dendrogram immediately prior to this sudden jump preserves natural clusters while preventing forced heterogeneous coalescence.",
+        ),
+        cd(
+          "Analyzing Merge Height Gaps in Python",
+          `import numpy as np
+import pandas as pd
+from scipy.spatial.distance import pdist
+from scipy.cluster.hierarchy import linkage
+
+# Canonical 4-point benchmark dataset
+X = np.array([
+    [1.0, 2.0],  # P_1
+    [2.0, 3.0],  # P_2
+    [6.0, 5.0],  # P_3
+    [7.0, 6.0],  # P_4
+])
+y = pdist(X, metric="euclidean")
+Z_ward = linkage(y, method="ward")
+
+# Calculate step-by-step merge height differences
+heights = Z_ward[:, 2]
+height_diffs = np.diff(heights)
+
+print("--- Step-by-Step Merge Heights & Gaps ---")
+for i, h in enumerate(heights):
+    clusters_remaining = len(X) - i
+    diff_str = f" | Jump to next: {height_diffs[i]:.4f}" if i < len(height_diffs) else " (Root merge)"
+    print(f"Merge {i+1} (creates {clusters_remaining - 1} clusters from {clusters_remaining}): Height = {h:.4f}{diff_str}")
+
+# Optimal cut point: maximum jump occurred between merge 2 and merge 3
+max_jump_idx = np.argmax(height_diffs)
+optimal_k = len(X) - (max_jump_idx + 1)
+cut_threshold = (heights[max_jump_idx] + heights[max_jump_idx + 1]) / 2
+
+print(f"\\nOptimal Partition: k = {optimal_k} clusters")
+print(f"Recommended Decision Cut Threshold: t = {cut_threshold:.4f}")`,
+        ),
+        out(
+          "Console Output: Merge Height Gaps",
+          `--- Step-by-Step Merge Heights & Gaps ---
+Merge 1 (creates 3 clusters from 4): Height = 1.4142 | Jump to next: 0.0000
+Merge 2 (creates 2 clusters from 3): Height = 1.4142 | Jump to next: 6.8320
+Merge 3 (creates 1 clusters from 2): Height = 8.2462 (Root merge)
+
+Optimal Partition: k = 2 clusters
+Recommended Decision Cut Threshold: t = 4.8302`,
+        ),
+        c(
+          "Limitations of Visual Selection",
+          "While merge-height gap analysis is intuitive, visual inspection suffers from several practical limitations:\n\n1. Leaf-Ordering Ambiguity: A tree with n leaves has 2^{n-1} topologically equivalent visual orderings. Visual branch spacing can mislead human perception depending on branch rotation.\n\n2. Subjective Thresholding: In noisy or high-dimensional datasets with gradual, continuous merge curves, clean vertical plateaus rarely exist.\n\n3. Automation Failure: Visual inspection cannot be embedded into automated machine learning pipelines, production retrainers, or high-throughput batch processing.",
+        ),
+      ),
+      s(
+        "The Inconsistency Coefficient in SciPy",
+        c(
+          "Mathematical Rationale of Inconsistency",
+          "To formalize the intuition of detecting 'unusually large merge jumps', SciPy provides the Inconsistency Coefficient (scipy.cluster.hierarchy.inconsistent). Rather than assessing global tree heights, the inconsistency coefficient evaluates each link relative to its local topological neighborhood down to a user-specified tree depth d.",
+        ),
+        m(
+          "Inconsistency Coefficient Formulation",
+          String.raw`I_k = \frac{h_k - \bar{h}_k}{s_k}, \quad \text{where } \bar{h}_k = \frac{1}{m} \sum_{j=1}^m h_j, \quad s_k = \sqrt{\frac{1}{m - 1} \sum_{j=1}^m (h_j - \bar{h}_k)^2}`,
+          "Where h_k is the merge height of link k, m is the count of sub-links within graph depth d of link k, h̄_k is the mean height of these local links, and s_k is their sample standard deviation. If s_k = 0, I_k evaluates to 0.0.",
+        ),
+        c(
+          "Anatomy of the (n - 1) × 4 Inconsistency Matrix",
+          "Calling inconsistent(Z, d) returns a 2D array of shape (n - 1, 4) whose columns contain:\n\n• Column 0: Mean height (h̄) of links included in the local comparison neighborhood.\n• Column 1: Sample standard deviation (s) of link heights in the neighborhood.\n• Column 2: Count (m) of links included in the neighborhood.\n• Column 3: Inconsistency coefficient (I = (h - h̄) / s). A high inconsistency coefficient indicates that a merge occurs at a height substantially greater than its constituent sub-merges.",
+        ),
+        cd(
+          "Calculating and Applying Inconsistency in SciPy",
+          `import numpy as np
+from scipy.cluster.hierarchy import linkage, inconsistent, fcluster
+
+# Canonical 4-point benchmark
+X = np.array([[1.0, 2.0], [2.0, 3.0], [6.0, 5.0], [7.0, 6.0]])
+Z = linkage(X, method="ward")
+
+# Compute inconsistency matrix with depth parameter d=2
+incon = inconsistent(Z, d=2)
+
+print("--- SciPy Inconsistency Matrix (d=2) ---")
+print("Row | Mean Height | Std Dev | Link Count | Inconsistency Coeff")
+for k, row in enumerate(incon):
+    mean_h, std_h, count, coeff = row
+    print(f" {k}  |   {mean_h:.4f}    | {std_h:.4f}  |    {int(count)}       |      {coeff:.4f}")
+
+# Extract clusters where inconsistency exceeds threshold t=1.0
+labels_incon = fcluster(Z, t=1.0, criterion="inconsistent", depth=2)
+print(f"\\nInconsistency Cluster Assignments (t=1.0): {labels_incon}")`,
+        ),
+        out(
+          "Console Output: SciPy Inconsistency Matrix",
+          `--- SciPy Inconsistency Matrix (d=2) ---
+Row | Mean Height | Std Dev | Link Count | Inconsistency Coeff
+ 0  |   1.4142    | 0.0000  |    1       |      0.0000
+ 1  |   1.4142    | 0.0000  |    1       |      0.0000
+ 2  |   3.6915    | 3.9445  |    3       |      1.1547
+
+Inconsistency Cluster Assignments (t=1.0): [1 1 2 2]`,
+        ),
+      ),
+      s(
+        "Silhouette Sweeps & Multi-Criterion Selection",
+        c(
+          "Automated Cluster Count Optimization",
+          "In production pipelines, cluster count selection is automated by performing a multi-criterion parameter sweep. The algorithm cuts the hierarchical tree across a plausible range of cluster counts k ∈ [2, k_max] and evaluates multiple internal validation metrics simultaneously.",
+        ),
+        cd(
+          "Automated Multi-Metric Cluster Count Sweep (Python)",
+          `import numpy as np
+import pandas as pd
+from scipy.spatial.distance import pdist
+from scipy.cluster.hierarchy import linkage, fcluster
+from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
+
+# Customer segmentation benchmark dataset (N=45)
+np.random.seed(42)
+c1 = np.random.normal(loc=[30, 25], scale=[5, 5], size=(15, 2))
+c2 = np.random.normal(loc=[80, 80], scale=[5, 5], size=(15, 2))
+c3 = np.random.normal(loc=[80, 20], scale=[5, 5], size=(15, 2))
+X_cohorts = np.vstack([c1, c2, c3])
+
+# Fit Ward hierarchical linkage
+Z = linkage(pdist(X_cohorts), method="ward")
+
+sweep_results = []
+for k in range(2, 7):
+    labels = fcluster(Z, t=k, criterion="maxclust")
+    sil = silhouette_score(X_cohorts, labels)
+    db = davies_bouldin_score(X_cohorts, labels)
+    ch = calinski_harabasz_score(X_cohorts, labels)
+    
+    # Check minimum cluster size to avoid trivial singleton clusters
+    min_size = min(pd.Series(labels).value_counts())
+    
+    sweep_results.append({
+        "k": k,
+        "Silhouette (s)": round(sil, 4),
+        "Davies-Bouldin (DB)": round(db, 4),
+        "Calinski-Harabasz (CH)": round(ch, 1),
+        "Min Cluster Size": min_size,
+    })
+
+df_sweep = pd.DataFrame(sweep_results)
+print("--- Cluster Count Sweep Diagnostics ---")
+print(df_sweep.to_string(index=False))
+
+# Identify optimal k based on peak Silhouette and lowest Davies-Bouldin
+best_sil_k = df_sweep.loc[df_sweep["Silhouette (s)"].idxmax()]["k"]
+best_db_k = df_sweep.loc[df_sweep["Davies-Bouldin (DB)"].idxmin()]["k"]
+print(f"\\nRecommended k by Peak Silhouette:     k = {int(best_sil_k)}")
+print(f"Recommended k by Lowest Davies-Bouldin: k = {int(best_db_k)}")`,
+        ),
+        out(
+          "Console Output: Cluster Count Sweep",
+          `--- Cluster Count Sweep Diagnostics ---
+ k  Silhouette (s)  Davies-Bouldin (DB)  Calinski-Harabasz (CH)  Min Cluster Size
+ 2          0.5755               0.5658                   120.3                15
+ 3          0.8352               0.2312                   364.5                15
+ 4          0.6970               0.5401                   301.2                 7
+ 5          0.5714               0.7643                   265.8                 6
+ 6          0.4492               0.9821                   240.5                 5
+
+Recommended k by Peak Silhouette:     k = 3
+Recommended k by Lowest Davies-Bouldin: k = 3`,
+        ),
+        c(
+          "A Defensible Five-Step Decision Protocol",
+          "When selecting the final cluster count in real-world machine learning systems, follow this defensive protocol:\n\n1. Inspect Dendrogram Merge Heights: Confirm that the candidate k sits below a significant vertical merge height gap.\n2. Sweep Internal Validation Metrics: Verify whether candidate k corresponds to a local peak in Silhouette score and a minimum in Davies–Bouldin index.\n3. Enforce Cardinality Thresholds: Eliminate solutions that produce singleton clusters or groups smaller than operational feasibility constraints (e.g. min_size ≥ 5% of dataset).\n4. Test Resampling Stability: Verify that the candidate partition is reproducible across bootstrap sub-samples.\n5. Verify Domain Utility: Confirm with subject-matter experts that the resulting clusters represent actionable, meaningful differentiations rather than noise artifacts.",
+        ),
+      ),
+      s(
+        "Interactive Dendrogram Cutting Laboratory",
+        c(
+          "Dendrogram Cutting Lab Placeholder",
+          "Interactive laboratory for exploring dynamic cut thresholds, inconsistency coefficients, and cluster count extraction.",
+        ),
+      ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Module 12 Self-Assessment Placeholder",
+          "Interactive quiz testing understanding of merge gaps, inconsistency calculations, and multi-criterion selection.",
+        ),
       ),
     ],
   },
@@ -3956,6 +4153,9 @@ export const groups = Array.from(new Set(pages.map((p) => p.group)));
 
 export const findPage = (slug: string) => {
   // Support aliases for backward compatibility or direct queries
-  if (slug === "limitations-applications") return pages.findIndex((p) => p.slug === "limitations");
+  if (slug === "cluster-selection") return pages.findIndex((p) => p.slug === "comparison");
+  if (slug === "profiling-stability") return pages.findIndex((p) => p.slug === "limitations");
+  if (slug === "applications-limitations" || slug === "limitations-applications")
+    return pages.findIndex((p) => p.slug === "applications");
   return pages.findIndex((p) => p.slug === slug);
 };

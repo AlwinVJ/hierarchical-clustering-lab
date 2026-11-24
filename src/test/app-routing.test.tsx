@@ -43,8 +43,10 @@ describe("App routing and Course Structure", () => {
     expect(findPage(slug)).toBeGreaterThan(0);
   });
 
-  it("provides alias resolution for limitations-applications", () => {
+  it("provides alias resolution for aliases", () => {
     expect(findPage("limitations-applications")).toBeGreaterThan(0);
+    expect(findPage("cluster-selection")).toBeGreaterThan(0);
+    expect(findPage("profiling-stability")).toBeGreaterThan(0);
   });
 
   it("organizes modules into 4 logical curricular stages", () => {
@@ -182,5 +184,25 @@ describe("App routing and Course Structure", () => {
       "Interactive Cluster Evaluation Playground",
     );
     expect(evalPage.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
+
+    // Page 13: Optimal Cluster Selection (slug: "comparison")
+    const selectionPage = pages.find((p) => p.slug === "comparison")!;
+    expect(selectionPage.sections.length).toBe(6);
+    expect(selectionPage.sections.map((s) => s.title)).toContain("The Cluster Selection Problem");
+    expect(selectionPage.sections.map((s) => s.title)).toContain(
+      "Dendrogram-Based Selection & Merge-Height Gaps",
+    );
+    expect(selectionPage.sections.map((s) => s.title)).toContain(
+      "The Inconsistency Coefficient in SciPy",
+    );
+    expect(selectionPage.sections.map((s) => s.title)).toContain(
+      "Silhouette Sweeps & Multi-Criterion Selection",
+    );
+    expect(selectionPage.sections.map((s) => s.title)).toContain(
+      "Interactive Dendrogram Cutting Laboratory",
+    );
+    expect(selectionPage.sections.map((s) => s.title)).toContain(
+      "Knowledge Check & Self-Assessment",
+    );
   });
 });
