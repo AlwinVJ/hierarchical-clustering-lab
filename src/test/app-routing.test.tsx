@@ -114,6 +114,23 @@ describe("App routing and Course Structure", () => {
     );
     expect(metrics.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
 
+    // Page 9: Dendrograms
+    const dendrograms = pages.find((p) => p.slug === "dendrograms")!;
+    expect(dendrograms.sections.length).toBe(7);
+    expect(dendrograms.sections.map((s) => s.title)).toContain("Dendrogram Structure");
+    expect(dendrograms.sections.map((s) => s.title)).toContain("How Dendrograms are Constructed");
+    expect(dendrograms.sections.map((s) => s.title)).toContain(
+      "Ultrametric Space & Mathematical Properties",
+    );
+    expect(dendrograms.sections.map((s) => s.title)).toContain(
+      "Cophenetic Distance & Correlation (CCC)",
+    );
+    expect(dendrograms.sections.map((s) => s.title)).toContain(
+      "Cutting a Dendrogram & Cluster Extraction",
+    );
+    expect(dendrograms.sections.map((s) => s.title)).toContain("Interactive Dendrogram Workspace");
+    expect(dendrograms.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
+
     // Page 11: Implementation
     const impl = pages.find((p) => p.slug === "implementation")!;
     expect(impl.sections.length).toBe(3);

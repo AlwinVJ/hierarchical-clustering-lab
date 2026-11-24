@@ -16,6 +16,11 @@ import {
   Module07Quiz,
 } from "@/content/module07-metrics";
 import {
+  DendrogramExplorer,
+  UltrametricPropertyVisualizer,
+  Module08Quiz,
+} from "@/content/module08-dendrograms";
+import {
   Compass,
   BookOpen,
   Layers,
@@ -2127,37 +2132,226 @@ Output:
     group: "Core Algorithms",
     icon: Network,
     subtitle:
-      "Constructing, reading, and cutting hierarchical tree visualizations to determine optimal clusters.",
+      "Tree anatomy, ultrametric geometry, cophenetic correlation (CCC), horizontal slicing, and cluster extraction.",
     sections: [
       s(
         "Dendrogram Structure",
-        c("U-shaped links, cophenetic distance, and leaf ordering"),
-        d("Anatomical dendrogram diagram"),
+        c(
+          "Anatomy of a Hierarchical Tree",
+          "A dendrogram (from Greek dendron 'tree' and gramma 'drawing') is a specialized binary tree diagram that visually represents the nested sequence of cluster merges (in agglomerative clustering) or splits (in divisive clustering). Each component of a dendrogram possesses precise mathematical meaning:",
+        ),
+        {
+          kind: "table",
+          columns: ["Anatomical Component", "Geometric Representation", "Mathematical Meaning"],
+          rows: [
+            "Leaf Nodes",
+            "Terminating points at height h = 0",
+            "Individual singleton data points (initial clusters C_i = {x_i})",
+          ],
+          tableData: {
+            "Leaf Nodes": [
+              "Terminating points along the bottom horizontal axis at height h = 0",
+              "Individual singleton observations (initial clusters C_i = {x_i})",
+            ],
+            "Vertical Legs": [
+              "Vertical lines extending upward from child clusters to the merge bar",
+              "Span the height interval from child creation height to parent merge height",
+            ],
+            "Horizontal Crossbar": [
+              "Horizontal bridge connecting the vertical legs of two coalescing clusters",
+              "Positioned at the exact dissimilarity value D(A, B) where clusters merge",
+            ],
+            "Internal Nodes": [
+              "Branching vertices formed by the horizontal crossbars",
+              "Composite clusters A ∪ B created by combining two smaller clusters",
+            ],
+            "Root Node": [
+              "The single top-level horizontal crossbar spanning the entire dataset",
+              "The final global cluster containing all N observations at height h_{N-1}",
+            ],
+          },
+        },
+        n(
+          "CRITICAL: The Mobile Tree Principle (Horizontal Leaf Order is an Illusion)",
+          "A common beginner error is assuming that data points positioned close to one another along the bottom horizontal axis of a dendrogram are geometrically similar in feature space. This is completely false! A dendrogram represents a 'mobile' (kinetic sculpture): at any internal node, the left and right child subtrees can be freely rotated/swapped without altering the tree's mathematical topology, merge heights, or cluster memberships. For a tree with N leaves, there are 2^{N-1} distinct valid horizontal leaf permutations that represent the exact same hierarchical clustering! Proximity is determined EXCLUSIVELY by the vertical height of the lowest common ancestor (LCA) node, never by horizontal adjacency.",
+        ),
+        c(
+          "Optimal Leaf Ordering (OLO)",
+          "To reduce visual cognitive burden without altering tree topology, Bar-Joseph et al. (2001) developed the Optimal Leaf Ordering algorithm. OLO uses dynamic programming in O(N³) or O(N⁴) time to find the specific rotation among the 2^{N-1} possible permutations that minimizes the sum of distances between adjacent leaves: min ∑_{i=1}^{N-1} d(x_{π(i)}, x_{π(i+1)}). Both SciPy (`scipy.cluster.hierarchy.optimal_leaf_ordering`) and R support this optional aesthetic post-processing step.",
+        ),
       ),
       s(
         "How Dendrograms are Constructed",
-        c("Mapping merge heights to linkage distances"),
-        d("Step-by-step tree growth"),
+        c(
+          "The SciPy Linkage Matrix Data Structure (Z-Matrix)",
+          "In computational implementations (such as SciPy's `scipy.cluster.hierarchy.linkage`), the entire clustering hierarchy is stored as an (N - 1) × 4 floating-point matrix Z. Each row k (from k = 0 to N - 2) records a single merge event:",
+        ),
+        m(
+          "SciPy Linkage Matrix Format Z",
+          String.raw`Z = \begin{bmatrix}
+\text{cluster}_1 & \text{cluster}_2 & \text{merge\_height} & \text{cluster\_size} \\
+c_{0,1} & c_{0,2} & h_0 & n_0 \\
+\vdots & \vdots & \vdots & \vdots \\
+c_{N-2,1} & c_{N-2,2} & h_{N-2} & N
+\end{bmatrix}`,
+          "Original singletons are indexed 0 to N-1. The cluster formed at row k is assigned virtual index N + k.",
+        ),
+        c(
+          "Step-by-Step Construction Trace on Deterministic 4-Point Benchmark",
+          "Tracing the exact (4 - 1) = 3 merge rows across our canonical points P₁(1,2) [idx 0], P₂(2,3) [idx 1], P₃(6,5) [idx 2], P₄(7,6) [idx 3]:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Linkage Method",
+            "Row 0 (Merge 1: P₁ + P₂ -> C₄)",
+            "Row 1 (Merge 2: P₃ + P₄ -> C₅)",
+            "Row 2 (Root Merge: C₄ + C₅ -> C₆)",
+          ],
+          rows: [
+            "Single Linkage",
+            "Complete Linkage",
+            "Average Linkage (UPGMA)",
+            "Centroid Linkage (UPGMC)",
+            "Ward's Minimum Variance",
+          ],
+          tableData: {
+            "Single Linkage": [
+              "[0, 1, 1.4142, 2]",
+              "[2, 3, 1.4142, 2]",
+              "[4, 5, 4.4721, 4] (h = min cross distance)",
+            ],
+            "Complete Linkage": [
+              "[0, 1, 1.4142, 2]",
+              "[2, 3, 1.4142, 2]",
+              "[4, 5, 7.2111, 4] (h = max cross distance)",
+            ],
+            "Average Linkage (UPGMA)": [
+              "[0, 1, 1.4142, 2]",
+              "[2, 3, 1.4142, 2]",
+              "[4, 5, 5.8363, 4] (h = mean cross distance)",
+            ],
+            "Centroid Linkage (UPGMC)": [
+              "[0, 1, 1.4142, 2]",
+              "[2, 3, 1.4142, 2]",
+              "[4, 5, 5.8310, 4] (h = distance between centroids)",
+            ],
+            "Ward's Minimum Variance": [
+              "[0, 1, 1.4142, 2]",
+              "[2, 3, 1.4142, 2]",
+              "[4, 5, 8.2462, 4] (h = √(2 · ΔESS) = √68)",
+            ],
+          },
+        },
       ),
       s(
-        "How to Interpret Dendrograms",
-        c("Reading vertical jump lengths to identify distinct clusters"),
+        "Ultrametric Space & Mathematical Properties",
+        c(
+          "The Strong Triangle Inequality",
+          "A fundamental mathematical property of hierarchical clustering is that any monotonic dendrogram induces an ultrametric space on the data points. An ultrametric space (X, d_ultra) is a metric space that satisfies the Strong Triangle Inequality (also called the Ultrametric Inequality):",
+        ),
+        m(
+          "The Ultrametric Inequality",
+          String.raw`d_{\text{ultra}}(\mathbf{x}, \mathbf{z}) \le \max(d_{\text{ultra}}(\mathbf{x}, \mathbf{y}), \, d_{\text{ultra}}(\mathbf{y}, \mathbf{z}))`,
+          "Holds for all triples x, y, z ∈ X. This is strictly stronger than the classical triangle inequality d(x, z) ≤ d(x, y) + d(y, z).",
+        ),
+        c(
+          "The Isosceles Triangle Theorem of Ultrametric Spaces",
+          "The ultrametric inequality imposes a profound geometric constraint: in any ultrametric space, EVERY triangle is either equilateral or acute isosceles with its two longest sides having identical length! Scalene triangles with three unequal edge lengths are mathematically impossible. If d(x, y) ≠ d(y, z), then the third side d(x, z) MUST equal exactly max(d(x, y), d(y, z)).",
+        ),
+        {
+          kind: "custom",
+          content: createElement(UltrametricPropertyVisualizer),
+        },
       ),
       s(
-        "How to Select the Number of Clusters",
-        c("Finding largest vertical gaps without intersecting horizontal lines"),
-        { kind: "note" },
+        "Cophenetic Distance & Correlation (CCC)",
+        c(
+          "Measuring Hierarchical Representation Fidelity",
+          "When hierarchical clustering constructs a dendrogram, it approximates the original N(N-1)/2 pairwise distances D with an ultrametric tree distance matrix C. To evaluate how much spatial distortion the tree introduces, Robert R. Sokal and F. James Rohlf (1962) formulated the Cophenetic Correlation Coefficient (CCC or CPCC).",
+        ),
+        m(
+          "Cophenetic Distance and CCC Formulation",
+          String.raw`c(\mathbf{x}_i, \mathbf{x}_j) = \text{height}(\text{LCA}(\mathbf{x}_i, \mathbf{x}_j)), \quad \text{CCC} = \frac{\sum_{i < j} (d_{ij} - \bar{d})(c_{ij} - \bar{c})}{\sqrt{\sum_{i < j} (d_{ij} - \bar{d})^2 \sum_{i < j} (c_{ij} - \bar{c})^2}}`,
+          "Where c(x_i, x_j) is the cophenetic distance (height of lowest common ancestor), d_ij is the original pairwise distance, and d̄, c̄ are their respective sample means.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "CCC Score Range",
+            "Hierarchical Representation Fidelity",
+            "Practical Interpretation",
+          ],
+          rows: ["CCC ≥ 0.90", "0.80 ≤ CCC < 0.90", "0.70 ≤ CCC < 0.80", "CCC < 0.70"],
+          tableData: {
+            "CCC ≥ 0.90": [
+              "Outstanding Fidelity",
+              "The dendrogram preserves original pairwise distances with near-zero distortion; highly reliable hierarchy.",
+            ],
+            "0.80 ≤ CCC < 0.90": [
+              "Good to Very Good Fidelity",
+              "Minor geometric distortions; adequate for most scientific clustering analyses.",
+            ],
+            "0.70 ≤ CCC < 0.80": [
+              "Moderate / Fair Fidelity",
+              "Noticeable distortion; branch heights should be interpreted with caution.",
+            ],
+            "CCC < 0.70": [
+              "Poor Representation Fidelity",
+              "Severe tree distortion; the hierarchical tree poorly reflects true spatial relationships.",
+            ],
+          },
+        },
+        n(
+          "Why Average Linkage (UPGMA) Maximizes CCC",
+          "Empirical and theoretical studies (such as Farris, 1969) demonstrate that Average Linkage (UPGMA) almost universally yields the highest Cophenetic Correlation Coefficient among all standard linkage criteria. Because UPGMA defines cluster dissimilarity as the arithmetic mean of all cross-cluster point distances, it directly minimizes the mean squared error between original distances d_ij and cophenetic tree heights c_ij.",
+        ),
       ),
       s(
-        "Cutting a Dendrogram",
-        c("Horizontal cutting threshold and extraction of discrete labels"),
-        d("Dendrogram horizontal slice diagram"),
-        m("Threshold criterion"),
+        "Cutting a Dendrogram & Cluster Extraction",
+        c(
+          "Extracting Flat Partitions from Nested Hierarchies",
+          "A dendrogram represents a continuous hierarchy of clusters from N singletons at h = 0 to 1 grand cluster at the root. To extract a concrete, flat clustering partition (discrete cluster labels for downstream machine learning tasks), the dendrogram must be cut.",
+        ),
+        m(
+          "Two Complementary Slicing Strategies",
+          String.raw`\begin{aligned}
+\text{1. Height Threshold Cutoff: } &\quad \mathcal{C} = \text{Subtrees separated by horizontal line at height } h_{\text{cut}} \\
+\text{2. Fixed Cluster Count: } &\quad \mathcal{C} = \text{Topological slice producing exactly } k \text{ disjoint subtrees}
+\end{aligned}`,
+          "In SciPy, implemented via `scipy.cluster.hierarchy.fcluster(Z, t=h_cut, criterion='distance')` or `fcluster(Z, t=k, criterion='maxclust')`.",
+        ),
+        c(
+          "The Largest Vertical Gap Heuristic",
+          "To determine the optimal number of clusters k without prior domain knowledge, analysts inspect the dendrogram for the largest vertical gap: find the horizontal line that cuts through the longest vertical branches without intersecting any horizontal merge bars. A long vertical branch indicates that the underlying clusters remain well-separated across a wide range of dissimilarity thresholds before coalescing.",
+        ),
       ),
-      s("Interactive Dendrogram Workspace", {
-        kind: "viz-large",
-        label: "Reserved interactive dendrogram tree-cutter workspace",
-      }),
+      s(
+        "Interactive Dendrogram Workspace",
+        c(
+          "Interactive Slicing & Cophenetic Distance Exploration",
+          "Interact with the canonical 4-point benchmark dendrogram below: adjust the horizontal cutting threshold, observe flat cluster extraction, and inspect the cophenetic distance matrix across all 5 linkage methods:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(DendrogramExplorer),
+        },
+      ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Interactive Conceptual Evaluation",
+          "Test your mastery of dendrogram anatomy, the mobile tree rotation principle, ultrametric geometry, and cophenetic correlation:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(Module08Quiz),
+        },
+        c(
+          "Module 08 References & Further Reading",
+          "Sokal, R. R., & Rohlf, F. J. (1962). The comparison of dendrograms by objective methods. Taxon, 11(2), 33–40. | Bar-Joseph, Z., Gifford, D. K., & Jaakkola, T. S. (2001). Fast optimal leaf ordering for hierarchical clustering. Bioinformatics, 17(suppl_1), S22–S29. | Farris, J. S. (1969). On the cophenetic correlation coefficient. Systematic Biology, 18(3), 279–285. | Murtagh, F. (1983). A survey of recent advances in hierarchical clustering algorithms. The Computer Journal, 26(4), 354–359.",
+        ),
+      ),
     ],
   },
   {

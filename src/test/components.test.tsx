@@ -25,6 +25,11 @@ import {
   CurseOfDimensionalitySimulator,
   Module07Quiz,
 } from "@/content/module07-metrics";
+import {
+  DendrogramExplorer,
+  UltrametricPropertyVisualizer,
+  Module08Quiz,
+} from "@/content/module08-dendrograms";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -150,6 +155,20 @@ describe("Reusable Lab Components", () => {
 
     const quizHtml = renderToString(<Module07Quiz />);
     expect(quizHtml).toContain("Module 07 Knowledge Check");
+    expect(quizHtml).toContain("Check Answers");
+  });
+
+  it("renders DendrogramExplorer, UltrametricPropertyVisualizer, and Module08Quiz", () => {
+    const dendroHtml = renderToString(<DendrogramExplorer />);
+    expect(dendroHtml).toContain("Interactive Dendrogram Slicing");
+    expect(dendroHtml).toContain("Cophenetic Correlation (CCC)");
+
+    const ultraHtml = renderToString(<UltrametricPropertyVisualizer />);
+    expect(ultraHtml).toContain("Ultrametric Inequality");
+    expect(ultraHtml).toContain("Isosceles Triangle Theorem");
+
+    const quizHtml = renderToString(<Module08Quiz />);
+    expect(quizHtml).toContain("Module 08 Knowledge Check");
     expect(quizHtml).toContain("Check Answers");
   });
 });
