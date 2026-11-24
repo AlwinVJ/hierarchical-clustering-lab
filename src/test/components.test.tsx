@@ -31,6 +31,7 @@ import {
   Module08Quiz,
 } from "@/content/module08-dendrograms";
 import { MathematicalPlayground, Module09Quiz } from "@/content/module09-mathematics";
+import { ImplementationExplorer, Module10Quiz } from "@/content/module10-implementation";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -180,6 +181,18 @@ describe("Reusable Lab Components", () => {
 
     const quizHtml = renderToString(<Module09Quiz />);
     expect(quizHtml).toContain("Module 09 Knowledge Check");
+    expect(quizHtml).toContain("Check Answers");
+  });
+
+  it("renders ImplementationExplorer and Module10Quiz", () => {
+    const explorerHtml = renderToString(<ImplementationExplorer />);
+    expect(explorerHtml).toContain("Client-Side Interactive Simulator");
+    expect(explorerHtml).toContain("Dataset Selection");
+    expect(explorerHtml).toContain("Target Clusters (k)");
+    expect(explorerHtml).toContain("Feature Dimension X");
+
+    const quizHtml = renderToString(<Module10Quiz />);
+    expect(quizHtml).toContain("Module 10 Knowledge Check");
     expect(quizHtml).toContain("Check Answers");
   });
 });

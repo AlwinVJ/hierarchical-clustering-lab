@@ -21,6 +21,7 @@ import {
   Module08Quiz,
 } from "@/content/module08-dendrograms";
 import { MathematicalPlayground, Module09Quiz } from "@/content/module09-mathematics";
+import { ImplementationExplorer, Module10Quiz } from "@/content/module10-implementation";
 import {
   Compass,
   BookOpen,
@@ -3461,15 +3462,17 @@ Conclusion: Both libraries yield identical 3-cluster partitions with 0.8151 Silh
       s(
         "Interactive Implementation Explorer",
         c(
-          "Live Interactive Simulator Placeholder",
-          "Interactive client-side simulator demonstrating hierarchical clustering algorithms.",
+          "Interactive Cluster Slicing & API Inspector",
+          "Use this simulator to explore agglomerative clustering across different datasets, metrics, and linkage criteria. Observe the 2D scatter coordinates, the hierarchical dendrogram tree, the SciPy linkage matrix (Z), and the live-generated Python code.",
         ),
+        cust(createElement(ImplementationExplorer)),
       ),
       s(
         "Knowledge Check & Self-Assessment",
+        cust(createElement(Module10Quiz)),
         c(
-          "Conceptual Self-Assessment Placeholder",
-          "Interactive quiz evaluating understanding of Python implementations.",
+          "Module References",
+          "Verified against SciPy 1.14+ (scipy.cluster.hierarchy), Scikit-Learn 1.5+ (sklearn.cluster.AgglomerativeClustering), Murtagh & Contreras (2012), and Kaufman & Rousseeuw (1990). See docs/references.md.",
         ),
       ),
     ],
