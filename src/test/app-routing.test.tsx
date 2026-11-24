@@ -204,5 +204,26 @@ describe("App routing and Course Structure", () => {
     expect(selectionPage.sections.map((s) => s.title)).toContain(
       "Knowledge Check & Self-Assessment",
     );
+
+    // Page 14: Cluster Profiling & Stability (slug: "limitations")
+    const profilingPage = pages.find((p) => p.slug === "limitations")!;
+    expect(profilingPage.sections.length).toBe(7);
+    expect(profilingPage.sections.map((s) => s.title)).toContain("Understanding Cluster Profiles");
+    expect(profilingPage.sections.map((s) => s.title)).toContain("Visualizing Cluster Profiles");
+    expect(profilingPage.sections.map((s) => s.title)).toContain(
+      "Cluster Stability & Resampling Analysis",
+    );
+    expect(profilingPage.sections.map((s) => s.title)).toContain(
+      "Cophenetic Structure vs. Cluster Reliability",
+    );
+    expect(profilingPage.sections.map((s) => s.title)).toContain(
+      "Outliers, Noise, and Chain Reactions",
+    );
+    expect(profilingPage.sections.map((s) => s.title)).toContain(
+      "Interactive Cluster Interpretation Laboratory",
+    );
+    expect(profilingPage.sections.map((s) => s.title)).toContain(
+      "Knowledge Check & Self-Assessment",
+    );
   });
 });

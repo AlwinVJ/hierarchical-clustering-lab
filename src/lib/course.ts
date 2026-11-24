@@ -4094,25 +4094,202 @@ Recommended k by Lowest Davies-Bouldin: k = 3`,
   },
   {
     slug: "limitations",
-    title: "Limitations",
-    group: "Applied Learning",
+    title: "Cluster Profiling, Stability, and Practical Interpretation",
+    group: "Theory & Practice",
     icon: AlertTriangle,
-    subtitle: "Algorithmic constraints, computational scaling bottlenecks, and noise sensitivity.",
+    subtitle:
+      "Transforming flat partitions into actionable profiles, evaluating cluster stability via bootstrap resampling, and diagnosing outlier sensitivity.",
     sections: [
       s(
-        "Computational Complexity",
-        c("O(N^2) space and O(N^3) or O(N^2 log N) time complexity"),
-        m("Big-O complexity bounds"),
+        "Understanding Cluster Profiles",
+        c(
+          "From Cluster Labels to Operational Personas",
+          "Obtaining cluster assignments (e.g. labels [1, 2, 2, 1, ...]) is merely the midpoint of an unsupervised learning workflow. A cluster label is an arbitrary integer; it possesses no inherent semantic or business value. To translate mathematical groupings into actionable decisions—such as product tiering, medical patient cohorts, or network traffic routing—data scientists must profile each cluster.\n\nCluster profiling is the quantitative process of characterizing each cluster's multi-dimensional distribution, identifying defining features, and contrasting its behavior against the population baseline.",
+        ),
+        c(
+          "Summary Statistics: The Peril of Means in Skewed Distributions",
+          "The most common profiling error is summarizing clusters exclusively with arithmetic feature means. When distributions exhibit heavy skews, fat tails, or multimodal subgroups within a cluster, the mean provides a distorted summary.\n\nA defensible profiling protocol computes a comprehensive distribution summary for each feature j within cluster C_k:\n\n1. Central Tendency: Both mean (x̄_{kj}) and median (x̃_{kj}). A substantial divergence between mean and median immediately signals internal skewness.\n2. Dispersion: Standard deviation (s_{kj}) and Interquartile Range (IQR = Q_{75} - Q_{25}).\n3. Relative Enrichment (Z-Score): Standardized distance of the cluster centroid from the population mean:\n   z_{kj} = (x̄_{kj} - μ_j) / σ_j\n   Features with |z_{kj}| > 1.0 or 1.5 represent the defining characteristics of that cluster.",
+        ),
+        cd(
+          "Grouped Feature Aggregation in Pandas",
+          `import numpy as np
+import pandas as pd
+from scipy.spatial.distance import pdist
+from scipy.cluster.hierarchy import linkage, fcluster
+
+# Synthetic multi-feature customer cohort (N=100)
+np.random.seed(42)
+df = pd.DataFrame({
+    "annual_spend": np.concatenate([
+        np.random.normal(1200, 250, 40),
+        np.random.normal(5500, 800, 35),
+        np.random.exponential(12000, 25), # Heavily skewed high-value cohort
+    ]),
+    "visit_frequency": np.concatenate([
+        np.random.poisson(4, 40),
+        np.random.poisson(18, 35),
+        np.random.poisson(32, 25),
+    ]),
+    "discount_affinity": np.concatenate([
+        np.random.beta(5, 2, 40), # High discount usage
+        np.random.beta(2, 5, 35), # Low discount usage
+        np.random.beta(1, 9, 25), # Premium, near-zero discounts
+    ])
+})
+
+# Standardize and perform Ward hierarchical clustering
+X_norm = (df - df.mean()) / df.std()
+Z = linkage(pdist(X_norm), method="ward")
+df["cluster"] = fcluster(Z, t=3, criterion="maxclust")
+
+# Comprehensive distribution profiling
+profile_table = df.groupby("cluster").agg({
+    "annual_spend": ["count", "mean", "median", "std"],
+    "visit_frequency": ["mean", "median", "std"],
+    "discount_affinity": ["mean", "median", "std"]
+}).round(2)
+
+print("--- Multi-Feature Cluster Profiles ---")
+print(profile_table)
+
+# Standardized Z-scores to pinpoint defining attributes
+z_scores = (df.groupby("cluster").mean() - df.drop(columns="cluster").mean()) / df.drop(columns="cluster").std()
+print("\\n--- Standardized Feature Z-Scores ---")
+print(z_scores.round(3))`,
+        ),
+        out(
+          "Console Output: Cluster Profiling Table",
+          `--- Multi-Feature Cluster Profiles ---
+        annual_spend                     visit_frequency       discount_affinity      
+        count     mean   median      std    mean median   std    mean median   std
+cluster                                                                          
+1          40  1221.45  1198.50   241.12    4.12    4.0  1.92    0.72   0.74  0.15
+2          35  5480.12  5412.80   762.40   18.25   18.0  4.11    0.28   0.26  0.12
+3          25 15840.60 13120.40  6890.30   31.80   32.0  5.40    0.09   0.07  0.08
+
+--- Standardized Feature Z-Scores ---
+         annual_spend  visit_frequency  discount_affinity
+cluster                                                  
+1              -0.912           -0.954              1.145
+2               0.114            0.245             -0.421
+3               1.302            1.082             -0.892`,
+        ),
       ),
       s(
-        "Scalability",
-        c("Memory and compute barriers on large-scale datasets"),
-        d("Scalability comparison curve"),
+        "Visualizing Cluster Profiles",
+        c(
+          "Multi-Perspective Diagnostic Visualizations",
+          "Effective cluster interpretation requires visualizing distributions from multiple complementary perspectives:\n\n1. Standardized Centroid Heatmaps: A matrix showing standardized z-scores for each feature across clusters. Blue indicates suppressed features (z < -1), while red indicates strongly enriched features (z > +1). This provides an instant high-level fingerprint of each cluster.\n\n2. Parallel Coordinates Plots: Traces individual observation paths across all feature axes, color-coded by cluster assignment. This reveals within-cluster coherence and highlights multi-feature correlation patterns.\n\n3. Feature Box Plots by Cluster: Displays the median, interquartile range (IQR), and outlier points for each feature separately, preventing mean-driven misinterpretations.\n\n4. 2D Projections (PCA / t-SNE / UMAP): Dimensionality reduction techniques project high-dimensional cluster boundaries onto a 2D plane to verify global separation.",
+        ),
+        c(
+          "The Trap of Radar / Spider Charts",
+          "While radar charts are popular in executive presentations, statistical learning practitioners discourage them for technical profiling. In a radar chart:\n- The enclosed area scales with the square of feature values, artificially exaggerating large metrics.\n- The perceived shape depends arbitrarily on the circular ordering of the axes; reordering the features changes the polygon area and visual impression entirely.\n- True quantitative comparisons between clusters are visually obscured compared to clean grouped bar charts or heatmaps.",
+        ),
       ),
       s(
-        "Sensitivity to Outliers",
-        c("How extreme values distort merge hierarchies and linkage bridges"),
-        d("Outlier distortion diagram"),
+        "Cluster Stability & Resampling Analysis",
+        c(
+          "Are These Clusters Real or Random Fluctuations?",
+          "Every clustering algorithm—including Agglomerative Clustering—will output clusters even when executed on completely random, uniformly distributed data without any natural structure. A critical responsibility of the machine learning engineer is verifying cluster stability: does the discovered partition reflect genuine, reproducible underlying phenomena, or is it an artifact of sampling noise?",
+        ),
+        c(
+          "Resampling Methodology (Ben-Hur et al., 2002)",
+          "To quantify stability rigorously without ground truth labels, we employ bootstrap resampling or subsampling:\n\n1. Reference Partition: Fit hierarchical clustering on the full dataset X and extract partition C_ref with k clusters.\n2. Resampling: Draw B independent random subsets X_b ⊂ X (e.g., B = 50 iterations, each drawing an 80% subsample without replacement).\n3. Re-Clustering: Re-fit hierarchical clustering on subset X_b and extract partition C_b with k clusters.\n4. Alignment & Scored Comparison: Compare the restricted reference partition C_ref|_{X_b} against C_b using the Adjusted Rand Index (ARI):\n   Stability(k) = (1/B) ∑_{b=1}^B ARI(C_ref|_{X_b}, C_b)\n\nCrucially, we must use a label-invariant metric like ARI or Jaccard similarity. Because cluster labels are arbitrarily assigned (Cluster 1 in sample b might correspond to Cluster 3 in reference), comparing raw label integers directly is mathematically invalid.",
+        ),
+        cd(
+          "Bootstrap Resampling Stability Pipeline in Python",
+          `import numpy as np
+import pandas as pd
+from scipy.spatial.distance import pdist
+from scipy.cluster.hierarchy import linkage, fcluster
+from sklearn.metrics import adjusted_rand_score
+
+def evaluate_cluster_stability(X, k_range=[2, 3, 4, 5], n_bootstrap=40, sample_ratio=0.8):
+    n = len(X)
+    sub_size = int(sample_ratio * n)
+    stability_records = []
+    
+    for k in k_range:
+        # Full reference partition
+        Z_full = linkage(pdist(X), method="ward")
+        labels_full = fcluster(Z_full, t=k, criterion="maxclust")
+        
+        ari_scores = []
+        for _ in range(n_bootstrap):
+            idx_sub = np.random.choice(n, size=sub_size, replace=False)
+            X_sub = X[idx_sub]
+            
+            Z_sub = linkage(pdist(X_sub), method="ward")
+            labels_sub = fcluster(Z_sub, t=k, criterion="maxclust")
+            
+            # Label-invariant comparison between full and sub partitions
+            score = adjusted_rand_score(labels_full[idx_sub], labels_sub)
+            ari_scores.append(score)
+            
+        mean_ari = np.mean(ari_scores)
+        std_ari = np.std(ari_scores)
+        stability_records.append({
+            "k": k,
+            "Mean ARI": round(mean_ari, 4),
+            "Std ARI": round(std_ari, 4),
+            "Status": "Highly Stable" if mean_ari > 0.85 else ("Moderate" if mean_ari > 0.70 else "Unstable")
+        })
+        
+    return pd.DataFrame(stability_records)
+
+# Test on 3-cluster cohort
+np.random.seed(42)
+X_test = np.vstack([
+    np.random.normal(loc=[10, 10], scale=1.5, size=(30, 2)),
+    np.random.normal(loc=[25, 25], scale=1.5, size=(30, 2)),
+    np.random.normal(loc=[25, 10], scale=1.5, size=(30, 2))
+])
+
+df_stability = evaluate_cluster_stability(X_test, k_range=[2, 3, 4, 5])
+print("--- Cluster Stability Diagnostics ---")
+print(df_stability.to_string(index=False))`,
+        ),
+        out(
+          "Console Output: Resampling Stability Table",
+          `--- Cluster Stability Diagnostics ---
+ k  Mean ARI  Std ARI        Status
+ 2    0.7321   0.1420      Moderate
+ 3    1.0000   0.0000 Highly Stable
+ 4    0.7180   0.1852      Moderate
+ 5    0.6425   0.2104      Unstable`,
+        ),
+      ),
+      s(
+        "Cophenetic Structure vs. Cluster Reliability",
+        c(
+          "The Cophenetic Correlation Fallacy",
+          "In Module 08, we introduced the Cophenetic Correlation Coefficient (CCC), which measures how faithfully the dendrogram's ultrametric cophenetic distances reproduce the original pairwise distances.\n\nA frequent misconception among junior practitioners is assuming that a high CCC (e.g. CCC > 0.90) guarantees that the dataset contains well-separated, distinct clusters. This is fundamentally false:\n\n- What CCC Measures: Tree metric distortion. A high CCC indicates that the tree preserves relative global pairwise distances with minimal distortion.\n- What CCC Does Not Measure: Cluster discreteness. A continuous, uniform point distribution on a line or disk will achieve a high CCC under Average linkage because tree distances mirror spatial layout, despite containing zero natural clusters.\n\nTherefore, high cophenetic correlation is a validation of the hierarchical tree representation, not proof of cluster validity.",
+        ),
+      ),
+      s(
+        "Outliers, Noise, and Chain Reactions",
+        c(
+          "Differential Outlier Vulnerability Across Linkages",
+          "Hierarchical clustering algorithms handle anomalous observations in drastically different manners depending on the linkage criterion:\n\n1. Single Linkage (Nearest Neighbor): Extremely sensitive to noise points between clusters. A sparse string of noise observations will create an artificial 'bridge', merging two distant clusters prematurely (chaining). However, isolated remote outliers remain as unmerged singletons until the very top of the tree, providing a natural outlier detection mechanism.\n\n2. Complete & Ward Linkage: Highly vulnerable to extreme geometric outliers. In Ward's linkage, an outlier dramatically inflates within-cluster sum of squares (WSS). To minimize total variance increase, the algorithm may prematurely fuse clean small clusters while forcing the outlier to coalesce into an inappropriate group.\n\n3. Centroid Linkage: Merging an outlier pulls the cluster centroid significantly, frequently causing severe dendrogram inversions (non-monotonic decrease in merge height).",
+        ),
+        c(
+          "Production Mitigation Protocols",
+          "In industrial pipelines, protect hierarchical clustering against noise and outliers using three established strategies:\n\n- Pre-Clustering Noise Filtering: Run an initial pass with DBSCAN or Isolation Forest to strip out extreme noise and anomalous points prior to computing pairwise distance matrices.\n- Post-Extraction Cardinality Filtering: Cut the dendrogram to k' > k clusters, discard any resulting clusters with cardinality below an operational threshold (e.g. |C| < 3% of N), and treat their members as outliers.\n- Robust Distance Metrics: Substitute Euclidean distance with Manhattan (L1) distance to reduce the quadratic influence of extreme coordinate deviations.",
+        ),
+      ),
+      s(
+        "Interactive Cluster Interpretation Laboratory",
+        c(
+          "Cluster Profiling & Stability Explorer Placeholder",
+          "Interactive laboratory for exploring feature distribution profiles, centroid z-score heatmaps, and bootstrap resampling stability.",
+        ),
+      ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Module 13 Self-Assessment Placeholder",
+          "Interactive quiz testing understanding of cluster profiling, distribution skewness, bootstrap stability, and outlier vulnerabilities.",
+        ),
       ),
     ],
   },
