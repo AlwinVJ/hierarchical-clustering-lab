@@ -2,16 +2,17 @@ import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import {
   SectionHeader,
-  ContentCard,
   ContentPlaceholder,
   FormulaBox,
   CodeBlock,
-  OutputBlock,
   DiagramPlaceholder,
   VizPlaceholder,
   NoteBox,
   ComparisonTable,
 } from "@/components/lab/blocks";
+import { ParadigmComparisonVisualizer, Module03Quiz } from "@/content/module03-types";
+import { AgglomerativeSimulator, Module04Quiz } from "@/content/module04-agglomerative";
+import { DianaSimulator, Module05Quiz } from "@/content/module05-divisive";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -68,5 +69,35 @@ describe("Reusable Lab Components", () => {
     expect(html).toContain("Divisive");
     expect(html).toContain("Direction");
     expect(html).toContain("Complexity");
+  });
+
+  it("renders ParadigmComparisonVisualizer and Module03Quiz", () => {
+    const vizHtml = renderToString(<ParadigmComparisonVisualizer />);
+    expect(vizHtml).toContain("Side-by-Side Progression Visualizer");
+    expect(vizHtml).toContain("4-Point Dataset");
+
+    const quizHtml = renderToString(<Module03Quiz />);
+    expect(quizHtml).toContain("Module 03 Knowledge Check");
+    expect(quizHtml).toContain("Check Answers");
+  });
+
+  it("renders AgglomerativeSimulator and Module04Quiz", () => {
+    const vizHtml = renderToString(<AgglomerativeSimulator />);
+    expect(vizHtml).toContain("Interactive Agglomerative Clustering Simulator");
+    expect(vizHtml).toContain("Current Distance Matrix");
+
+    const quizHtml = renderToString(<Module04Quiz />);
+    expect(quizHtml).toContain("Module 04 Knowledge Check");
+    expect(quizHtml).toContain("Check Answers");
+  });
+
+  it("renders DianaSimulator and Module05Quiz", () => {
+    const vizHtml = renderToString(<DianaSimulator />);
+    expect(vizHtml).toContain("Interactive DIANA Splitting Simulator");
+    expect(vizHtml).toContain("diam(C) = 7.2111");
+
+    const quizHtml = renderToString(<Module05Quiz />);
+    expect(quizHtml).toContain("Module 05 Knowledge Check");
+    expect(quizHtml).toContain("Check Answers");
   });
 });
