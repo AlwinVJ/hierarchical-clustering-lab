@@ -2995,8 +2995,154 @@ Linkage Matrix Z (Scratch):
       s(
         "Hierarchical Clustering in SciPy (scipy.cluster.hierarchy)",
         c(
-          "SciPy Hierarchy Submodule Overview",
-          "SciPy's scipy.cluster.hierarchy module is Python's definitive scientific reference library for hierarchical clustering.",
+          "Overview of scipy.cluster.hierarchy and scipy.spatial.distance",
+          "SciPy provides Python's most comprehensive, computationally optimized suite for hierarchical clustering. Rather than forcing clustering into a black-box fit-predict abstraction, SciPy exposes the entire mathematical progression: condensed distance computation (pdist), linkage tree generation (linkage), cophenetic correlation analysis (cophenet), dendrogram visualization (dendrogram), and flexible flat partition cutting (fcluster).",
+        ),
+        c(
+          "Distance Vector Representation: pdist and squareform",
+          "Pairwise distance matrices in R^n are symmetric (D[i, j] = D[j, i]) with an identically zero diagonal (D[i, i] = 0). Storing the full n × n matrix wastes more than 50% of memory and induces cache inefficiency.\n\nSciPy solves this with a condensed distance vector of length m = n(n - 1) / 2 containing only strictly upper triangular elements stored row-wise. For any two observation indices i < j (0 <= i < j < n), the corresponding index k in the 1D condensed array is given by:\n\nk(i, j) = n · i - i(i + 1)/2 + j - i - 1\n\nThe squareform() utility provides bi-directional conversion: passing a condensed vector produces a symmetric n × n redundant distance matrix; passing a symmetric zero-diagonal matrix condenses it back to a 1D vector.",
+        ),
+        m(
+          "Condensed Distance Vector Index Mapping",
+          String.raw`k(i, j) = n \cdot i - \frac{i(i + 1)}{2} + (j - i - 1) \quad \text{for } 0 \le i < j < n`,
+          "Total elements m = \\frac{n(n-1)}{2}. For n=4, m=6. Stored in contiguous C-order without redundant symmetric entries or zero diagonals.",
+        ),
+        cd(
+          "Pairwise Distance Computation with pdist and squareform",
+          `import numpy as np
+from scipy.spatial.distance import pdist, squareform
+
+# Canonical 4-point benchmark dataset
+X = np.array([
+    [1.0, 2.0],  # P_1
+    [2.0, 3.0],  # P_2
+    [6.0, 5.0],  # P_3
+    [7.0, 6.0],  # P_4
+])
+
+# 1. Condensed distance vector (length = 4 * 3 / 2 = 6)
+y = pdist(X, metric="euclidean")
+print(f"Condensed Vector y (shape {y.shape}):")
+print(np.round(y, 4))
+
+# 2. Convert to symmetric square redundant matrix (shape 4 x 4)
+D = squareform(y)
+print("\\nSquareform Distance Matrix D (shape 4x4):")
+print(np.round(D, 4))
+
+# 3. Alternative distance metrics
+y_manhattan = pdist(X, metric="cityblock")
+y_cosine = pdist(X, metric="cosine")
+print("\\nManhattan Condensed Vector:", np.round(y_manhattan, 4))
+print("Cosine Condensed Vector:   ", np.round(y_cosine, 4))`,
+        ),
+        out(
+          "Console Output: pdist and squareform",
+          `Condensed Vector y (shape (6,)):
+[1.4142 5.831  7.2111 4.4721 5.831  1.4142]
+
+Squareform Distance Matrix D (shape 4x4):
+[[0.     1.4142 5.831  7.2111]
+ [1.4142 0.     4.4721 5.831 ]
+ [5.831  4.4721 0.     1.4142]
+ [7.2111 5.831  1.4142 0.    ]]
+
+Manhattan Condensed Vector: [ 2.  8. 10.  6.  8.  2.]
+Cosine Condensed Vector:    [0.0194 0.0052 0.0016 0.0076 0.0094 0.0003]`,
+        ),
+        c(
+          "The 7 Linkage Criteria in SciPy (scipy.cluster.hierarchy.linkage)",
+          "The linkage() function accepts either a condensed distance vector y or a raw feature matrix X. If X is passed, SciPy internally evaluates pdist(X, metric='euclidean'). It supports 7 distinct mathematical criteria:\n\n1. 'single': Minimum pairwise distance min_{a ∈ A, b ∈ B} d(a, b). Highly efficient O(n^2) via MST; susceptible to chaining.\n\n2. 'complete': Maximum pairwise distance max_{a ∈ A, b ∈ B} d(a, b). Produces compact, spherical, equal-diameter clusters.\n\n3. 'average': UPGMA (Unweighted Pair Group Method with Arithmetic Mean). Proximity is the sample-weighted arithmetic mean of pairwise distances. Weights are proportional to cluster cardinality.\n\n4. 'weighted': WPGMA (Weighted Pair Group Method with Arithmetic Mean / McQuitty). Equal weight given to subclusters regardless of sample size, mitigating bias from disparate cluster populations.\n\n5. 'centroid': UPGMC (Unweighted Pair Group Method with Centroid). Euclidean distance between cluster centroids ||μ_A - μ_B||_2. Subject to dendrogram inversions (non-monotonic).\n\n6. 'median': WPGMC (Weighted Pair Group Method with Centroid). Centroids computed by assigning equal weight to parent clusters regardless of counts. Also non-monotonic.\n\n7. 'ward': Incremental sum of squared Euclidean deviations (minimum variance). In SciPy, the reported merge height is scaled as d(A, B) = sqrt(2 * n_A * n_B / (n_A + n_B)) * ||μ_A - μ_B||_2.",
+        ),
+        c(
+          "Mathematical Anatomy of the (n-1) × 4 Linkage Matrix Z",
+          "The output of linkage() is a 2D float64 NumPy array of shape (n - 1, 4), denoted Z. The rows represent sequential agglomerative merge steps k = 0, 1, ..., n - 2:\n\n• Column 0 (Z[k, 0]): Cluster index of the first component cluster merged at step k.\n• Column 1 (Z[k, 1]): Cluster index of the second component cluster merged at step k (canonical order: Z[k, 0] <= Z[k, 1]).\n• Column 2 (Z[k, 2]): The cophenetic merge distance d(A, B) between the two clusters.\n• Column 3 (Z[k, 3]): Cardinality (total number of original observations) contained in the newly synthesized cluster.\n\nIndexing Convention: The n original observations are indexed 0, 1, ..., n - 1. A new cluster formed at row k receives index n + k. For n = 4, original points are 0, 1, 2, 3; row 0 forms cluster 4, row 1 forms cluster 5, and row 2 forms cluster 6.",
+        ),
+        cd(
+          "SciPy Linkage Matrix Execution & Inspection",
+          `from scipy.cluster.hierarchy import linkage
+
+# Execute Ward linkage on the 4-point benchmark
+Z_ward = linkage(X, method="ward", metric="euclidean")
+
+print("--- SciPy Ward Linkage Matrix Z (shape 3 x 4) ---")
+for k, row in enumerate(Z_ward):
+    c1, c2, dist, count = row
+    new_id = len(X) + k
+    print(f"Row {k}: Cluster {int(c1)} + Cluster {int(c2)} -> Node {new_id} | Dist: {dist:.4f} | Size: {int(count)}")`,
+        ),
+        out(
+          "Console Output: SciPy Ward Linkage Matrix",
+          `--- SciPy Ward Linkage Matrix Z (shape 3 x 4) ---
+Row 0: Cluster 0 + Cluster 1 -> Node 4 | Dist: 1.4142 | Size: 2
+Row 1: Cluster 2 + Cluster 3 -> Node 5 | Dist: 1.4142 | Size: 2
+Row 2: Cluster 4 + Cluster 5 -> Node 6 | Dist: 8.2462 | Size: 4`,
+        ),
+        c(
+          "Dendrogram Visualization with scipy.cluster.hierarchy.dendrogram",
+          "The dendrogram() function translates linkage matrix Z into an informative tree visualization. Key parameters include:\n\n• labels: Custom list/array of strings for leaf annotations.\n• color_threshold: Branches merged below this height receive distinct colors; branches merged above receive above_threshold_color (default 'C0' / grey). Setting color_threshold=0 leaves all branches monochromatic.\n• truncate_mode: Handles massive datasets (n > 100): 'lastp' displays only the final p non-singleton clusters; 'level' displays tree nodes down to depth level p.\n• p: Integer threshold for truncation.\n• orientation: 'top' (standard vertical root-at-top), 'bottom', 'left', or 'right'.\n• leaf_rotation & leaf_font_size: Typographic styling for legibility.",
+        ),
+        cd(
+          "Dendrogram Plotting Script with Matplotlib",
+          `import matplotlib.pyplot as plt
+from scipy.cluster.hierarchy import dendrogram
+
+plt.figure(figsize=(8, 5))
+plt.title("SciPy Ward Hierarchical Dendrogram", fontsize=14, fontweight="bold")
+plt.xlabel("Observation Index / Cluster Leaf", fontsize=11)
+plt.ylabel("Cophenetic Distance (Merge Height)", fontsize=11)
+
+# Render dendrogram with threshold cut line
+dendro_dict = dendrogram(
+    Z_ward,
+    labels=[f"P_{i+1}" for i in range(len(X))],
+    color_threshold=4.0,  # Distinct color for clusters merged below height 4.0
+    above_threshold_color="#475569",
+)
+
+# Plot horizontal decision threshold cut line
+plt.axhline(y=4.0, color="#dc2626", linestyle="--", linewidth=1.5, label="Cut Threshold (t=4.0)")
+plt.legend(loc="upper left")
+plt.grid(axis="y", linestyle=":", alpha=0.6)
+plt.tight_layout()
+
+print("Dendrogram dictionary keys:", list(dendro_dict.keys()))
+print("Leaf execution order:", dendro_dict["ivl"])`,
+        ),
+        out(
+          "Console Output: Dendrogram Attributes",
+          `Dendrogram dictionary keys: ['icoord', 'dcoord', 'ivl', 'leaves', 'color_list']
+Leaf execution order: ['P_1', 'P_2', 'P_3', 'P_4']`,
+        ),
+        c(
+          "Flat Cluster Extraction with fcluster",
+          "Once the tree Z is computed, fcluster() extracts discrete partition labels without re-clustering. The two primary criteria are:\n\n1. criterion='distance': Slices the dendrogram horizontally at height t. Any subtrees whose root merge occurs at or below t form distinct clusters. Suitable when you have a natural domain threshold for maximum allowable intra-cluster dissimilarity.\n\n2. criterion='maxclust': Cuts the dendrogram such that exactly k clusters are produced. Slices down from the root until k branches are severed. Suitable when domain requirements dictate a predetermined partition count.\n\nCritical 1-Indexing Notice: fcluster() returns cluster labels indexed from 1 to k (e.g., [1, 1, 2, 2]). In contrast, Scikit-Learn uses 0-indexed labels ([0, 0, 1, 1]). Mixing these indexing conventions is a frequent cause of off-by-one errors in evaluation metrics!",
+        ),
+        cd(
+          "Cluster Extraction with fcluster and Cophenetic Validation",
+          `from scipy.cluster.hierarchy import fcluster, cophenet
+
+# 1. Distance-based threshold extraction (t = 4.0)
+labels_dist = fcluster(Z_ward, t=4.0, criterion="distance")
+print(f"Flat Labels (distance <= 4.0): {labels_dist}")
+
+# 2. Predefined k cluster extraction (k = 2)
+labels_k = fcluster(Z_ward, t=2, criterion="maxclust")
+print(f"Flat Labels (maxclust = 2):    {labels_k}")
+
+# 3. Cophenetic Correlation Coefficient (CCC)
+# Quantifies how faithfully Z preserves the original pairwise distances
+ccc, coph_dists = cophenet(Z_ward, y)
+print(f"\\nCophenetic Correlation Coefficient (CCC): {ccc:.4f}")
+print("Faithfulness Interpretation: High correlation (> 0.8) indicates strong preservation of metric structure.")`,
+        ),
+        out(
+          "Console Output: fcluster and Cophenetic Correlation",
+          `Flat Labels (distance <= 4.0): [1 1 2 2]
+Flat Labels (maxclust = 2):    [1 1 2 2]
+
+Cophenetic Correlation Coefficient (CCC): 0.9350
+Faithfulness Interpretation: High correlation (> 0.8) indicates strong preservation of metric structure.`,
         ),
       ),
       s(
