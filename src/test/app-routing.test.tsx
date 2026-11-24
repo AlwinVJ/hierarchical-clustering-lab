@@ -171,6 +171,16 @@ describe("App routing and Course Structure", () => {
 
     // Page 12: Model Evaluation
     const evalPage = pages.find((p) => p.slug === "evaluation")!;
-    expect(evalPage.sections.length).toBe(3);
+    expect(evalPage.sections.length).toBe(6);
+    expect(evalPage.sections.map((s) => s.title)).toContain("Why Cluster Evaluation Matters");
+    expect(evalPage.sections.map((s) => s.title)).toContain("Internal Validation Metrics");
+    expect(evalPage.sections.map((s) => s.title)).toContain("External Validation Metrics");
+    expect(evalPage.sections.map((s) => s.title)).toContain(
+      "Relative Validation & Multi-Linkage Benchmarking",
+    );
+    expect(evalPage.sections.map((s) => s.title)).toContain(
+      "Interactive Cluster Evaluation Playground",
+    );
+    expect(evalPage.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
   });
 });
