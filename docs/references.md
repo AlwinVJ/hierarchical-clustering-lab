@@ -148,24 +148,39 @@ This documentation catalogs the foundational academic papers, peer-reviewed mono
   - **Journal**: _Proceedings of the National Institute of Sciences of India_, Vol. 2, No. 1 (1936), pp. 49–55.
   - **Verified Information**: Formulation of covariance-standardized distance $d_M(\mathbf{x}, \mathbf{y}) = \sqrt{(\mathbf{x} - \mathbf{y})^T \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \mathbf{y})}$ and ellipsoidal isodistance contours.
 
+### Nearest-Neighbor Chain & Optimized Implementations
+
+- **Title**: _Cluster Analysis for Applications_
+  - **Author**: Michael R. Anderberg
+  - **Publisher**: Academic Press, New York (1973).
+  - **Verified Information**: Nearest-neighbor chain algorithm (NN-chain) and mutual nearest neighbor properties, establishing $O(N^2)$ optimal clustering for reducible linkage criteria.
+- **Title**: _fastcluster: Fast Hierarchical, Agglomerative Clustering Routines for R and Python_
+  - **Author**: Daniel Müllner
+  - **Journal**: _Journal of Statistical Software_, Vol. 53, No. 9 (2013), pp. 1–18.
+  - **DOI/URL**: https://doi.org/10.18637/jss.v053.i09
+  - **Verified Information**: Algorithmic complexity bounds, memory-efficient index tracking, and vectorization architectures underlying modern SciPy `scipy.cluster.hierarchy` and C/C++ clustering extensions.
+
 ---
 
 ## 3. Module-to-Source Mapping
 
-| Module                           | Core Concepts Verified                                                   | Primary & Academic References                                   |
-| :------------------------------- | :----------------------------------------------------------------------- | :-------------------------------------------------------------- |
-| **01. Introduction**             | Supervised vs. Unsupervised, Hierarchical vs. Flat, Nested Partitions    | Kaufman & Rousseeuw (1990), Scikit-learn User Guide             |
-| **02. Fundamentals**             | Observation-level vs Cluster-level distance, Proximity Matrix, Trees     | Murtagh & Contreras (2012), Sokal & Rohlf (1962)                |
-| **03. Types**                    | Bottom-up (Agglomerative) vs Top-down (Divisive), DIANA Splintering      | Kaufman & Rousseeuw (1990 Ch. 6), Lance & Williams (1967)       |
-| **04. Agglomerative**            | Merge sequence, Proximity matrix updates, Tie-breaking, Termination      | Murtagh & Contreras (2012), SciPy Hierarchy docs                |
-| **05. Divisive**                 | DIANA algorithm, Splinter group, Max diameter heuristic, Partition cost  | Kaufman & Rousseeuw (1990), Murtagh & Contreras (2012)          |
-| **06. Linkage Methods**          | Single, Complete, Average (UPGMA), Centroid (UPGMC), Ward's Min Variance | Ward (1963), Lance & Williams (1967), SciPy `linkage`           |
-| **07. Distance Metrics**         | Euclidean, Manhattan, Minkowski, Cosine, Metric Axioms, Normalization    | SciPy `pdist`, Scikit-learn Preprocessing Guide                 |
-| **08. Dendrograms**              | Topology, Cophenetic heights, Inversion anomalies, Cutting thresholds    | Sokal & Rohlf (1962), SciPy `dendrogram`                        |
-| **09. Mathematics**              | Lance-Williams parameters, Matrix vectorization, Ward proof              | Ward (1963), Lance & Williams (1967)                            |
-| **10. Practical Implementation** | NumPy scratch matrix updates, SciPy `linkage`, `AgglomerativeClustering` | NumPy Reference, SciPy Docs, Scikit-learn API                   |
-| **11. Model Evaluation**         | Silhouette Score, Davies-Bouldin Index, Cophenetic Correlation           | Rousseeuw (1987), Davies & Bouldin (1979), Sokal & Rohlf (1962) |
-| **12. Algorithm Comparison**     | K-Means, DBSCAN, Agglomerative trade-offs, Non-globular shapes           | Scikit-learn User Guide, Murtagh & Contreras (2012)             |
-| **13. Limitations**              | $O(N^2)$ space, $O(N^3)$ time, Greedy irreversibility, Chaining          | Murtagh & Contreras (2012), Kaufman & Rousseeuw (1990)          |
-| **14. Real-world Applications**  | Customer RFM hierarchies, Gene Phylogeny, Taxonomy Clustering            | Scikit-learn Applications, Kaufman & Rousseeuw (1990)           |
-| **15. Hands-on Projects**        | End-to-end Python pipeline, Validation against SciPy, Evaluation metrics | SciPy, Scikit-learn, NumPy official guides                      |
+| Module                           | Core Concepts Verified                                                                                                             | Primary & Academic References                                                     |
+| :------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
+| **01. Introduction**             | Supervised vs. Unsupervised, Hierarchical vs. Flat, Nested Partitions                                                              | Kaufman & Rousseeuw (1990), Scikit-learn User Guide                               |
+| **02. Fundamentals**             | Observation-level vs Cluster-level distance, Proximity Matrix, Trees                                                               | Murtagh & Contreras (2012), Sokal & Rohlf (1962)                                  |
+| **03. Types**                    | Bottom-up (Agglomerative) vs Top-down (Divisive), DIANA Splintering                                                                | Kaufman & Rousseeuw (1990 Ch. 6), Lance & Williams (1967)                         |
+| **04. Agglomerative**            | Merge sequence, Proximity matrix updates, Tie-breaking, Termination                                                                | Murtagh & Contreras (2012), SciPy Hierarchy docs                                  |
+| **05. Divisive**                 | DIANA algorithm, Splinter group, Max diameter heuristic, Partition cost                                                            | Kaufman & Rousseeuw (1990), Murtagh & Contreras (2012)                            |
+| **06. Linkage Methods**          | Single, Complete, Average (UPGMA), Centroid (UPGMC), Ward's Min Variance                                                           | Ward (1963), Lance & Williams (1967), SciPy `linkage`                             |
+| **07. Distance Metrics**         | Euclidean, Manhattan, Minkowski, Cosine, Metric Axioms, Normalization                                                              | SciPy `pdist`, Scikit-learn Preprocessing Guide                                   |
+| **08. Dendrograms**              | Topology, Cophenetic heights, Inversion anomalies, Cutting thresholds                                                              | Sokal & Rohlf (1962), SciPy `dendrogram`, Bar-Joseph et al. (2001)                |
+| **09. Mathematics**              | Matrix data $\mathbf{X} \in \mathbb{R}^{n \times d}$, Metric axioms, WSS variance expansion, Huygens theorem, Ward harmonic factor | Ward (1963), Lance & Williams (1967), Batagelj (1981), Murtagh & Contreras (2012) |
+| **10. Practical Implementation** | NumPy scratch broadcasting, SciPy `pdist`/`linkage`/`fcluster`, Scikit-Learn `AgglomerativeClustering`, k-NN connectivity graphs   | NumPy Reference, SciPy Docs, Scikit-learn API, Müllner (2013), Anderberg (1973)   |
+| **11. Model Evaluation**         | Silhouette Score, Davies-Bouldin Index, Cophenetic Correlation                                                                     | Rousseeuw (1987), Davies & Bouldin (1979), Sokal & Rohlf (1962)                   |
+| **12. Algorithm Comparison**     | K-Means, DBSCAN, Agglomerative trade-offs, Non-globular shapes                                                                     | Scikit-learn User Guide, Murtagh & Contreras (2012)                               |
+| **13. Limitations**              | $O(N^2)$ space, $O(N^3)$ time, Greedy irreversibility, Chaining                                                                    | Murtagh & Contreras (2012), Kaufman & Rousseeuw (1990)                            |
+| **14. Real-world Applications**  | Customer RFM hierarchies, Gene Phylogeny, Taxonomy Clustering                                                                      | Scikit-learn Applications, Kaufman & Rousseeuw (1990)                             |
+| **15. Hands-on Projects**        | End-to-end Python pipeline, Validation against SciPy, Evaluation metrics                                                           | SciPy, Scikit-learn, NumPy official guides                                        |
+| **13. Limitations**              | $O(N^2)$ space, $O(N^3)$ time, Greedy irreversibility, Chaining                                                                    | Murtagh & Contreras (2012), Kaufman & Rousseeuw (1990)                            |
+| **14. Real-world Applications**  | Customer RFM hierarchies, Gene Phylogeny, Taxonomy Clustering                                                                      | Scikit-learn Applications, Kaufman & Rousseeuw (1990)                             |
+| **15. Hands-on Projects**        | End-to-end Python pipeline, Validation against SciPy, Evaluation metrics                                                           | SciPy, Scikit-learn, NumPy official guides                                        |
