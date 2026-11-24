@@ -32,6 +32,7 @@ import {
 } from "@/content/module08-dendrograms";
 import { MathematicalPlayground, Module09Quiz } from "@/content/module09-mathematics";
 import { ImplementationExplorer, Module10Quiz } from "@/content/module10-implementation";
+import { EvaluationPlayground, Module11Quiz } from "@/content/module11-evaluation";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -193,6 +194,19 @@ describe("Reusable Lab Components", () => {
 
     const quizHtml = renderToString(<Module10Quiz />);
     expect(quizHtml).toContain("Module 10 Knowledge Check");
+    expect(quizHtml).toContain("Check Answers");
+  });
+
+  it("renders EvaluationPlayground and Module11Quiz", () => {
+    const evalHtml = renderToString(<EvaluationPlayground />);
+    expect(evalHtml).toContain("Interactive Cluster Evaluation Laboratory");
+    expect(evalHtml).toContain("Evaluation Dataset");
+    expect(evalHtml).toContain("Internal Validation Panel");
+    expect(evalHtml).toContain("External Benchmark Panel");
+    expect(evalHtml).toContain("Silhouette Score");
+
+    const quizHtml = renderToString(<Module11Quiz />);
+    expect(quizHtml).toContain("Module 11 Knowledge Check: Cluster Evaluation");
     expect(quizHtml).toContain("Check Answers");
   });
 });

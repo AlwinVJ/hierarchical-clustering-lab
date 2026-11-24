@@ -22,6 +22,7 @@ import {
 } from "@/content/module08-dendrograms";
 import { MathematicalPlayground, Module09Quiz } from "@/content/module09-mathematics";
 import { ImplementationExplorer, Module10Quiz } from "@/content/module10-implementation";
+import { EvaluationPlayground, Module11Quiz } from "@/content/module11-evaluation";
 import {
   Compass,
   BookOpen,
@@ -3856,15 +3857,17 @@ COMPLETE            0.8732          0.7543               0.2425                 
       s(
         "Interactive Cluster Evaluation Playground",
         c(
-          "Interactive Evaluation Playground Placeholder",
-          "Live interactive playground calculating internal and external evaluation metrics across custom clustering configurations.",
+          "Dynamic Validation Engine & Silhouette Diagnostics",
+          "Experiment with internal metrics (Silhouette, Davies–Bouldin, Calinski–Harabasz) and external benchmark metrics (ARI, NMI, Homogeneity, Completeness, V-Measure) across multiple deterministic datasets and linkage configurations.",
         ),
+        cust(createElement(EvaluationPlayground)),
       ),
       s(
         "Knowledge Check & Self-Assessment",
+        cust(createElement(Module11Quiz)),
         c(
-          "Module 11 Self-Assessment Placeholder",
-          "Interactive quiz evaluating understanding of cluster validation principles and metric trade-offs.",
+          "Module References",
+          "Verified against Rousseeuw (1987), Davies & Bouldin (1979), Calinski & Harabasz (1974), Hubert & Arabie (1985), and Scikit-Learn 1.5+ clustering performance evaluation documentation. See docs/references.md.",
         ),
       ),
     ],
