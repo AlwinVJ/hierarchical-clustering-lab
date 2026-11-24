@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import { createElement, type ReactNode } from "react";
 import { ParadigmComparisonVisualizer, Module03Quiz } from "@/content/module03-types";
 import { AgglomerativeSimulator, Module04Quiz } from "@/content/module04-agglomerative";
+import { DianaSimulator, Module05Quiz } from "@/content/module05-divisive";
 import {
   Compass,
   BookOpen,
@@ -902,29 +903,254 @@ Output:
     group: "Core Algorithms",
     icon: Split,
     subtitle:
-      "Top-down hierarchical partitioning, recursive bi-partitioning mechanisms, and trade-offs.",
+      "Top-down hierarchical partitioning, combinatorial splitting complexity, DIANA methodology, and trade-offs.",
     sections: [
       s(
         "Top-down Approach",
-        c("Starting from a universal cluster down to singletons"),
-        d("Top-down tree branching diagram"),
+        c(
+          "Global Decomposition Paradigm",
+          "Divisive hierarchical clustering operates via a top-down recursive partitioning strategy. Unlike agglomerative clustering—which begins with fragmented individual observations and merges upward—divisive clustering initializes the entire dataset of N observations as a single, all-encompassing universal cluster. The algorithm iteratively subdivides active clusters into smaller sub-clusters until every observation forms an isolated singleton.",
+        ),
+        m(
+          "Divisive Partition Transition",
+          String.raw`\mathcal{P}_{t+1} = (\mathcal{P}_t \setminus \{C^*\}) \cup \{C_A^*, C_B^*\}`,
+          "At split iteration t, the most dispersed cluster C* is divided into two non-empty, disjoint sub-clusters C_A* and C_B*.",
+        ),
+        c(
+          "The Advantage of Global Perspective",
+          "Because divisive clustering initiates its operations at the highest hierarchical level, its early splitting decisions evaluate global variance and large-scale structural boundaries across the entire dataset. Consequently, top-level clusters (e.g. k = 2 or k = 3) produced by divisive algorithms are often more robust and less vulnerable to local outlier noise than the upper levels of agglomerative dendrograms.",
+        ),
+        n(
+          "Greedy Irreversibility in Divisive Clustering",
+          "Like agglomerative merging, divisive splitting decisions are strictly irreversible: once two observations are partitioned into separate sub-clusters C_A and C_B, they can never be reunited in any lower branch of the dendrogram.",
+        ),
       ),
       s(
         "Splitting Mechanism",
-        c("Finding optimal bi-partitions (e.g. 2-means, spectral splitting)"),
-        m("Splitting criterion optimization"),
+        c(
+          "Combinatorial Partition Explosion",
+          "The central theoretical challenge in divisive clustering is the selection of the optimal binary partition. For a cluster containing m observations, the number of distinct ways to split it into two non-empty subsets is:",
+        ),
+        m(
+          "Combinatorial Splitting Complexity",
+          String.raw`N_{\text{splits}}(m) = 2^{m-1} - 1`,
+          "An exhaustive evaluation of all possible binary partitions requires O(2^m) operations. For m = 50, this yields over 1.12 × 10^14 combinations, rendering brute-force optimization mathematically intractable.",
+        ),
+        c(
+          "Heuristic Splitting Paradigms",
+          "To circumvent combinatorial explosion, practical divisive algorithms employ three principal heuristic strategies:",
+        ),
+        {
+          kind: "table",
+          columns: ["Splitting Strategy", "Algorithmic Mechanism", "Strengths", "Limitations"],
+          rows: ["Bisecting K-Means", "DIANA (Kaufman & Rousseeuw)", "Spectral Bi-partitioning"],
+          tableData: {
+            "Bisecting K-Means": [
+              "Applies 2-Means (k = 2) clustering iteratively to subdivide clusters with maximum sum of squared errors",
+              "Extremely fast: O(N) per split; scales effectively to hundreds of thousands of samples",
+              "Non-deterministic; sensitive to random centroid initialization and spherical cluster assumptions",
+            ],
+            "DIANA (Kaufman & Rousseeuw)": [
+              "Deterministic heuristic: identifies maximum diameter cluster, extracts splinter group based on average dissimilarity",
+              "100% deterministic, parameter-free, operates directly on distance matrices without vector coordinates",
+              "Requires O(N²) distance matrix; computationally slower than bisecting k-means",
+            ],
+            "Spectral Bi-partitioning": [
+              "Constructs affinity graph, evaluates graph Laplacian L = D - W, and splits using the Fiedler vector",
+              "Excels at non-convex, manifold, and graph-structured cluster geometries",
+              "Requires eigenvalue decomposition of N × N matrix; computationally expensive O(N³)",
+            ],
+          },
+        },
+      ),
+      s(
+        "DIANA Methodology & Mathematics",
+        c(
+          "Algorithmic Mechanics of DIANA",
+          "Introduced by Leonard Kaufman and Peter J. Rousseeuw (1990), DIANA (Divisive Analysis) is the definitive academic algorithm for divisive hierarchical clustering. It replaces the intractable 2^(m-1)-1 search with a deterministic greedy splinter heuristic.",
+        ),
+        m(
+          "1. Maximum Diameter Cluster Selection",
+          String.raw`C^* = \arg\max_{C \in \mathcal{P}_t} \text{diam}(C) = \arg\max_{C \in \mathcal{P}_t} \left( \max_{\mathbf{x}_i, \mathbf{x}_j \in C} d(\mathbf{x}_i, \mathbf{x}_j) \right)`,
+          "DIANA selects the cluster with the largest diameter (maximum pairwise dissimilarity) as the candidate for subdivision.",
+        ),
+        m(
+          "2. Splinter Seed Selection",
+          String.raw`i^* = \arg\max_{i \in C^*} \left( \frac{1}{|C^*| - 1} \sum_{j \in C^* \setminus \{i\}} d(\mathbf{x}_i, \mathbf{x}_j) \right)`,
+          "The splinter group S is initialized with the single observation i* that has the highest average distance to all other members in C*.",
+        ),
+        m(
+          "3. Iterative Dissimilarity Difference Reassignment",
+          String.raw`\Delta_i = D_i - E_i = \left( \frac{1}{|R| - 1} \sum_{j \in R \setminus \{i\}} d(\mathbf{x}_i, \mathbf{x}_j) \right) - \left( \frac{1}{|S|} \sum_{j \in S} d(\mathbf{x}_i, \mathbf{x}_j) \right)`,
+          "For every point i in remaining group R = C* \\ S, DIANA computes average distance to R (D_i) and to S (E_i). If max(D_i - E_i) > 0, that point moves to S. The split terminates when max(D_i - E_i) ≤ 0.",
+        ),
+        m(
+          "Divisive Coefficient (DC)",
+          String.raw`DC = 1 - \frac{1}{N} \sum_{i=1}^N \frac{d(i)}{\text{diam}(X)}`,
+          "Quantifies the overall clustering structure of the dataset on a scale of [0, 1], where d(i) is the diameter of the cluster at the stage when observation i was separated into a singleton.",
+        ),
       ),
       s(
         "Algorithm Workflow",
-        c("Recursive sub-clustering workflow and priority queues"),
-        d("Workflow execution chart"),
+        c(
+          "Structured Lifecycle of DIANA",
+          "The step-by-step procedural workflow executed by DIANA at each recursive stage:",
+        ),
+        {
+          kind: "code",
+          label: "DIANA Divisive Algorithm Pseudocode",
+          code: `Algorithm: DIANA(X, Metric)
+Input:
+    X: Dataset of N observations {x_1, ..., x_N}
+    Metric: Distance function d(u, v)
+Output:
+    Tree: Fully nested divisive dendrogram
+
+1:  // Stage 1: Initialize root cluster
+2:  Clusters = { X }
+3:
+4:  // Main Divisive Splitting Loop
+5:  while any cluster C in Clusters has |C| > 1 do:
+6:      // Stage 2: Identify cluster with maximum diameter
+7:      C_target = argmax_{C in Clusters, |C| > 1} diam(C)
+8:
+9:      // Stage 3: Initialize splinter group S with most isolated point
+10:     seed = argmax_{i in C_target} (1 / (|C_target| - 1) * sum_{j in C_target \\ {i}} d(x_i, x_j))
+11:     S = { seed }
+12:     R = C_target \\ { seed }
+13:
+14:     // Stage 4: Iterative reassignment loop
+15:     while true do:
+16:         for each point i in R do:
+17:             D_i = average distance from i to all other points in R \\ {i}
+18:             E_i = average distance from i to all points in S
+19:             diff_i = D_i - E_i
+20:
+21:         k_star = argmax_{i in R} diff_i
+22:         if diff_{k_star} > 0 then:
+23:             S = S U { k_star }
+24:             R = R \\ { k_star }
+25:         else:
+26:             break  // Splintering complete
+27:
+28:     // Stage 5: Replace C_target with sub-clusters S and R
+29:     Clusters = (Clusters \\ { C_target }) U { S, R }
+30:
+31: return Clusters`,
+        },
+      ),
+      s(
+        "Worked Numerical Example",
+        c(
+          "Complete Deterministic 4-Point DIANA Walkthrough",
+          "Tracing DIANA step-by-step on the 4-point benchmark dataset: P₁(1,2), P₂(2,3), P₃(6,5), P₄(7,6).",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Observation",
+            "Pairwise Distances in Root C",
+            "Average Distance to Others",
+            "Splinter Seed Selection",
+          ],
+          rows: ["Point P₁", "Point P₂", "Point P₃", "Point P₄"],
+          tableData: {
+            "Point P₁": [
+              "d(P₁, P₂) = 1.4142, d(P₁, P₃) = 5.8310, d(P₁, P₄) = 7.2111",
+              "(1.4142 + 5.8310 + 7.2111) / 3 = 4.8188",
+              "Selected as splinter seed S = {P₁} (index tie-break)",
+            ],
+            "Point P₂": [
+              "d(P₂, P₁) = 1.4142, d(P₂, P₃) = 4.4721, d(P₂, P₄) = 5.8310",
+              "(1.4142 + 4.4721 + 5.8310) / 3 = 3.9058",
+              "Remains in R = {P₂, P₃, P₄}",
+            ],
+            "Point P₃": [
+              "d(P₃, P₁) = 5.8310, d(P₃, P₂) = 4.4721, d(P₃, P₄) = 1.4142",
+              "(5.8310 + 4.4721 + 1.4142) / 3 = 3.9058",
+              "Remains in R = {P₂, P₃, P₄}",
+            ],
+            "Point P₄": [
+              "d(P₄, P₁) = 7.2111, d(P₄, P₂) = 5.8310, d(P₄, P₃) = 1.4142",
+              "(7.2111 + 5.8310 + 1.4142) / 3 = 4.8188",
+              "Tied with P₁ at 4.8188; remains in R",
+            ],
+          },
+        },
+        c(
+          "Splinter Iteration 1 & Point Reassignment",
+          "With splinter seed S = {P₁} and remaining group R = {P₂, P₃, P₄}, we compute D_i, E_i, and the difference Δ_i = D_i - E_i:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Point in R",
+            "D_i (Avg Distance to R \\ {i})",
+            "E_i (Avg Distance to S)",
+            "Δ_i = D_i - E_i",
+            "Reassignment Decision",
+          ],
+          rows: ["Point P₂", "Point P₃", "Point P₄"],
+          tableData: {
+            "Point P₂": [
+              "(4.4721 + 5.8310) / 2 = 5.1515",
+              "d(P₂, P₁) = 1.4142",
+              "5.1515 - 1.4142 = +3.7373",
+              "Max positive difference (> 0) → Moves to S",
+            ],
+            "Point P₃": [
+              "(4.4721 + 1.4142) / 2 = 2.9432",
+              "d(P₃, P₁) = 5.8310",
+              "2.9432 - 5.8310 = -2.8878",
+              "Negative difference (≤ 0) → Remains in R",
+            ],
+            "Point P₄": [
+              "(5.8310 + 1.4142) / 2 = 3.6226",
+              "d(P₄, P₁) = 7.2111",
+              "3.6226 - 7.2111 = -3.5885",
+              "Negative difference (≤ 0) → Remains in R",
+            ],
+          },
+        },
+        c(
+          "Splinter Iteration 2 & Stopping Rule",
+          "Now S = {P₁, P₂} and R = {P₃, P₄}. We re-evaluate the remaining observations in R:",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Point in R",
+            "D_i (Avg Distance to R \\ {i})",
+            "E_i (Avg Distance to S)",
+            "Δ_i = D_i - E_i",
+            "Reassignment Decision",
+          ],
+          rows: ["Point P₃", "Point P₄"],
+          tableData: {
+            "Point P₃": [
+              "d(P₃, P₄) = 1.4142",
+              "(5.8310 + 4.4721) / 2 = 5.1515",
+              "1.4142 - 5.1515 = -3.7373",
+              "Negative (≤ 0) → Splintering stops",
+            ],
+            "Point P₄": [
+              "d(P₄, P₃) = 1.4142",
+              "(7.2111 + 5.8310) / 2 = 6.5210",
+              "1.4142 - 6.5210 = -5.1068",
+              "Negative (≤ 0) → Splintering stops",
+            ],
+          },
+        },
       ),
       s(
         "Comparison with Agglomerative Clustering",
-        c("Detailed trade-offs between split quality and merge efficiency"),
+        c(
+          "Detailed Architectural Trade-Offs",
+          "A comparative breakdown between divisive and agglomerative architectures across primary engineering dimensions:",
+        ),
         {
           kind: "table",
-          columns: ["Aspect", "Divisive Clustering", "Agglomerative Clustering"],
+          columns: ["Aspect", "Divisive Clustering (DIANA)", "Agglomerative Clustering"],
           rows: [
             "Computational Bottleneck",
             "Splitting Heuristics",
@@ -932,7 +1158,55 @@ Output:
             "Software Support (SciPy/sklearn)",
             "Suitability for Few Clusters",
           ],
+          tableData: {
+            "Computational Bottleneck": [
+              "O(2^m) combinatorial split explosion without heuristics; O(N²) space for distance matrix in DIANA",
+              "O(N²) pairwise distance matrix storage; O(N³) naive search (reducible to O(N²) via NN-chains)",
+            ],
+            "Splitting Heuristics": [
+              "Relies on heuristic seed identification and average dissimilarity reassignment thresholds",
+              "Directly evaluates pairwise linkage criteria (Single, Complete, Average, Ward's minimum variance)",
+            ],
+            "Sensitivity to Early Choices": [
+              "Early choices define macro-clusters; robust against noise at top levels, but sensitive at micro-leaves",
+              "Early merges are local; sensitive to noise and outlier bridges, which propagate up to root",
+            ],
+            "Software Support (SciPy/sklearn)": [
+              "Not natively implemented in Scikit-learn or SciPy; reference standard is R `cluster::diana`",
+              "Universal standard support across Scikit-learn (`AgglomerativeClustering`) and SciPy (`cluster.hierarchy`)",
+            ],
+            "Suitability for Few Clusters": [
+              "Highly suitable when targeting small k (e.g. k = 2 or 3): halt after k-1 splits without computing full tree",
+              "Requires computing N - k merges to produce k clusters, processing fine granular details first",
+            ],
+          },
         },
+      ),
+      s(
+        "Step-by-Step Algorithm Walkthrough",
+        c(
+          "Interactive DIANA Splitting Simulator",
+          "Step through top-down divisive analysis on the 4-point benchmark dataset below. Inspect cluster diameter evaluations, splinter group seed extraction, and dynamic dissimilarity threshold tests:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(DianaSimulator),
+        },
+      ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Interactive Conceptual Evaluation",
+          "Test your mastery of combinatorial splitting complexity, DIANA diameter heuristics, splinter group dynamics, and stopping criteria:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(Module05Quiz),
+        },
+        c(
+          "Module References",
+          "Verified against Kaufman & Rousseeuw (1990) Ch. 6; Maechler et al. (R `cluster::diana`); Murtagh & Contreras (2012). See docs/references.md.",
+        ),
       ),
     ],
   },
