@@ -7,6 +7,8 @@ import {
   SingleLinkageChainingVisualizer,
   CentroidLinkageInversionVisualizer,
   WardVarianceIncreaseCalculator,
+  LanceWilliamsExplorer,
+  Module06Quiz,
 } from "@/content/module06-linkage";
 import {
   Compass,
@@ -1681,6 +1683,163 @@ Output:
             ],
           },
         },
+      ),
+      s(
+        "Generalized Lance–Williams Recurrence",
+        c(
+          "Unification of Agglomerative Criteria (Lance & Williams, 1967)",
+          "In 1967, G. N. Lance and W. T. Williams published a landmark theoretical framework proving that all standard combinatorial agglomerative clustering methods can be expressed through a single universal recurrence equation. When two clusters A and B merge into A ∪ B, the distance from the newly unified cluster to any remaining cluster C in the dataset can be updated directly from the existing pairwise distances D(A, C), D(B, C), and D(A, B) without re-inspecting individual data points.",
+        ),
+        m(
+          "General Lance–Williams Recurrence Formula",
+          String.raw`D(A \cup B, C) = \alpha_A D(A, C) + \alpha_B D(B, C) + \beta D(A, B) + \gamma |D(A, C) - D(B, C)|`,
+          "Where α_A, α_B, β, and γ are predetermined algebraic parameters defined by the specific linkage method, and may depend on cluster cardinalities n_A, n_B, and n_C.",
+        ),
+        c(
+          "Algorithmic Complexity Advantage",
+          "Without the Lance–Williams recurrence, evaluating the distance between merged cluster (A ∪ B) and cluster C would require scanning all |A ∪ B| · |C| constituent point pairs, requiring O(N³) operations across the entire clustering hierarchy. Using Lance–Williams, updating each distance entry requires strictly O(1) arithmetic operations. Across all N - 1 merge steps, updating the dissimilarity matrix consumes only O(N²) operations, enabling efficient agglomerative clustering implementations.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Linkage Method",
+            "α_A Parameter",
+            "α_B Parameter",
+            "β Parameter",
+            "γ Parameter",
+            "Distance Space",
+          ],
+          rows: [
+            "Single Linkage",
+            "Complete Linkage",
+            "Average Linkage (UPGMA)",
+            "Centroid Linkage (UPGMC)",
+            "Ward's Linkage (Minimum Variance)",
+          ],
+          tableData: {
+            "Single Linkage": ["1/2", "1/2", "0", "-1/2", "Linear Metric d(u, v)"],
+            "Complete Linkage": ["1/2", "1/2", "0", "+1/2", "Linear Metric d(u, v)"],
+            "Average Linkage (UPGMA)": [
+              "n_A / (n_A + n_B)",
+              "n_B / (n_A + n_B)",
+              "0",
+              "0",
+              "Linear Metric d(u, v)",
+            ],
+            "Centroid Linkage (UPGMC)": [
+              "n_A / (n_A + n_B)",
+              "n_B / (n_A + n_B)",
+              "- (n_A · n_B) / (n_A + n_B)²",
+              "0",
+              "Squared Euclidean d²(u, v)",
+            ],
+            "Ward's Linkage (Minimum Variance)": [
+              "(n_A + n_C) / (n_A + n_B + n_C)",
+              "(n_B + n_C) / (n_A + n_B + n_C)",
+              "- n_C / (n_A + n_B + n_C)",
+              "0",
+              "Squared Metric / Variance ΔESS",
+            ],
+          },
+        },
+        c(
+          "Algebraic Derivation of min/max Simplifications",
+          "For Single and Complete Linkage, Lance and Williams leveraged a classical algebraic identity for minimum and maximum functions: min(u, v) = (u + v)/2 - |u - v|/2 and max(u, v) = (u + v)/2 + |u - v|/2. Setting α_A = 1/2, α_B = 1/2, β = 0, and γ = ∓1/2 perfectly reproduces the nearest-neighbor and farthest-neighbor definitions without requiring any dependency on cluster sizes n_A or n_B.",
+        ),
+        {
+          kind: "custom",
+          content: createElement(LanceWilliamsExplorer),
+        },
+      ),
+      s(
+        "Monotonicity and Inversions",
+        c(
+          "The Monotonicity Property (Ultrametric Tree Condition)",
+          "A fundamental mathematical property required for reliable hierarchical clustering interpretation is monotonicity. An agglomerative hierarchical clustering algorithm is said to be monotonic if the sequence of merge heights (dissimilarities at which clusters coalesce) is non-decreasing throughout the clustering process: h₁ ≤ h₂ ≤ ... ≤ h_{N-1}. Monotonicity ensures that the resulting dendrogram forms a valid ultrametric tree where parent nodes are always positioned at equal or greater heights than their child nodes.",
+        ),
+        m(
+          "Necessary and Sufficient Conditions for Monotonicity (Batagelj, 1981)",
+          String.raw`\alpha_A + \alpha_B + \beta \ge 1, \quad \min(\alpha_A, \alpha_B) \ge \gamma, \quad \gamma \ge -\min(\alpha_A, \alpha_B), \quad \beta \ge 0`,
+          "Vladimir Batagelj (1981) and Glenn Milligan (1979) established that an agglomerative algorithm operating via the Lance–Williams recurrence is guaranteed to produce monotonic dendrograms under any valid distance matrix if and only if these four conditions hold.",
+        ),
+        c(
+          "The Root Cause of Centroid and Median Inversions",
+          "In Centroid Linkage (UPGMC) and Median Linkage (WPGMC), the parameter β is strictly negative (β = -n_A n_B / (n_A + n_B)² < 0), directly violating the fourth condition (β ≥ 0). Because the centroid of the newly merged cluster μ_{A ∪ B} can lie physically closer to a third cluster C than the original centroids μ_A and μ_B were to each other, D(A ∪ B, C) can be strictly less than D(A, B). When this happens, a dendrogram inversion (reversal) occurs: a higher-level branch is drawn below its constituent child branches, producing confusing, intersecting tree branches.",
+        ),
+        n(
+          "Why Ward's Method Preserves Monotonicity Despite β < 0",
+          "While Ward's method has a negative β parameter in terms of inter-cluster distances (β = -n_C / (n_A + n_B + n_C) < 0), it satisfies α_A + α_B + β = 1. More fundamentally, Ward's method optimizes the within-cluster error sum of squares (ESS). Because merging any two clusters can never reduce total variance, the incremental variance increase is non-negative (ΔESS ≥ 0), and under Euclidean distances, the sequence of minimum variance increases is strictly non-decreasing, guaranteeing full monotonicity.",
+        ),
+        {
+          kind: "table",
+          columns: [
+            "Linkage Method",
+            "Geometric Shape Tendency",
+            "Chaining Vulnerability",
+            "Outlier Sensitivity",
+            "Dendrogram Monotonicity",
+            "Computational Space / Time",
+          ],
+          rows: [
+            "Single",
+            "Complete",
+            "Average (UPGMA)",
+            "Centroid (UPGMC)",
+            "Ward's Minimum Variance",
+          ],
+          tableData: {
+            Single: [
+              "Elongated, serpentine, arbitrary non-globular shapes",
+              "Severe (noise points form false connective bridges)",
+              "Low (isolates distant points until the final stages)",
+              "Always strictly monotonic (no inversions)",
+              "O(N²) space, O(N²) time (via SLINK or Prim's MST)",
+            ],
+            Complete: [
+              "Compact, spherical, equal-diameter globular clusters",
+              "None (strongly resists chaining by enforcing max diameter)",
+              "Extremely high (single outlier inflates cluster distance)",
+              "Always strictly monotonic (no inversions)",
+              "O(N²) space, O(N² log N) or O(N²) time (via CLINK)",
+            ],
+            "Average (UPGMA)": [
+              "Balanced, moderately compact clusters of intermediate variance",
+              "Very low (arithmetic averaging suppresses single-pair noise)",
+              "Moderate (outliers contribute proportionally to cluster size)",
+              "Always strictly monotonic (no inversions)",
+              "O(N²) space, O(N²) time (via nearest-neighbor chains)",
+            ],
+            "Centroid (UPGMC)": [
+              "Spherical clusters defined by geometric centers of mass",
+              "Low (centroids represent cluster mass rather than boundaries)",
+              "Moderate to high (distant outliers distort centroid position)",
+              "NON-MONOTONIC: Subject to dendrogram inversions (reversals)",
+              "O(N²) space, O(N²) time (via nearest-neighbor chains)",
+            ],
+            "Ward's Minimum Variance": [
+              "Spherical, dense, balanced equal-size globular clusters",
+              "None (heavily penalizes elongated variance structures)",
+              "High (squared distance term amplifies outlier impact)",
+              "Always strictly monotonic under Euclidean distance",
+              "O(N²) space, O(N²) time (via Murtagh's NN-chain algorithm)",
+            ],
+          },
+        },
+      ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Interactive Conceptual Evaluation",
+          "Test your comprehension of Lance–Williams recurrence parameters, monotonicity criteria, centroid inversions, and Ward's variance increase:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(Module06Quiz),
+        },
+        c(
+          "Module 06 References & Further Reading",
+          "Lance, G. N., & Williams, W. T. (1967). A General Theory of Classificatory Sorting Strategies: 1. Hierarchical Systems. The Computer Journal, 9(4), 373–380. | Batagelj, V. (1981). Note on ultrametric hierarchical clustering algorithms. Psychometrika, 46(3), 351–352. | Ward, J. H. (1963). Hierarchical Grouping to Optimize an Objective Function. JASA, 58(301), 236–244. | Murtagh, F., & Contreras, P. (2012). Algorithms for Hierarchical Clustering: An Overview. WIREs Data Mining and Knowledge Discovery, 2(1), 86–97.",
+        ),
       ),
     ],
   },

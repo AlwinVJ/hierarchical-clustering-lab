@@ -17,6 +17,8 @@ import {
   SingleLinkageChainingVisualizer,
   CentroidLinkageInversionVisualizer,
   WardVarianceIncreaseCalculator,
+  LanceWilliamsExplorer,
+  Module06Quiz,
 } from "@/content/module06-linkage";
 
 describe("Reusable Lab Components", () => {
@@ -120,5 +122,15 @@ describe("Reusable Lab Components", () => {
     const wardHtml = renderToString(<WardVarianceIncreaseCalculator />);
     expect(wardHtml).toContain("Variance Increase");
     expect(wardHtml).toContain("Harmonic Weight Factor");
+  });
+
+  it("renders LanceWilliamsExplorer and Module06Quiz", () => {
+    const lwHtml = renderToString(<LanceWilliamsExplorer />);
+    expect(lwHtml).toContain("Generalized Lance–Williams Recurrence");
+    expect(lwHtml).toContain("Batagelj (1981) Monotonicity Conditions");
+
+    const quizHtml = renderToString(<Module06Quiz />);
+    expect(quizHtml).toContain("Module 06 Knowledge Check");
+    expect(quizHtml).toContain("Check Answers");
   });
 });

@@ -84,7 +84,15 @@ describe("App routing and Course Structure", () => {
 
     // Page 7: Linkage methods
     const linkage = pages.find((p) => p.slug === "linkage")!;
-    expect(linkage.sections.length).toBe(5);
+    expect(linkage.sections.length).toBe(8);
+    expect(linkage.sections.map((s) => s.title)).toContain("Single Linkage");
+    expect(linkage.sections.map((s) => s.title)).toContain("Complete Linkage");
+    expect(linkage.sections.map((s) => s.title)).toContain("Average Linkage (UPGMA)");
+    expect(linkage.sections.map((s) => s.title)).toContain("Centroid Linkage (UPGMC)");
+    expect(linkage.sections.map((s) => s.title)).toContain("Ward's Minimum Variance Linkage");
+    expect(linkage.sections.map((s) => s.title)).toContain("Generalized Lance–Williams Recurrence");
+    expect(linkage.sections.map((s) => s.title)).toContain("Monotonicity and Inversions");
+    expect(linkage.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
 
     // Page 8: Distance metrics
     const metrics = pages.find((p) => p.slug === "distance-metrics")!;
