@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { createElement, type ReactNode } from "react";
+import { ParadigmComparisonVisualizer, Module03Quiz } from "@/content/module03-types";
 import {
   Compass,
   BookOpen,
@@ -386,32 +387,176 @@ export const pages: CoursePage[] = [
       "A detailed comparison of bottom-up (Agglomerative) and top-down (Divisive) algorithmic paradigms.",
     sections: [
       s(
+        "Introduction to Hierarchical Paradigms",
+        c(
+          "Two Complementary Search Strategies",
+          "Hierarchical clustering algorithms construct an organized tree hierarchy through two opposing computational philosophies: Agglomerative (bottom-up aggregation) and Divisive (top-down recursive splitting). While both paradigms converge to a complete nested tree structure, they traverse the hypothesis space from opposite boundary conditions and exhibit distinct computational, mathematical, and practical trade-offs.",
+        ),
+      ),
+      s(
         "Agglomerative Clustering",
-        c("Bottom-up aggregation mechanism"),
-        d("Agglomerative progression diagram"),
+        c(
+          "Bottom-Up Merging Mechanics",
+          "Agglomerative clustering is the most common paradigm in applied machine learning. It initializes every observation as an independent singleton cluster (N clusters in total) and proceeds through N-1 greedy merge iterations. At each step, it identifies and coalesces the two clusters exhibiting minimal inter-cluster dissimilarity according to a chosen linkage criterion.",
+        ),
+        m(
+          "Greedy Merge Selection",
+          String.raw`(A^*, B^*) = \arg\min_{A, B \in \mathcal{P}_t, A \neq B} \mathcal{D}(A, B)`,
+          "At iteration t, the algorithm greedily identifies the pair of clusters with the global minimum linkage distance.",
+        ),
+        n(
+          "Greedy Irreversibility",
+          "Agglomerative clustering makes irreversible local decisions: once two points merge, they remain unified throughout all subsequent macro-stages. Any early merge error induced by noise or outlier bridges propagates upward.",
+        ),
+        d("Bottom-up merge progression from singletons to root"),
       ),
       s(
         "Divisive Clustering",
-        c("Top-down recursive splitting mechanism"),
-        d("Divisive decomposition diagram"),
+        c(
+          "Top-Down Recursive Partitioning",
+          "Divisive clustering operates in reverse: it begins with a single universal cluster containing all N observations and recursively partitions clusters until N singleton clusters remain. While top-down clustering has access to global structural context from the beginning, finding the mathematically optimal binary partition of a cluster of size m is computationally intractable.",
+        ),
+        m(
+          "Combinatorial Splitting Complexity",
+          String.raw`\text{Possible non-empty binary splits} = 2^{m-1} - 1`,
+          "An exhaustive search for the optimal binary split of m points grows exponentially, requiring O(2^m) operations. For m = 50, this exceeds 10^14 evaluations.",
+        ),
+        c(
+          "DIANA (Divisive Analysis) Algorithm Heuristic",
+          "To bypass combinatorial explosion, Kaufman & Rousseeuw (1990) designed DIANA. DIANA identifies the cluster with the largest diameter (maximum pairwise dissimilarity), initializes a splinter group with the observation having the highest average distance to others, and iteratively reassigns points that are closer to the splinter group on average.",
+        ),
+        m(
+          "Cluster Diameter Criterion in DIANA",
+          String.raw`\text{diam}(C) = \max_{\mathbf{x}_i, \mathbf{x}_j \in C} d(\mathbf{x}_i, \mathbf{x}_j)`,
+          "DIANA selects the cluster with maximum diameter to subdivide, focusing computation on the most widely dispersed group.",
+        ),
+        d("Top-down splinter group progression from root to leaves"),
       ),
       s(
         "Comparison of Paradigms",
-        c("Comparative analysis of time complexity and top-level decision precision"),
+        c(
+          "Comprehensive Technical Comparison Matrix",
+          "A side-by-side analysis of theoretical and operational characteristics between the two paradigms:",
+        ),
         {
           kind: "table",
-          columns: ["Characteristic", "Agglomerative (Bottom-Up)", "Divisive (Top-Down)"],
+          columns: ["Dimension", "Agglomerative (Bottom-Up)", "Divisive (Top-Down, e.g. DIANA)"],
           rows: [
             "Starting Condition",
             "Termination Condition",
-            "Direction of Computation",
-            "Time Complexity (Naive)",
-            "Optimal Sub-splitting Problem",
-            "Accuracy of High-Level Clusters",
-            "Accuracy of Low-Level Clusters",
-            "Frequency of Practical Use",
+            "Direction of Search",
+            "Core Operation",
+            "Splitting / Merging Rule",
+            "Greedy Decision Point",
+            "Top-Level Cluster Accuracy",
+            "Low-Level Cluster Accuracy",
+            "Combinatorial Bottleneck",
+            "Library Support in Python",
           ],
+          tableData: {
+            "Starting Condition": [
+              "N singleton clusters {x_1}, ..., {x_N}",
+              "1 universal cluster {X} containing all points",
+            ],
+            "Termination Condition": [
+              "1 root cluster containing all points",
+              "N singleton clusters",
+            ],
+            "Direction of Search": [
+              "Bottom-up (aggregation)",
+              "Top-down (recursive bi-partitioning)",
+            ],
+            "Core Operation": [
+              "Pairwise distance matrix update",
+              "Diameter evaluation & splinter group extraction",
+            ],
+            "Splitting / Merging Rule": [
+              "Linkage distance minimization",
+              "Average dissimilarity threshold test (D_i - E_i > 0)",
+            ],
+            "Greedy Decision Point": [
+              "Irreversible merge of closest pair",
+              "Irreversible splintering into two sub-clusters",
+            ],
+            "Top-Level Cluster Accuracy": [
+              "Prone to early merge error propagation",
+              "Higher fidelity because top splits see global data context",
+            ],
+            "Low-Level Cluster Accuracy": [
+              "Highest fidelity at fine micro-cluster scales",
+              "Prone to compounding late split errors",
+            ],
+            "Combinatorial Bottleneck": [
+              "O(N²) distance matrix storage",
+              "2^(m-1)-1 splits without DIANA heuristics",
+            ],
+            "Library Support in Python": [
+              "Native in SciPy (`linkage`) & Scikit-learn",
+              "Rarely implemented; R `cluster::diana` is reference",
+            ],
+          },
         },
+      ),
+      s(
+        "When to Choose Each Approach",
+        c(
+          "Practical Decision Guidelines & Scenarios",
+          "Choosing between agglomerative and divisive hierarchical clustering depends on the analytical objective, dataset scale, and software ecosystem:",
+        ),
+        {
+          kind: "table",
+          columns: ["Decision Factor", "Favor Agglomerative When", "Favor Divisive (DIANA) When"],
+          rows: [
+            "Analytical Granularity",
+            "Computational Target",
+            "Linkage Flexibility",
+            "Software Ecosystem",
+          ],
+          tableData: {
+            "Analytical Granularity": [
+              "Fine-grained taxonomy, micro-segments, or full bottom-up tree is required",
+              "Only a small number of top-level macro-clusters (e.g. k = 2 or 3) are needed",
+            ],
+            "Computational Target": [
+              "Standard dataset sizes (N ≤ 10,000) where O(N²) matrix storage is feasible",
+              "Early stopping is desired: stop after 2-3 splits without computing all N-1 merges",
+            ],
+            "Linkage Flexibility": [
+              "Requires specific linkage criteria (Ward's variance, complete, or single linkage)",
+              "Natural diameter/average dissimilarity separation is sufficient",
+            ],
+            "Software Ecosystem": [
+              "Working in Python (Scikit-learn `AgglomerativeClustering`, SciPy `linkage`)",
+              "Working in R (`cluster::diana`) or custom standalone algorithms",
+            ],
+          },
+        },
+      ),
+      s(
+        "Visual Progression Pathways",
+        c(
+          "Interactive Side-by-Side Progression",
+          "Step through the simulation below to observe how the deterministic 4-point dataset is processed under both bottom-up aggregation and top-down division:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(ParadigmComparisonVisualizer),
+        },
+      ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Interactive Conceptual Evaluation",
+          "Test your mastery of bottom-up versus top-down paradigms, DIANA splinter heuristics, and algorithmic trade-offs:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(Module03Quiz),
+        },
+        c(
+          "Module References",
+          "Verified against Kaufman & Rousseeuw (1990) Ch. 6; Lance & Williams (1967); Murtagh & Contreras (2012); R `cluster::diana` documentation. See docs/references.md.",
+        ),
       ),
     ],
   },

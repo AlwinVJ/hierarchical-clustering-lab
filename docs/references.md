@@ -39,6 +39,17 @@ This documentation catalogs the foundational academic papers, peer-reviewed mono
   - **URL**: https://numpy.org/doc/stable/reference/
   - **Verified Information**: Vectorized broadcasting conventions for pairwise differences $(X[:, \text{None}, :] - X[\text{None}, :, :])$, triangular indexing `np.triu_indices`, and matrix update recurrences.
 
+### R `cluster` Package (DIANA Implementation)
+
+- **Title**: _R cluster Package Documentation — `diana` (Divisive Analysis Clustering)_
+  - **Authors**: Martin Maechler, Peter Rousseeuw, Anja Struyf, Mia Hubert
+  - **URL**: https://stat.ethz.ch/R-manual/R-devel/library/cluster/html/diana.html
+  - **Verified Information**: Algorithm specification for DIANA: selection of cluster with maximum diameter $\max_{i, j \in C} d(i, j)$, initialization of the splinter group with the observation maximizing average dissimilarity to others in $C$, iterative reassignment criterion based on difference between average dissimilarity to remaining cluster and splinter group ($D_i - E_i > 0$), and calculation of the divisive coefficient (DC).
+- **Title**: _R cluster Package Documentation — `diana.object`_
+  - **Authors**: Martin Maechler, Peter Rousseeuw, Anja Struyf, Mia Hubert
+  - **URL**: https://stat.ethz.ch/R-manual/R-devel/library/cluster/html/diana.object.html
+  - **Verified Information**: Structure of the DIANA tree output, merge-order coding, and diameter tracking across successive splits.
+
 ---
 
 ## 2. Seminal Academic Papers & Monographs
