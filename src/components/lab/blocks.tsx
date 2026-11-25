@@ -439,8 +439,32 @@ export function OutputBlock({
   );
 }
 
-/** Static Diagram and Schematic Placeholder */
+import {
+  FlatVsNestedDiagram,
+  ContinuousCloudCutDiagram,
+  LinkageDistanceGeometryDiagram,
+  AgglomerativeMergeSequenceDiagram,
+  DivisiveSplinterSequenceDiagram,
+} from "./diagrams";
+
+/** Static Diagram and Schematic Component */
 export function DiagramPlaceholder({ label }: { label?: string | undefined }) {
+  if (label?.includes("Feature space partitioning") || label?.includes("cluster boundary geometries")) {
+    return <FlatVsNestedDiagram label={label} />;
+  }
+  if (label?.includes("continuous feature space") || label?.includes("nested hierarchical partitions")) {
+    return <ContinuousCloudCutDiagram label={label} />;
+  }
+  if (label?.includes("inter-cluster distance definitions") || label?.includes("distance definitions")) {
+    return <LinkageDistanceGeometryDiagram label={label} />;
+  }
+  if (label?.includes("Bottom-up merge progression") || label?.includes("singletons to root")) {
+    return <AgglomerativeMergeSequenceDiagram label={label} />;
+  }
+  if (label?.includes("Top-down splinter") || label?.includes("root to leaves")) {
+    return <DivisiveSplinterSequenceDiagram label={label} />;
+  }
+
   return (
     <div className="flex min-h-56 flex-col items-center justify-center gap-3 rounded-sm border-2 border-dashed border-border bg-secondary/30 p-6 text-center">
       <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-background border border-border text-teal">
