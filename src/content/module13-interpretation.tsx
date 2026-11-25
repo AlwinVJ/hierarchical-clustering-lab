@@ -541,18 +541,18 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
   }, [dataset, items, featureNames, linkageMethod, kClusters, bootstrapReps, subsampleRatio]);
 
   return (
-    <div className="my-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="my-8 rounded-sm border border-border bg-card p-6 shadow-xs dark:border-border dark:bg-card">
       {/* Header */}
-      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between border-b border-border pb-4 dark:border-border">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">
+          <div className="inline-flex items-center gap-2 rounded-full bg-teal/10 px-3 py-1 text-xs font-semibold text-teal dark:bg-teal/10 dark:text-teal">
             <ShieldCheck className="h-3.5 w-3.5" />
             Interactive Cluster Interpretation & Stability Studio
           </div>
-          <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="mt-1 text-xl font-bold text-muted-foreground dark:text-muted-foreground">
             Feature Profiling, Centroid Heatmaps & Resampling Stability
           </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground">
             Profile feature distributions, identify defining attributes via standardized z-scores,
             and test cluster reproducibility.
           </p>
@@ -566,7 +566,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
             setBootstrapReps(25);
             setSubsampleRatio(0.8);
           }}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+          className="inline-flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary/30 dark:border-border dark:text-muted-foreground dark:hover:bg-secondary/30"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           Reset Defaults
@@ -576,13 +576,13 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
       {/* Configuration Controls */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
         <div>
-          <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground dark:text-muted-foreground">
             Dataset Domain
           </label>
           <select
             value={datasetKey}
             onChange={(e) => setDatasetKey(e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            className="mt-1.5 w-full rounded-sm border border-border bg-card px-3 py-2 text-sm text-muted-foreground focus:border-navy focus:outline-none dark:border-border dark:bg-card dark:text-muted-foreground"
           >
             {Object.entries(PROFILING_DATASETS).map(([key, d]) => (
               <option key={key} value={key}>
@@ -593,7 +593,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
         </div>
 
         <div>
-          <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground dark:text-muted-foreground">
             Linkage Criterion
           </label>
           <select
@@ -601,7 +601,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
             onChange={(e) =>
               setLinkageMethod(e.target.value as "ward" | "average" | "complete" | "single")
             }
-            className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            className="mt-1.5 w-full rounded-sm border border-border bg-card px-3 py-2 text-sm text-muted-foreground focus:border-navy focus:outline-none dark:border-border dark:bg-card dark:text-muted-foreground"
           >
             <option value="ward">Ward's Minimum Variance</option>
             <option value="average">Average Linkage (UPGMA)</option>
@@ -611,9 +611,9 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
         </div>
 
         <div>
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground dark:text-muted-foreground">
             <span>Cluster Count (k)</span>
-            <span className="font-mono text-violet-600 dark:text-violet-400 font-bold">
+            <span className="font-mono text-teal dark:text-teal font-bold">
               k = {kClusters}
             </span>
           </div>
@@ -624,14 +624,14 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
             step="1"
             value={kClusters}
             onChange={(e) => setKClusters(parseInt(e.target.value, 10))}
-            className="mt-2 w-full accent-violet-600"
+            className="mt-2 w-full accent-teal"
           />
         </div>
 
         <div>
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground dark:text-muted-foreground">
             <span>Subsample Ratio</span>
-            <span className="font-mono text-violet-600 dark:text-violet-400 font-bold">
+            <span className="font-mono text-teal dark:text-teal font-bold">
               {Math.round(subsampleRatio * 100)}%
             </span>
           </div>
@@ -642,19 +642,19 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
             step="0.05"
             value={subsampleRatio}
             onChange={(e) => setSubsampleRatio(parseFloat(e.target.value))}
-            className="mt-2 w-full accent-violet-600"
+            className="mt-2 w-full accent-teal"
           />
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 mb-6 gap-2 overflow-x-auto">
+      <div className="flex border-b border-border dark:border-border mb-6 gap-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab("profiles")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "profiles"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-teal dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-muted-foreground dark:text-muted-foreground dark:hover:text-muted-foreground"
           }`}
         >
           <FileSpreadsheet className="h-3.5 w-3.5" />
@@ -664,8 +664,8 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
           onClick={() => setActiveTab("heatmap")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "heatmap"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-teal dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-muted-foreground dark:text-muted-foreground dark:hover:text-muted-foreground"
           }`}
         >
           <Flame className="h-3.5 w-3.5" />
@@ -675,8 +675,8 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
           onClick={() => setActiveTab("stability")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "stability"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-teal dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-muted-foreground dark:text-muted-foreground dark:hover:text-muted-foreground"
           }`}
         >
           <ShieldCheck className="h-3.5 w-3.5" />
@@ -686,8 +686,8 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
           onClick={() => setActiveTab("code")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "code"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-teal dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-muted-foreground dark:text-muted-foreground dark:hover:text-muted-foreground"
           }`}
         >
           <Code2 className="h-3.5 w-3.5" />
@@ -702,20 +702,20 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
             {clusterProfiles.map((c) => (
               <div
                 key={c.clusterId}
-                className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900"
+                className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card"
                 style={{ borderTopWidth: "4px", borderTopColor: c.color }}
               >
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-sm" style={{ color: c.color }}>
                     Cluster {c.clusterId}
                   </h4>
-                  <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                  <span className="rounded bg-secondary/30 px-2 py-0.5 text-xs text-muted-foreground dark:bg-card dark:text-muted-foreground">
                     {c.memberCount} members ({Math.round((c.memberCount / n) * 100)}%)
                   </span>
                 </div>
 
-                <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">Cohort:</span>{" "}
+                <div className="mt-2 text-xs text-muted-foreground dark:text-muted-foreground">
+                  <span className="font-semibold text-muted-foreground dark:text-muted-foreground">Cohort:</span>{" "}
                   {c.memberLabels.join(", ")}
                 </div>
 
@@ -727,9 +727,9 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                     const isSuppressed = feat.zScore < -0.8;
 
                     return (
-                      <div key={f} className="rounded-lg bg-slate-50 p-2.5 dark:bg-slate-800/60">
+                      <div key={f} className="rounded-sm bg-secondary/30 p-2.5 dark:bg-card">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-semibold text-slate-700 dark:text-slate-200 capitalize">
+                          <span className="font-semibold text-muted-foreground dark:text-muted-foreground capitalize">
                             {f.replace("_", " ")}
                           </span>
                           <span
@@ -738,7 +738,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                                 ? "text-amber-600 dark:text-amber-400"
                                 : isSuppressed
                                   ? "text-blue-600 dark:text-blue-400"
-                                  : "text-slate-500"
+                                  : "text-muted-foreground"
                             }`}
                           >
                             z ={" "}
@@ -748,23 +748,23 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                           </span>
                         </div>
 
-                        <div className="mt-1.5 grid grid-cols-2 gap-2 text-[11px] font-mono text-slate-500">
+                        <div className="mt-1.5 grid grid-cols-2 gap-2 text-[11px] font-mono text-muted-foreground">
                           <div>
                             Mean:{" "}
-                            <span className="text-slate-800 dark:text-slate-200">
+                            <span className="text-muted-foreground dark:text-muted-foreground">
                               {feat.mean.toFixed(1)} {unit}
                             </span>
                           </div>
                           <div>
                             Median:{" "}
-                            <span className="text-slate-800 dark:text-slate-200">
+                            <span className="text-muted-foreground dark:text-muted-foreground">
                               {feat.median.toFixed(1)} {unit}
                             </span>
                           </div>
                         </div>
 
                         {/* Visual indicator bar */}
-                        <div className="mt-2 h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex">
+                        <div className="mt-2 h-1.5 w-full rounded-full bg-secondary/30 dark:bg-card overflow-hidden flex">
                           <div
                             className="h-full rounded-full"
                             style={{
@@ -786,11 +786,11 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
       {/* Heatmap Tab */}
       {activeTab === "heatmap" && (
         <div className="space-y-6">
-          <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
+          <div className="rounded-sm bg-secondary/30 p-4 dark:bg-card border border-border dark:border-border">
+            <h4 className="text-sm font-bold text-muted-foreground dark:text-muted-foreground mb-1">
               Standardized Centroid Z-Score Matrix
             </h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-muted-foreground dark:text-muted-foreground">
               Each cell displays the standardized z-score: z = (x̄_{`{kj}`} - μ_j) / σ_j. Red
               indicates strongly enriched attributes (z &gt; +0.5), while blue indicates suppressed
               attributes (z &lt; -0.5).
@@ -798,8 +798,8 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-center text-xs border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
-              <thead className="bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-semibold">
+            <table className="w-full text-center text-xs border border-border dark:border-border rounded-sm overflow-hidden">
+              <thead className="bg-secondary/30 text-muted-foreground dark:bg-card dark:text-muted-foreground font-semibold">
                 <tr>
                   <th className="p-3 text-left">Cluster Persona</th>
                   <th className="p-3">Cohort Size</th>
@@ -811,7 +811,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                   <th className="p-3">Dominant Signature</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-border dark:divide-border">
                 {clusterProfiles.map((c) => {
                   let maxFeat = featureNames[0];
                   let maxZ = -Infinity;
@@ -825,7 +825,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                   return (
                     <tr
                       key={c.clusterId}
-                      className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40"
+                      className="hover:bg-secondary/30 dark:hover:bg-secondary/30"
                     >
                       <td className="p-3 text-left font-bold" style={{ color: c.color }}>
                         Cluster {c.clusterId}
@@ -860,7 +860,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                           </td>
                         );
                       })}
-                      <td className="p-3 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      <td className="p-3 text-xs font-semibold text-muted-foreground dark:text-muted-foreground">
                         High {maxFeat.replace("_", " ")}
                       </td>
                     </tr>
@@ -876,35 +876,35 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
       {activeTab === "stability" && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-              <span className="text-xs font-semibold uppercase text-slate-500">
+            <div className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">
                 Mean Bootstrap Stability
               </span>
-              <div className="mt-2 text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+              <div className="mt-2 text-2xl font-bold font-mono text-muted-foreground dark:text-muted-foreground">
                 ARI = {stabilityResult.meanARI.toFixed(4)}
               </div>
-              <div className="mt-1 text-xs text-slate-500">
+              <div className="mt-1 text-xs text-muted-foreground">
                 Across {bootstrapReps} random subsamples
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-              <span className="text-xs font-semibold uppercase text-slate-500">
+            <div className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">
                 Stability Variance
               </span>
-              <div className="mt-2 text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+              <div className="mt-2 text-2xl font-bold font-mono text-muted-foreground dark:text-muted-foreground">
                 ± {stabilityResult.stdARI.toFixed(4)}
               </div>
-              <div className="mt-1 text-xs text-slate-500">Sample standard deviation</div>
+              <div className="mt-1 text-xs text-muted-foreground">Sample standard deviation</div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-              <span className="text-xs font-semibold uppercase text-slate-500">
+            <div className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">
                 Empirical Assessment
               </span>
               <div className="mt-2 text-lg font-bold">
                 {stabilityResult.meanARI >= 0.85 ? (
-                  <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                  <span className="inline-flex items-center gap-1.5 text-teal dark:text-teal">
                     <CheckCircle2 className="h-5 w-5" /> Highly Stable (Real Cohort)
                   </span>
                 ) : stabilityResult.meanARI >= 0.7 ? (
@@ -912,17 +912,17 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                     <AlertTriangle className="h-5 w-5" /> Moderate Stability
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 text-rose-600 dark:text-rose-400">
+                  <span className="inline-flex items-center gap-1.5 text-destructive dark:text-destructive">
                     <AlertTriangle className="h-5 w-5" /> Unstable (Potential Noise)
                   </span>
                 )}
               </div>
-              <div className="mt-1 text-xs text-slate-500">Ben-Hur et al. (2002) Criteria</div>
+              <div className="mt-1 text-xs text-muted-foreground">Ben-Hur et al. (2002) Criteria</div>
             </div>
           </div>
 
-          <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
+          <div className="rounded-sm bg-secondary/30 p-4 dark:bg-card border border-border dark:border-border">
+            <h4 className="text-sm font-bold text-muted-foreground dark:text-muted-foreground mb-1">
               Resampling Iteration Traces (Adjusted Rand Index)
             </h4>
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -931,10 +931,10 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                   key={idx}
                   className={`rounded px-2 py-0.5 font-mono text-xs font-semibold ${
                     score >= 0.85
-                      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                      ? "bg-teal/10 text-teal dark:bg-teal/10 dark:text-teal"
                       : score >= 0.6
                         ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
-                        : "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300"
+                        : "bg-destructive/10 text-destructive dark:bg-destructive/10 dark:text-destructive"
                   }`}
                 >
                   #{idx + 1}: {score.toFixed(2)}
@@ -949,16 +949,16 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
       {activeTab === "code" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+            <span className="text-xs font-semibold text-muted-foreground dark:text-muted-foreground">
               End-to-End Production Profiling & Stability Pipeline
             </span>
             <button
               onClick={() => copyCode(generatedPython)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground shadow-xs hover:bg-secondary/30 dark:border-border dark:bg-card dark:text-muted-foreground"
             >
               {copied ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-emerald-600" />
+                  <Check className="h-3.5 w-3.5 text-teal" />
                   Copied!
                 </>
               ) : (
@@ -969,7 +969,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
               )}
             </button>
           </div>
-          <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 font-mono text-xs text-slate-200">
+          <pre className="overflow-x-auto rounded-sm bg-secondary/30 p-4 font-mono text-xs text-muted-foreground">
             {generatedPython}
           </pre>
         </div>
@@ -1053,19 +1053,19 @@ export function Module13Quiz() {
   }, 0);
 
   return (
-    <div className="my-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+    <div className="my-8 rounded-sm border border-border bg-card p-6 shadow-xs dark:border-border dark:bg-card">
+      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4 dark:border-border">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-violet-700 dark:text-violet-400">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-teal dark:text-teal">
             <HelpCircle className="h-4 w-4" />
             Knowledge Check
           </div>
-          <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="mt-1 text-lg font-bold text-muted-foreground dark:text-muted-foreground">
             Module 13: Cluster Profiling & Stability Assessment
           </h3>
         </div>
         {showResults && (
-          <div className="inline-flex items-center gap-2 rounded-lg bg-violet-50 px-3 py-1.5 text-xs font-bold text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">
+          <div className="inline-flex items-center gap-2 rounded-sm bg-teal/10 px-3 py-1.5 text-xs font-bold text-teal dark:bg-teal/10 dark:text-teal">
             Score: {score} / {questions.length} ({Math.round((score / questions.length) * 100)}%)
           </div>
         )}
@@ -1080,28 +1080,28 @@ export function Module13Quiz() {
           return (
             <div
               key={q.id}
-              className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30"
+              className="rounded-sm border border-border bg-secondary/30 p-4 dark:border-border dark:bg-card"
             >
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+              <p className="text-sm font-semibold text-muted-foreground dark:text-muted-foreground">
                 {idx + 1}. {q.prompt}
               </p>
 
               <div className="mt-3 space-y-2">
                 {q.options.map((opt, optIdx) => {
                   let btnStyle =
-                    "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300";
+                    "border-border bg-card text-muted-foreground hover:bg-secondary/30 dark:border-border dark:bg-card dark:text-muted-foreground";
 
                   if (showResults) {
                     if (optIdx === q.correct) {
                       btnStyle =
-                        "border-emerald-500 bg-emerald-50 text-emerald-800 font-medium dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-700";
+                        "border-teal bg-teal/10 text-teal font-medium dark:bg-teal/10 dark:text-teal dark:border-teal";
                     } else if (userAns === optIdx) {
                       btnStyle =
-                        "border-rose-500 bg-rose-50 text-rose-800 font-medium dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-700";
+                        "border-destructive bg-destructive/10 text-destructive font-medium dark:bg-destructive/10 dark:text-destructive dark:border-destructive";
                     }
                   } else if (userAns === optIdx) {
                     btnStyle =
-                      "border-violet-600 bg-violet-50 text-violet-800 font-medium dark:bg-violet-950/40 dark:text-violet-200 dark:border-violet-500";
+                      "border-navy bg-teal/10 text-teal font-medium dark:bg-teal/10 dark:text-teal dark:border-teal";
                   }
 
                   return (
@@ -1109,11 +1109,11 @@ export function Module13Quiz() {
                       key={optIdx}
                       onClick={() => handleSelect(q.id, optIdx)}
                       disabled={showResults}
-                      className={`flex w-full items-center justify-between rounded-lg border p-3 text-left text-xs transition-all ${btnStyle}`}
+                      className={`flex w-full items-center justify-between rounded-sm border p-3 text-left text-xs transition-all ${btnStyle}`}
                     >
                       <span>{opt}</span>
                       {showResults && optIdx === q.correct && (
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-teal dark:text-teal" />
                       )}
                     </button>
                   );
@@ -1122,10 +1122,10 @@ export function Module13Quiz() {
 
               {showResults && (
                 <div
-                  className={`mt-3 rounded-md p-3 text-xs ${
+                  className={`mt-3 rounded-sm p-3 text-xs ${
                     isCorrect
-                      ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-200"
-                      : "bg-rose-50 text-rose-900 dark:bg-rose-950/30 dark:text-rose-200"
+                      ? "bg-teal/10 text-teal dark:bg-teal/10 dark:text-teal"
+                      : "bg-destructive/10 text-destructive dark:bg-destructive/10 dark:text-destructive"
                   }`}
                 >
                   <span className="font-bold">{isCorrect ? "Correct: " : "Incorrect: "}</span>
@@ -1144,7 +1144,7 @@ export function Module13Quiz() {
               setSelectedAnswers({});
               setShowResults(false);
             }}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="rounded-sm border border-border px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-secondary/30 dark:border-border dark:text-muted-foreground dark:hover:bg-secondary/30"
           >
             Retake Quiz
           </button>
@@ -1152,7 +1152,7 @@ export function Module13Quiz() {
           <button
             onClick={() => setShowResults(true)}
             disabled={Object.keys(selectedAnswers).length < questions.length}
-            className="rounded-lg bg-violet-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-violet-700 disabled:opacity-50"
+            className="rounded-sm bg-navy hover:bg-deep text-primary-foreground px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-navy hover:bg-deep text-primary-foreground disabled:opacity-50"
           >
             Submit Answers
           </button>
