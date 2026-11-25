@@ -10,6 +10,13 @@
 @import "tw-animate-css";
 @import "katex/dist/katex.min.css";
 
+/* KaTeX adds a 2px `.vlist-s` spacer to sums, roots, fractions and scripts.
+   Inside the overflow-x:auto wrapper of MathFormula that spacer alone
+   triggers a scrollbar; padding the display box absorbs it. */
+.katex-display {
+  padding-inline: 2px;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /*

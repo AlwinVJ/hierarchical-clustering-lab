@@ -274,7 +274,7 @@ export function DendrogramExplorer() {
           <div className="w-full overflow-x-auto">
             <svg
               viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-              className="w-full min-w-[380px] aspect-[440/240] select-none"
+              className="w-full max-w-full aspect-[440/240] select-none"
             >
               {/* Y-Axis (Distance Scale) */}
               <line x1={35} y1={topY} x2={35} y2={bottomY} className="stroke-border stroke-1" />

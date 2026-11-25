@@ -3597,7 +3597,12 @@ Conclusion: Both libraries yield identical 3-cluster partitions with 0.8151 Silh
         cd(
           "Scikit-Learn Verification: Calculating All Internal Metrics in Python",
           `import numpy as np
-from sklearn.metrics import silhouette_score, silhouette_samples, davies_bouldin_score, calinski_harabasz_score
+from sklearn.metrics import (
+  silhouette_score,
+  silhouette_samples,
+  davies_bouldin_score,
+  calinski_harabasz_score,
+)
 
 # Canonical 4-point benchmark dataset
 X = np.array([
@@ -3738,23 +3743,35 @@ y_pred_singletons = np.array([0, 1, 2, 3])
 y_pred_monolith = np.array([0, 0, 0, 0])
 
 print("--- Scenario 1: Perfect Recovery ---")
-print(f"ARI: {adjusted_rand_score(y_true, y_pred_perfect):.4f} | NMI: {normalized_mutual_info_score(y_true, y_pred_perfect):.4f}")
+ari_1 = adjusted_rand_score(y_true, y_pred_perfect)
+nmi_1 = normalized_mutual_info_score(y_true, y_pred_perfect)
+print(f"ARI: {ari_1:.4f} | NMI: {nmi_1:.4f}")
 
-print("\\n--- Scenario 2: Permuted Label Assignment (Label Invariance) ---")
-print(f"ARI: {adjusted_rand_score(y_true, y_pred_permuted):.4f} | NMI: {normalized_mutual_info_score(y_true, y_pred_permuted):.4f}")
+print("\n--- Scenario 2: Permuted Label Assignment (Label Invariance) ---")
+ari_2 = adjusted_rand_score(y_true, y_pred_permuted)
+nmi_2 = normalized_mutual_info_score(y_true, y_pred_permuted)
+print(f"ARI: {ari_2:.4f} | NMI: {nmi_2:.4f}")
 
-print("\\n--- Scenario 3: Imperfect Partition Contingency Matrix ---")
+print("\n--- Scenario 3: Imperfect Partition Contingency Matrix ---")
 cm = cluster.contingency_matrix(y_true, y_pred_imperfect)
 print(cm)
 h, c, v = homogeneity_completeness_v_measure(y_true, y_pred_imperfect)
-print(f"ARI: {adjusted_rand_score(y_true, y_pred_imperfect):.4f} | NMI: {normalized_mutual_info_score(y_true, y_pred_imperfect):.4f}")
+ari_3 = adjusted_rand_score(y_true, y_pred_imperfect)
+nmi_3 = normalized_mutual_info_score(y_true, y_pred_imperfect)
+print(f"ARI: {ari_3:.4f} | NMI: {nmi_3:.4f}")
 print(f"Homogeneity: {h:.4f} | Completeness: {c:.4f} | V-Measure: {v:.4f}")
 
-print("\\n--- Scenarios 4 & 5: Trade-off Extremes ---")
+print("\n--- Scenarios 4 & 5: Trade-off Extremes ---")
 h_s, c_s, v_s = homogeneity_completeness_v_measure(y_true, y_pred_singletons)
-print(f"Singletons:  Homogeneity = {h_s:.4f} (Max purity) | Completeness = {c_s:.4f} | V-Measure = {v_s:.4f}")
+print(
+    f"Singletons:  Homogeneity = {h_s:.4f} (Max purity) | "
+    f"Completeness = {c_s:.4f} | V-Measure = {v_s:.4f}"
+)
 h_m, c_m, v_m = homogeneity_completeness_v_measure(y_true, y_pred_monolith)
-print(f"Monolith:    Homogeneity = {h_m:.4f} | Completeness = {c_m:.4f} (Max whole) | V-Measure = {v_m:.4f}")`,
+print(
+    f"Monolith:    Homogeneity = {h_m:.4f} | "
+    f"Completeness = {c_m:.4f} (Max whole) | V-Measure = {v_m:.4f}"
+)`,
         ),
         out(
           "Console Output: External Metric Verification",

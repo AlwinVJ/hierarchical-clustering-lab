@@ -522,7 +522,7 @@ print("Scikit-Learn children_:\\n", model.children_)`;
 
       {/* Tabs */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2 pt-2">
-        <div className="flex gap-1 bg-muted/40 p-1 rounded-sm border border-border">
+        <div className="flex flex-wrap gap-1 bg-muted/40 p-1 rounded-sm border border-border">
           <button
             onClick={() => setActiveTab("scatter")}
             className={`px-3 py-1 text-xs rounded-sm transition-colors ${

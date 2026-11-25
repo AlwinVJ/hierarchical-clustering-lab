@@ -131,7 +131,7 @@ function Overview() {
             Upon completing this comprehensive learning series, practitioners will achieve verified
             mastery of:
           </p>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {LEARNING_OBJECTIVES.map((obj, idx) => (
               <div
                 key={idx}
@@ -155,7 +155,7 @@ function Overview() {
         <SectionHeader index={3} title="Course & Curriculum Overview" />
         <div className="space-y-4 text-sm leading-relaxed text-foreground/90">
           <p>The curriculum is architected around four foundational pedagogical pillars:</p>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-sm border border-border bg-card p-3.5 space-y-1.5">
               <div className="flex items-center gap-2 text-xs font-bold text-teal font-mono">
                 <Cpu className="h-3.5 w-3.5" />
@@ -216,7 +216,7 @@ function Overview() {
       {/* 4. Learning Roadmap */}
       <ContentCard>
         <SectionHeader index={4} title="Four-Stage Learning Roadmap" />
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {groups.map((groupName, idx) => {
             const count = pages.filter((p) => p.group === groupName).length;
             const meta = STAGE_METADATA[groupName] ?? {
@@ -252,7 +252,7 @@ function Overview() {
       {/* 5. Topic Navigation Cards / Structured Topic Index */}
       <ContentCard>
         <SectionHeader index={5} title="Structured Topic Index" />
-        <div className="grid gap-2.5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           {learningModules.map((page, idx) => {
             const Icon = page.icon;
             return (
@@ -260,7 +260,7 @@ function Overview() {
                 key={page.slug}
                 to="/$slug"
                 params={{ slug: page.slug }}
-                className="group flex items-start gap-3 rounded-sm border border-border bg-secondary/10 p-3 hover:border-navy hover:bg-secondary/40 transition-all"
+                className="group flex min-w-0 items-start gap-3 rounded-sm border border-border bg-secondary/10 p-3 hover:border-navy hover:bg-secondary/40 transition-all"
               >
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-background border border-border text-teal group-hover:text-navy transition-colors">
                   <Icon className="h-4 w-4" />

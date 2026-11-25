@@ -120,7 +120,9 @@ export function renderRichTextItemContent(text: string): ReactNode {
     const rest = match[2] ?? "";
     return (
       <>
-        <strong className="font-semibold text-foreground">{leadIn}</strong>
+        <strong className="font-semibold text-foreground break-words [overflow-wrap:anywhere]">
+          {leadIn}
+        </strong>
         {rest ? ` ${rest}` : ""}
       </>
     );
@@ -206,7 +208,10 @@ export function RichText({ text, className = "" }: { text: ReactNode; className?
       const key = `${sIdx}-${gIdx}`;
       if (group.type === "p" && group.paragraphs) {
         elements.push(
-          <p key={key} className="leading-relaxed text-left sm:text-justify hyphens-auto">
+          <p
+            key={key}
+            className="leading-relaxed text-left sm:text-justify hyphens-auto break-words [overflow-wrap:anywhere]"
+          >
             {group.paragraphs.join(" ")}
           </p>,
         );
@@ -215,22 +220,26 @@ export function RichText({ text, className = "" }: { text: ReactNode; className?
           elements.push(
             <ol
               key={key}
-              className="list-decimal pl-5 space-y-1.5 text-left sm:text-justify hyphens-auto"
+              className="list-decimal pl-5 space-y-1.5 text-left sm:text-justify hyphens-auto break-words [overflow-wrap:anywhere]"
             >
               {group.items.map((it, iIdx) => (
-                <li key={iIdx} className="leading-relaxed">
+                <li key={iIdx} className="leading-relaxed break-words [overflow-wrap:anywhere]">
                   {renderRichTextItemContent(it.content)}
                   {it.subList &&
                     (it.subList.type === "ol" ? (
                       <ol className="list-decimal pl-5 mt-1.5 space-y-1">
                         {it.subList.items.map((sub, subIdx) => (
-                          <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
+                          <li key={subIdx} className="break-words [overflow-wrap:anywhere]">
+                            {renderRichTextItemContent(sub)}
+                          </li>
                         ))}
                       </ol>
                     ) : (
                       <ul className="list-disc pl-5 mt-1.5 space-y-1">
                         {it.subList.items.map((sub, subIdx) => (
-                          <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
+                          <li key={subIdx} className="break-words [overflow-wrap:anywhere]">
+                            {renderRichTextItemContent(sub)}
+                          </li>
                         ))}
                       </ul>
                     ))}
@@ -242,22 +251,26 @@ export function RichText({ text, className = "" }: { text: ReactNode; className?
           elements.push(
             <ul
               key={key}
-              className="list-disc pl-5 space-y-1.5 text-left sm:text-justify hyphens-auto"
+              className="list-disc pl-5 space-y-1.5 text-left sm:text-justify hyphens-auto break-words [overflow-wrap:anywhere]"
             >
               {group.items.map((it, iIdx) => (
-                <li key={iIdx} className="leading-relaxed">
+                <li key={iIdx} className="leading-relaxed break-words [overflow-wrap:anywhere]">
                   {renderRichTextItemContent(it.content)}
                   {it.subList &&
                     (it.subList.type === "ol" ? (
                       <ol className="list-decimal pl-5 mt-1.5 space-y-1">
                         {it.subList.items.map((sub, subIdx) => (
-                          <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
+                          <li key={subIdx} className="break-words [overflow-wrap:anywhere]">
+                            {renderRichTextItemContent(sub)}
+                          </li>
                         ))}
                       </ol>
                     ) : (
                       <ul className="list-disc pl-5 mt-1.5 space-y-1">
                         {it.subList.items.map((sub, subIdx) => (
-                          <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
+                          <li key={subIdx} className="break-words [overflow-wrap:anywhere]">
+                            {renderRichTextItemContent(sub)}
+                          </li>
                         ))}
                       </ul>
                     ))}

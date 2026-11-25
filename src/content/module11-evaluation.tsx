@@ -553,7 +553,8 @@ y_pred = model.fit_predict(X)
 print("--- Internal Validation Metrics (k=${kClusters}) ---")
 ${
   kClusters > 1 && kClusters < n
-    ? `print(f"Silhouette Score:      {silhouette_score(X, y_pred, metric='${metric}'):.4f}")
+    ? `sil = silhouette_score(X, y_pred, metric='${metric}')
+print(f"Silhouette Score:      {sil:.4f}")
 print(f"Davies-Bouldin Index:  {davies_bouldin_score(X, y_pred):.4f}")
 print(f"Calinski-Harabasz:     {calinski_harabasz_score(X, y_pred):.4f}")`
     : `print("Internal metrics undefined for k=1 or k=N.")`
@@ -683,7 +684,7 @@ print(f"Homogeneity / Completeness / V-Measure: {h:.4f} / {c:.4f} / {v:.4f}")`;
 
       {/* Tabs */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2 pt-2">
-        <div className="flex gap-1 bg-muted/40 p-1 rounded-sm border border-border">
+        <div className="flex flex-wrap gap-1 bg-muted/40 p-1 rounded-sm border border-border">
           <button
             onClick={() => setActiveTab("dashboard")}
             className={`px-3 py-1 text-xs rounded-sm transition-colors ${

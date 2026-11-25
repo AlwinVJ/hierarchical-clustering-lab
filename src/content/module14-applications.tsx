@@ -262,7 +262,7 @@ profile = df_raw.groupby('Cluster')[rfm_cols].agg(['median', 'mean']).round(1)
 print("--- Business Profiling Table ---")
 print(profile)`,
     outputSummary:
-      "C1 (Dormant): Recency 90.5d, Freq 2/mo, Spend $410 | C2 (VIP): Recency 4.5d, Freq 25/mo, Spend $12.6k | C3 (Growth): Recency 28.0d, Freq 10/mo, Spend $3.6k.",
+      "C1 (Dormant): Recency 90.4d, Freq 2/mo, Spend $410 | C2 (VIP): Recency 4.5d, Freq 25/mo, Spend $12.6k | C3 (Growth): Recency 28.0d, Freq 10/mo, Spend $3.6k.",
   },
   {
     step: 14,
@@ -607,13 +607,13 @@ print("Pipeline completed successfully.")
               </div>
             )}
 
-            {/* Code and Output Split */}
-            <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Code and Output Stack */}
+            <div className="mt-4 space-y-4">
               <div>
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Python Implementation
                 </span>
-                <pre className="mt-1.5 overflow-x-auto rounded-sm bg-secondary/30 p-3.5 font-mono text-xs text-muted-foreground max-h-56">
+                <pre className="mt-1.5 overflow-x-auto rounded-sm bg-secondary/30 p-3.5 font-mono text-xs text-muted-foreground">
                   {activeStage.pythonSnippet}
                 </pre>
               </div>
