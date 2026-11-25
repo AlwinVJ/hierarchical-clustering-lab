@@ -97,6 +97,174 @@ export function PlaceholderTag({
   );
 }
 
+interface RichTextItem {
+  content: string;
+  subList?: {
+    type: "ol" | "ul";
+    items: string[];
+  };
+}
+
+interface RichTextGroup {
+  type: "p" | "list";
+  listType?: "ol" | "ul";
+  paragraphs?: string[];
+  items?: RichTextItem[];
+}
+
+export function renderRichTextItemContent(text: string): ReactNode {
+  // Check for "Term:" lead-in at the beginning of the text
+  const match = text.match(/^([^:\n]{1,60}:)(?:\s+(.*)|$)/);
+  if (match && match[1]) {
+    const leadIn = match[1];
+    const rest = match[2] ?? "";
+    return (
+      <>
+        <strong className="font-semibold text-foreground">{leadIn}</strong>
+        {rest ? ` ${rest}` : ""}
+      </>
+    );
+  }
+  return text;
+}
+
+/** Formats multi-paragraph prose and ordered/unordered lists with nesting */
+export function RichText({
+  text,
+  className = "",
+}: {
+  text: ReactNode;
+  className?: string;
+}) {
+  if (typeof text !== "string") {
+    return <>{text}</>;
+  }
+
+  const raw = text.replace(/\r\n/g, "\n");
+  const sections = raw.split(/\n\s*\n/);
+  const elements: ReactNode[] = [];
+
+  sections.forEach((section, sIdx) => {
+    const trimmedSection = section.trim();
+    if (!trimmedSection) return;
+
+    const lines = trimmedSection.split("\n");
+    const groups: RichTextGroup[] = [];
+
+    lines.forEach((line) => {
+      const topListMatch = line.match(/^(\s{0,1})(?:([0-9]+[\.\)]|[a-zA-Z][\.\)])|([•\-\*]))\s+(.*)$/);
+      const nestedMatch = line.match(/^(\s{2,}|\t+)(?:([0-9]+[\.\)]|[a-zA-Z][\.\)])|([•\-\*]))\s+(.*)$/);
+
+      if (nestedMatch) {
+        const subType: "ol" | "ul" = nestedMatch[2] ? "ol" : "ul";
+        const content = nestedMatch[4] ?? "";
+        const lastGroup = groups[groups.length - 1];
+        if (lastGroup && lastGroup.type === "list" && lastGroup.items && lastGroup.items.length > 0) {
+          const lastItem = lastGroup.items[lastGroup.items.length - 1]!;
+          if (!lastItem.subList) {
+            lastItem.subList = { type: subType, items: [content] };
+          } else {
+            lastItem.subList.items.push(content);
+          }
+          return;
+        }
+      }
+
+      if (topListMatch) {
+        const listType: "ol" | "ul" = topListMatch[2] ? "ol" : "ul";
+        const content = topListMatch[4] ?? "";
+        const lastGroup = groups[groups.length - 1];
+        if (lastGroup && lastGroup.type === "list" && lastGroup.listType === listType && lastGroup.items) {
+          lastGroup.items.push({ content });
+        } else {
+          groups.push({
+            type: "list",
+            listType,
+            items: [{ content }],
+          });
+        }
+        return;
+      }
+
+      // Normal text line
+      const lastGroup = groups[groups.length - 1];
+      if (lastGroup && lastGroup.type === "p" && lastGroup.paragraphs) {
+        lastGroup.paragraphs.push(line.trim());
+      } else {
+        groups.push({
+          type: "p",
+          paragraphs: [line.trim()],
+        });
+      }
+    });
+
+    groups.forEach((group, gIdx) => {
+      const key = `${sIdx}-${gIdx}`;
+      if (group.type === "p" && group.paragraphs) {
+        elements.push(
+          <p key={key} className="leading-relaxed text-left sm:text-justify hyphens-auto">
+            {group.paragraphs.join(" ")}
+          </p>,
+        );
+      } else if (group.type === "list" && group.items) {
+        if (group.listType === "ol") {
+          elements.push(
+            <ol key={key} className="list-decimal pl-5 space-y-1.5 text-left sm:text-justify hyphens-auto">
+              {group.items.map((it, iIdx) => (
+                <li key={iIdx} className="leading-relaxed">
+                  {renderRichTextItemContent(it.content)}
+                  {it.subList && (
+                    it.subList.type === "ol" ? (
+                      <ol className="list-decimal pl-5 mt-1.5 space-y-1">
+                        {it.subList.items.map((sub, subIdx) => (
+                          <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <ul className="list-disc pl-5 mt-1.5 space-y-1">
+                        {it.subList.items.map((sub, subIdx) => (
+                          <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
+                        ))}
+                      </ul>
+                    )
+                  )}
+                </li>
+              ))}
+            </ol>,
+          );
+        } else {
+          elements.push(
+            <ul key={key} className="list-disc pl-5 space-y-1.5 text-left sm:text-justify hyphens-auto">
+              {group.items.map((it, iIdx) => (
+                <li key={iIdx} className="leading-relaxed">
+                  {renderRichTextItemContent(it.content)}
+                  {it.subList && (
+                    it.subList.type === "ol" ? (
+                      <ol className="list-decimal pl-5 mt-1.5 space-y-1">
+                        {it.subList.items.map((sub, subIdx) => (
+                          <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <ul className="list-disc pl-5 mt-1.5 space-y-1">
+                        {it.subList.items.map((sub, subIdx) => (
+                          <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
+                        ))}
+                      </ul>
+                    )
+                  )}
+                </li>
+              ))}
+            </ul>,
+          );
+        }
+      }
+    });
+  });
+
+  return <div className={`space-y-2 ${className}`}>{elements}</div>;
+}
+
 /** Main Textual Content Container / Placeholder */
 export function ContentPlaceholder({
   label,
@@ -114,7 +282,7 @@ export function ContentPlaceholder({
             {label}
           </h3>
         )}
-        <div className="space-y-3 text-foreground/90">{children}</div>
+        <RichText text={children} className="text-foreground/90" />
       </div>
     );
   }
@@ -176,10 +344,16 @@ export function FormulaBox({
       </div>
 
       {description && (
-        <p className="text-xs text-muted-foreground leading-relaxed mt-2">{description}</p>
+        <div className="mt-2 text-xs text-muted-foreground leading-relaxed">
+          <RichText text={description} />
+        </div>
       )}
 
-      {children && <div className="mt-3 text-xs text-foreground/90 space-y-2">{children}</div>}
+      {children && (
+        <div className="mt-3 text-xs text-foreground/90 space-y-2">
+          <RichText text={children} />
+        </div>
+      )}
 
       {!tex && !children && !description && (
         <p className="font-mono text-[11px] text-muted-foreground">
@@ -330,7 +504,7 @@ export function NoteBox({
   title = "Key Concept Note",
   children,
 }: {
-  title?: string;
+  title?: string | undefined;
   children?: ReactNode;
 }) {
   return (
@@ -339,7 +513,9 @@ export function NoteBox({
       <div className="space-y-1 text-sm">
         <p className="font-semibold text-foreground">{title}</p>
         <div className="text-muted-foreground text-xs leading-relaxed">
-          {children ?? (
+          {children ? (
+            <RichText text={children} />
+          ) : (
             <div className="flex items-center gap-2">
               <span>Core insight or critical distinction:</span>
               <PlaceholderTag variant="content">[CONTENT PLACEHOLDER]</PlaceholderTag>
@@ -359,7 +535,7 @@ export function ComparisonTable({
 }: {
   columns: string[];
   rows: string[];
-  tableData?: Record<string, string[]>;
+  tableData?: Record<string, string[]> | undefined;
 }) {
   return (
     <div className="overflow-hidden rounded-sm border border-border">

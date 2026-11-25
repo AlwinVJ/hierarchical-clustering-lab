@@ -9,6 +9,7 @@ import {
   VizPlaceholder,
   NoteBox,
   ComparisonTable,
+  RichText,
 } from "@/components/lab/blocks";
 import { ParadigmComparisonVisualizer, Module03Quiz } from "@/content/module03-types";
 import { AgglomerativeSimulator, Module04Quiz } from "@/content/module04-agglomerative";
@@ -78,6 +79,45 @@ describe("Reusable Lab Components", () => {
     const html = renderToString(<NoteBox title="Key Takeaway">Important heuristic</NoteBox>);
     expect(html).toContain("Key Takeaway");
     expect(html).toContain("Important heuristic");
+  });
+
+  it("splits double-newlines into multiple paragraph elements via RichText", () => {
+    const html = renderToString(<RichText text={"Paragraph one.\n\nParagraph two."} />);
+    expect(html).toContain("<p");
+    expect(html).toContain("Paragraph one.");
+    expect(html).toContain("Paragraph two.");
+    const count = (html.match(/<p /g) || []).length;
+    expect(count).toBe(2);
+  });
+
+  it("renders a numbered string as an ordered list with the right item count and bold lead-in", () => {
+    const text =
+      "1. NumPy (Numerical Python): High-performance arrays.\n2. SciPy: Scientific algorithms.\n3. Scikit-Learn: Machine learning.";
+    const html = renderToString(<RichText text={text} />);
+    expect(html).toContain("<ol");
+    const liCount = (html.match(/<li /g) || []).length;
+    expect(liCount).toBe(3);
+    expect(html).toContain("<strong");
+    expect(html).toContain("NumPy (Numerical Python):");
+    expect(html).toContain("SciPy:");
+  });
+
+  it("renders nested lists (nested <ol> inside <ul>)", () => {
+    const text =
+      "- Choose Hierarchical Clustering when:\n  1. The dataset size is modest\n  2. You do not know cluster count k\n- Choose Alternative Paradigms when:\n  1. Dataset is massive";
+    const html = renderToString(<RichText text={text} />);
+    expect(html).toContain("<ul");
+    expect(html).toContain("<ol");
+    expect(html).toContain("Choose Hierarchical Clustering when:");
+    expect(html).toContain("The dataset size is modest");
+    expect(html).toContain("Dataset is massive");
+  });
+
+  it("leaves non-string ReactNode children untouched in RichText", () => {
+    const element = <span data-testid="custom">Custom element</span>;
+    const html = renderToString(<RichText text={element} />);
+    expect(html).toContain('data-testid="custom"');
+    expect(html).toContain("Custom element");
   });
 
   it("renders ComparisonTable with headers and rows", () => {
