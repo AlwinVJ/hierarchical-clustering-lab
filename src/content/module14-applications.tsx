@@ -179,7 +179,8 @@ plt.savefig("customer_dendrogram_truncated.png")`,
 gaps = np.diff(heights)
 print("Top 3 merge distance jumps:")
 for i in np.argsort(gaps)[-3:][::-1]:
-    print(f"Merge step {i+1} -> {i+2}: jump = +{gaps[i]:.3f} (yields k={len(heights) - i})")`,
+    k_val = len(heights) - i
+    print(f"Merge step {i+1} -> {i+2}: jump = +{gaps[i]:.3f} (yields k={k_val})")`,
     outputSummary:
       "Largest jump occurs at Step 58: jump = +8.142 -> strongly recommends cutting at k = 3.",
   },
@@ -190,7 +191,9 @@ for i in np.argsort(gaps)[-3:][::-1]:
     summary:
       "Perform automated parameter sweep across k ∈ [2, 6] evaluating Silhouette, Davies–Bouldin, and Calinski–Harabasz scores.",
     pythonSnippet: `from scipy.cluster.hierarchy import fcluster
-from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
+from sklearn.metrics import (
+    silhouette_score, davies_bouldin_score, calinski_harabasz_score
+)
 
 for k in range(2, 6):
     labs = fcluster(Z, t=k, criterion="maxclust")
@@ -220,7 +223,8 @@ print("Extracted cluster counts:\\n", df_raw['Cluster'].value_counts())`,
     summary:
       "Aggregate un-transformed business metrics by cluster (mean, median, IQR) and calculate standardized centroid z-scores to uncover defining signatures.",
     pythonSnippet: `# 13. Business-Facing Summary
-profile = df_raw.groupby('Cluster')[['Recency_Days', 'Frequency_Orders', 'Monetary_Spend']].agg(['median', 'mean']).round(1)
+rfm_cols = ['Recency_Days', 'Frequency_Orders', 'Monetary_Spend']
+profile = df_raw.groupby('Cluster')[rfm_cols].agg(['median', 'mean']).round(1)
 print("--- Business Profiling Table ---")
 print(profile)`,
     outputSummary:
@@ -248,7 +252,8 @@ for _ in range(50):
     ari = adjusted_rand_score(ref_labels[idx], sub_labs)
     ari_list.append(ari)
 
-print(f"Mean Resampling Stability: ARI = {np.mean(ari_list):.4f} (±{np.std(ari_list):.4f})")`,
+mean_ari, std_ari = np.mean(ari_list), np.std(ari_list)
+print(f"Mean Resampling Stability: ARI = {mean_ari:.4f} (±{std_ari:.4f})")`,
     outputSummary:
       "Mean ARI = 1.000 (±0.000) across 50 iterations -> 100% reproducible cluster topology.",
   },
@@ -336,14 +341,29 @@ import pandas as pd
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, fcluster, cophenet, dendrogram
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score, adjusted_rand_score
+from sklearn.metrics import (
+    silhouette_score, davies_bouldin_score,
+    calinski_harabasz_score, adjusted_rand_score
+)
 import matplotlib.pyplot as plt
 
 # --- 1. Synthetic Enterprise Customer RFM Generation (N=60) ---
 np.random.seed(42)
-recency = np.concatenate([np.random.normal(5, 2, 20), np.random.normal(30, 8, 20), np.random.normal(90, 15, 20)])
-frequency = np.concatenate([np.random.poisson(25, 20), np.random.poisson(10, 20), np.random.poisson(2, 20)])
-monetary = np.concatenate([np.random.normal(12000, 1500, 20), np.random.normal(3500, 600, 20), np.random.normal(400, 100, 20)])
+recency = np.concatenate([
+    np.random.normal(5, 2, 20),
+    np.random.normal(30, 8, 20),
+    np.random.normal(90, 15, 20)
+])
+frequency = np.concatenate([
+    np.random.poisson(25, 20),
+    np.random.poisson(10, 20),
+    np.random.poisson(2, 20)
+])
+monetary = np.concatenate([
+    np.random.normal(12000, 1500, 20),
+    np.random.normal(3500, 600, 20),
+    np.random.normal(400, 100, 20)
+])
 
 df = pd.DataFrame({
     'AccountID': [f'ACC-{i+1:03d}' for i in range(60)],
@@ -391,7 +411,8 @@ persona_map = {
 df['Persona'] = df['Cluster'].map(persona_map)
 
 print("\\n--- Customer Persona Profiles (Medians) ---")
-print(df.groupby('Persona')[['Recency_Days', 'Frequency_Orders', 'Monetary_Spend']].median())
+rfm_features = ['Recency_Days', 'Frequency_Orders', 'Monetary_Spend']
+print(df.groupby('Persona')[rfm_features].median())
 
 # --- 7. Bootstrap Resampling Stability (50 Iterations) ---
 ari_list = []
@@ -405,7 +426,8 @@ for _ in range(50):
     ari = adjusted_rand_score(ref_labels[idx], sub_labs)
     ari_list.append(ari)
 
-print(f"\\nBootstrap Stability (Mean ARI): {np.mean(ari_list):.4f} (±{np.std(ari_list):.4f})")
+mean_ari, std_ari = np.mean(ari_list), np.std(ari_list)
+print(f"\\nBootstrap Stability (Mean ARI): {mean_ari:.4f} (±{std_ari:.4f})")
 print("Pipeline completed successfully.")
 `;
   }, []);

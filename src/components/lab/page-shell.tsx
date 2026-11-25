@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, ArrowLeft, ArrowRight, Home } from "lucide-react";
 import { pages } from "@/lib/course";
-import { BlockView, ContentCard, SectionHeader, PlaceholderTag } from "./blocks";
+import { BlockView, ContentCard, SectionHeader } from "./blocks";
 
 const toOf = (slug: string) =>
   slug ? { to: "/$slug" as const, params: { slug } } : { to: "/" as const };
@@ -91,13 +91,13 @@ export function PageShell({ index, children }: { index: number; children?: React
   const isOverview = index === 0;
 
   return (
-    <article className="mx-auto max-w-4xl px-6 py-10 lg:px-12">
+    <article className="mx-auto max-w-6xl px-6 py-10 lg:px-12">
       {/* 1. Breadcrumb navigation */}
       <Breadcrumbs
         items={isOverview ? [{ label: "Welcome" }] : [{ label: page.group }, { label: page.title }]}
       />
 
-      {/* 2 & 3. Section Title & Short Description Placeholder */}
+      {/* 2 & 3. Section Title & Lead Subtitle */}
       <header className="mt-6 mb-10 pb-6 border-b border-border">
         <div className="flex items-center gap-2 mb-2 font-mono text-xs">
           <span className="font-semibold text-teal uppercase tracking-widest">
@@ -111,13 +111,11 @@ export function PageShell({ index, children }: { index: number; children?: React
           {page.title}
         </h1>
 
-        <div className="mt-3 flex items-start sm:items-center gap-2.5 rounded-sm border border-dashed border-border bg-secondary/40 px-3.5 py-2">
-          <PlaceholderTag variant="content">[CONTENT PLACEHOLDER]</PlaceholderTag>
-          <p className="font-mono text-xs text-muted-foreground">
-            {page.subtitle ??
-              "Short conceptual description and learning scope for this topic placeholder."}
+        {page.subtitle && (
+          <p className="mt-3 text-base text-muted-foreground leading-relaxed">
+            {page.subtitle}
           </p>
-        </div>
+        )}
       </header>
 
       {/* 4 & 5. Main Content Containers and Visualizations */}

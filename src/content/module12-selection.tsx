@@ -581,7 +581,8 @@ Z = linkage(pdist(X, metric='euclidean'), method='${linkageMethod}')
 
 # 3. Inconsistency Diagnostics (Depth d=${inconsistencyDepth})
 inconsistency_table = inconsistent(Z, d=${inconsistencyDepth})
-df_inc = pd.DataFrame(inconsistency_table, columns=['mean_height', 'std_dev', 'link_count', 'inconsistency_coeff'])
+cols = ['mean_height', 'std_dev', 'link_count', 'inconsistency_coeff']
+df_inc = pd.DataFrame(inconsistency_table, columns=cols)
 print("--- SciPy Inconsistency Matrix ---")
 print(df_inc.round(4))
 

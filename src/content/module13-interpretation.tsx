@@ -503,12 +503,19 @@ Z = linkage(pdist(X_scaled, metric="euclidean"), method="${linkageMethod}")
 df["cluster"] = fcluster(Z, t=${kClusters}, criterion="maxclust")
 
 # 4. Multi-Feature Cluster Profiling
-profile = df.groupby("cluster")[features].agg(["count", "mean", "median", "std"]).round(2)
+profile = (
+    df.groupby("cluster")[features]
+    .agg(["count", "mean", "median", "std"])
+    .round(2)
+)
 print("--- Cluster Distribution Profiles ---")
 print(profile)
 
 # Standardized Centroid Z-Scores
-z_centroids = (df.groupby("cluster")[features].mean() - df[features].mean()) / df[features].std()
+z_centroids = (
+    (df.groupby("cluster")[features].mean() - df[features].mean())
+    / df[features].std()
+)
 print("\\n--- Standardized Centroid Z-Scores ---")
 print(z_centroids.round(3))
 
