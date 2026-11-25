@@ -67,6 +67,7 @@ describe("App routing and Course Structure", () => {
       "What is Hierarchical Clustering?",
       "Applications",
       "Key Concepts",
+      "Knowledge Check & Self-Assessment",
     ]);
 
     // Page 3: Fundamentals
@@ -77,6 +78,7 @@ describe("App routing and Course Structure", () => {
       "Distance Between Clusters",
       "Linkage Criteria",
       "Dendrogram Fundamentals",
+      "Knowledge Check & Self-Assessment",
     ]);
 
     // Page 5: Agglomerative

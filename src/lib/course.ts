@@ -1,5 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { createElement, type ReactNode } from "react";
+import { Module01Quiz } from "@/content/module01-quiz";
+import { Module02Quiz } from "@/content/module02-quiz";
 import { ParadigmComparisonVisualizer, Module03Quiz } from "@/content/module03-types";
 import { AgglomerativeSimulator, Module04Quiz } from "@/content/module04-agglomerative";
 import { DianaSimulator, Module05Quiz } from "@/content/module05-divisive";
@@ -320,6 +322,21 @@ export const pages: CoursePage[] = [
           "Verified against Kaufman & Rousseeuw (1990) Ch. 1 & 6; Murtagh & Contreras (2012); Scikit-learn User Guide §2.3. See docs/references.md for complete bibliographical citations.",
         ),
       ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Interactive Conceptual Evaluation",
+          "Test your understanding of unsupervised taxonomy, flat versus hierarchical clustering, and core agglomerative mechanics:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(Module01Quiz),
+        },
+        c(
+          "Chapter References",
+          "Verified against Kaufman & Rousseeuw (1990) Ch. 1; Murtagh & Contreras (2012); Ward (1963). See docs/references.md.",
+        ),
+      ),
     ],
   },
   {
@@ -412,6 +429,21 @@ export const pages: CoursePage[] = [
         c(
           "Chapter References",
           "References: Sokal & Rohlf (1962); Lance & Williams (1967); SciPy Spatial Distance Documentation. See docs/references.md.",
+        ),
+      ),
+      s(
+        "Knowledge Check & Self-Assessment",
+        c(
+          "Interactive Conceptual Evaluation",
+          "Test your grasp of distance metrics, proximity matrices, linkage criteria definitions, and dendrogram anatomy:",
+        ),
+        {
+          kind: "custom",
+          content: createElement(Module02Quiz),
+        },
+        c(
+          "Chapter References",
+          "Verified against Sokal & Rohlf (1962); Lance & Williams (1967); Murtagh & Contreras (2012). See docs/references.md.",
         ),
       ),
     ],
@@ -2159,15 +2191,16 @@ Output:
           "Anatomy of a Hierarchical Tree",
           "A dendrogram (from Greek dendron 'tree' and gramma 'drawing') is a specialized binary tree diagram that visually represents the nested sequence of cluster merges (in agglomerative clustering) or splits (in divisive clustering). Each component of a dendrogram possesses precise mathematical meaning:",
         ),
-        {
-          kind: "table",
-          columns: ["Anatomical Component", "Geometric Representation", "Mathematical Meaning"],
-          rows: [
+        tbl(
+          ["Anatomical Component", "Geometric Representation", "Mathematical Meaning"],
+          [
             "Leaf Nodes",
-            "Terminating points at height h = 0",
-            "Individual singleton data points (initial clusters C_i = {x_i})",
+            "Vertical Legs",
+            "Horizontal Crossbar",
+            "Internal Nodes",
+            "Root Node",
           ],
-          tableData: {
+          {
             "Leaf Nodes": [
               "Terminating points along the bottom horizontal axis at height h = 0",
               "Individual singleton observations (initial clusters C_i = {x_i})",
@@ -2189,7 +2222,7 @@ Output:
               "The final global cluster containing all N observations at height h_{N-1}",
             ],
           },
-        },
+        ),
         n(
           "CRITICAL: The Mobile Tree Principle (Horizontal Leaf Order is an Illusion)",
           "A common beginner error is assuming that data points positioned close to one another along the bottom horizontal axis of a dendrogram are geometrically similar in feature space. This is completely false! A dendrogram represents a 'mobile' (kinetic sculpture): at any internal node, the left and right child subtrees can be freely rotated/swapped without altering the tree's mathematical topology, merge heights, or cluster memberships. For a tree with N leaves, there are 2^{N-1} distinct valid horizontal leaf permutations that represent the exact same hierarchical clustering! Proximity is determined EXCLUSIVELY by the vertical height of the lowest common ancestor (LCA) node, never by horizontal adjacency.",
