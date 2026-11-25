@@ -148,8 +148,45 @@ This documentation catalogs the foundational academic papers, peer-reviewed mono
   - **Journal**: _Proceedings of the National Institute of Sciences of India_, Vol. 2, No. 1 (1936), pp. 49–55.
   - **Verified Information**: Formulation of covariance-standardized distance $d_M(\mathbf{x}, \mathbf{y}) = \sqrt{(\mathbf{x} - \mathbf{y})^T \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \mathbf{y})}$ and ellipsoidal isodistance contours.
 
+### Calinski–Harabasz Index (Variance Ratio Criterion)
+
+- **Title**: _A Dendrite Method for Cluster Analysis_
+  - **Authors**: Tadeusz Caliński and Jerzy Harabasz
+  - **Journal**: _Communications in Statistics_, Vol. 3, No. 1 (1974), pp. 1–27.
+  - **DOI/URL**: https://doi.org/10.1080/03610927408827101
+  - **Verified Information**: Variance ratio criterion formula $CH = \frac{\text{tr}(B_k)/(k-1)}{\text{tr}(W_k)/(n-k)}$, dispersion matrices between ($B_k$) and within ($W_k$) clusters, and behavior under varying $k$.
+
+### Adjusted Rand Index (Chance-Corrected External Validation)
+
+- **Title**: _Comparing Partitions_
+  - **Authors**: Lawrence Hubert and Phipps Arabie
+  - **Journal**: _Journal of Classification_, Vol. 2, No. 1 (1985), pp. 193–218.
+  - **DOI/URL**: https://doi.org/10.1007/BF01908075
+  - **Verified Information**: Formulation of Adjusted Rand Index (ARI) corrected for hypergeometric chance expectations: $ARI = \frac{\text{Index} - \text{Expected}}{\text{Max} - \text{Expected}}$, invariance to cluster label permutations, and handling of marginal totals.
+
+### Information-Theoretic Cluster Validation (V-Measure & NMI)
+
+- **Title**: _V-Measure: A Conditional Entropy-Based External Cluster Evaluation Measure_
+  - **Authors**: Andrew Rosenberg and Julia Hirschberg
+  - **Conference**: _Proceedings of EMNLP-CoNLL 2007_, pp. 410–420.
+  - **URL**: https://aclanthology.org/D07-1043/
+  - **Verified Information**: Mathematical definitions of Homogeneity $h = 1 - \frac{H(C|K)}{H(C)}$, Completeness $c = 1 - \frac{H(K|C)}{H(K)}$, and their harmonic mean V-measure $V_\beta = \frac{(1+\beta)hc}{\beta^2 h + c}$.
+
+### Cluster Stability via Resampling
+
+- **Title**: _A Stability Based Method for Discovering Structure in Clustering_
+  - **Authors**: Asa Ben-Hur, Andre Elisseeff, and Isabelle Guyon
+  - **Journal**: _Pacific Symposium on Biocomputing (PSB 2002)_, pp. 6–17.
+  - **DOI/URL**: https://doi.org/10.1142/9789812799623_0002
+  - **Verified Information**: Subsampling and bootstrap stability methodology: evaluating pairwise similarity distributions across random subsamples, quantifying stability via ARI, and detecting optimal cluster counts where stability remains high without over-segmentation.
+
 ### Nearest-Neighbor Chain & Optimized Implementations
 
+- **Title**: _A Survey of Recent Advances in Hierarchical Clustering Algorithms_
+  - **Author**: Fionn Murtagh
+  - **Journal**: _The Computer Journal_, Vol. 26, No. 4 (1983), pp. 354–359.
+  - **DOI/URL**: https://doi.org/10.1093/comjnl/26.4.354
+  - **Verified Information**: Reciprocal nearest neighbor (RNN) pairs and Nearest Neighbor Chain (NN-chain) algorithm achieving $O(N^2)$ optimal clustering for reducible linkage criteria without matrix sorting.
 - **Title**: _Cluster Analysis for Applications_
   - **Author**: Michael R. Anderberg
   - **Publisher**: Academic Press, New York (1973).
@@ -164,23 +201,20 @@ This documentation catalogs the foundational academic papers, peer-reviewed mono
 
 ## 3. Module-to-Source Mapping
 
-| Module                           | Core Concepts Verified                                                                                                             | Primary & Academic References                                                     |
-| :------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
-| **01. Introduction**             | Supervised vs. Unsupervised, Hierarchical vs. Flat, Nested Partitions                                                              | Kaufman & Rousseeuw (1990), Scikit-learn User Guide                               |
-| **02. Fundamentals**             | Observation-level vs Cluster-level distance, Proximity Matrix, Trees                                                               | Murtagh & Contreras (2012), Sokal & Rohlf (1962)                                  |
-| **03. Types**                    | Bottom-up (Agglomerative) vs Top-down (Divisive), DIANA Splintering                                                                | Kaufman & Rousseeuw (1990 Ch. 6), Lance & Williams (1967)                         |
-| **04. Agglomerative**            | Merge sequence, Proximity matrix updates, Tie-breaking, Termination                                                                | Murtagh & Contreras (2012), SciPy Hierarchy docs                                  |
-| **05. Divisive**                 | DIANA algorithm, Splinter group, Max diameter heuristic, Partition cost                                                            | Kaufman & Rousseeuw (1990), Murtagh & Contreras (2012)                            |
-| **06. Linkage Methods**          | Single, Complete, Average (UPGMA), Centroid (UPGMC), Ward's Min Variance                                                           | Ward (1963), Lance & Williams (1967), SciPy `linkage`                             |
-| **07. Distance Metrics**         | Euclidean, Manhattan, Minkowski, Cosine, Metric Axioms, Normalization                                                              | SciPy `pdist`, Scikit-learn Preprocessing Guide                                   |
-| **08. Dendrograms**              | Topology, Cophenetic heights, Inversion anomalies, Cutting thresholds                                                              | Sokal & Rohlf (1962), SciPy `dendrogram`, Bar-Joseph et al. (2001)                |
-| **09. Mathematics**              | Matrix data $\mathbf{X} \in \mathbb{R}^{n \times d}$, Metric axioms, WSS variance expansion, Huygens theorem, Ward harmonic factor | Ward (1963), Lance & Williams (1967), Batagelj (1981), Murtagh & Contreras (2012) |
-| **10. Practical Implementation** | NumPy scratch broadcasting, SciPy `pdist`/`linkage`/`fcluster`, Scikit-Learn `AgglomerativeClustering`, k-NN connectivity graphs   | NumPy Reference, SciPy Docs, Scikit-learn API, Müllner (2013), Anderberg (1973)   |
-| **11. Model Evaluation**         | Silhouette Score, Davies-Bouldin Index, Cophenetic Correlation                                                                     | Rousseeuw (1987), Davies & Bouldin (1979), Sokal & Rohlf (1962)                   |
-| **12. Algorithm Comparison**     | K-Means, DBSCAN, Agglomerative trade-offs, Non-globular shapes                                                                     | Scikit-learn User Guide, Murtagh & Contreras (2012)                               |
-| **13. Limitations**              | $O(N^2)$ space, $O(N^3)$ time, Greedy irreversibility, Chaining                                                                    | Murtagh & Contreras (2012), Kaufman & Rousseeuw (1990)                            |
-| **14. Real-world Applications**  | Customer RFM hierarchies, Gene Phylogeny, Taxonomy Clustering                                                                      | Scikit-learn Applications, Kaufman & Rousseeuw (1990)                             |
-| **15. Hands-on Projects**        | End-to-end Python pipeline, Validation against SciPy, Evaluation metrics                                                           | SciPy, Scikit-learn, NumPy official guides                                        |
-| **13. Limitations**              | $O(N^2)$ space, $O(N^3)$ time, Greedy irreversibility, Chaining                                                                    | Murtagh & Contreras (2012), Kaufman & Rousseeuw (1990)                            |
-| **14. Real-world Applications**  | Customer RFM hierarchies, Gene Phylogeny, Taxonomy Clustering                                                                      | Scikit-learn Applications, Kaufman & Rousseeuw (1990)                             |
-| **15. Hands-on Projects**        | End-to-end Python pipeline, Validation against SciPy, Evaluation metrics                                                           | SciPy, Scikit-learn, NumPy official guides                                        |
+| Module                                                     | Core Concepts Verified                                                                                                                 | Primary & Academic References                                                                            |
+| :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------- |
+| **01. Introduction**                                       | Supervised vs. Unsupervised, Hierarchical vs. Flat, Nested Partitions                                                                  | Kaufman & Rousseeuw (1990), Scikit-learn User Guide                                                      |
+| **02. Fundamentals**                                       | Observation-level vs Cluster-level distance, Proximity Matrix, Trees                                                                   | Murtagh & Contreras (2012), Sokal & Rohlf (1962)                                                         |
+| **03. Types**                                              | Bottom-up (Agglomerative) vs Top-down (Divisive), DIANA Splintering                                                                    | Kaufman & Rousseeuw (1990 Ch. 6), Lance & Williams (1967)                                                |
+| **04. Agglomerative**                                      | Merge sequence, Proximity matrix updates, Tie-breaking, Termination                                                                    | Murtagh & Contreras (2012), SciPy Hierarchy docs                                                         |
+| **05. Divisive**                                           | DIANA algorithm, Splinter group, Max diameter heuristic, Partition cost                                                                | Kaufman & Rousseeuw (1990), Murtagh & Contreras (2012)                                                   |
+| **06. Linkage Methods**                                    | Single, Complete, Average (UPGMA), Centroid (UPGMC), Ward's Min Variance                                                               | Ward (1963), Lance & Williams (1967), SciPy `linkage`                                                    |
+| **07. Distance Metrics**                                   | Euclidean, Manhattan, Minkowski, Cosine, Metric Axioms, Normalization                                                                  | SciPy `pdist`, Scikit-learn Preprocessing Guide                                                          |
+| **08. Dendrograms**                                        | Topology, Cophenetic heights, Inversion anomalies, Cutting thresholds                                                                  | Sokal & Rohlf (1962), SciPy `dendrogram`, Bar-Joseph et al. (2001)                                       |
+| **09. Mathematics**                                        | Matrix data $\mathbf{X} \in \mathbb{R}^{n \times d}$, Metric axioms, WSS variance expansion, Huygens theorem, Ward harmonic factor     | Ward (1963), Lance & Williams (1967), Batagelj (1981), Murtagh & Contreras (2012)                        |
+| **10. Practical Implementation**                           | NumPy scratch broadcasting, SciPy `pdist`/`linkage`/`fcluster`, Scikit-Learn `AgglomerativeClustering`, k-NN connectivity graphs       | NumPy Reference, SciPy Docs, Scikit-learn API, Müllner (2013), Anderberg (1973)                          |
+| **11. Cluster Evaluation & Validation**                    | Internal metrics (Silhouette, Davies–Bouldin, Calinski–Harabasz), External metrics (ARI, NMI, V-Measure), Multi-linkage benchmarking   | Rousseeuw (1987), Davies & Bouldin (1979), Caliński & Harabasz (1974), Hubert & Arabie (1985)            |
+| **12. Optimal Cluster Selection & Dendrogram Slicing**     | Horizontal height cuts ($t$), maxclust ($k$), SciPy inconsistency matrix (`inconsistent`, $d=2$), merge-height gap jumps ($\\Delta h$) | SciPy `fcluster`/`inconsistent`, Murtagh & Contreras (2012)                                              |
+| **13. Cluster Profiling, Stability & Interpretation**      | Distribution summary statistics (medians vs. means), standardized centroid $z$-scores, bootstrap resampling stability (ARI), outliers  | Ben-Hur et al. (2002), Hennig (2007), Kaufman & Rousseeuw (1990)                                         |
+| **14. Real-World Applications, Limitations & Scalability** | RFM segmentation, genomics, $O(n^2)$ space & $O(n^2)$ time bottlenecks, sparse k-NN connectivity graphs, multi-paradigm comparison     | Murtagh (1983), Scikit-Learn connectivity documentation, Beyer et al. (1999), Kaufman & Rousseeuw (1990) |
+| **15. Hands-on Projects**                                  | Applied capstone projects, reproducible customer segmentation pipeline, real-world deployment benchmarks                               | SciPy, Scikit-learn, NumPy official guides                                                               |
