@@ -1012,7 +1012,7 @@ export function CurseOfDimensionalitySimulator() {
     },
   };
 
-  const curr = dimData[dim][distribution];
+  const curr = dimData[dim]![distribution];
 
   // SVG chart configuration for distance distribution bell curve
   const chartWidth = 500;

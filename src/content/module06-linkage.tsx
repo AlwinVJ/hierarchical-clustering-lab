@@ -492,7 +492,7 @@ export function CentroidLinkageInversionVisualizer() {
     },
   ];
 
-  const current = steps[activeStep - 1];
+  const current = steps[activeStep - 1]!;
 
   return (
     <div className="rounded-sm border border-border bg-card p-5 space-y-6">

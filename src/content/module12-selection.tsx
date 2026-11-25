@@ -144,7 +144,7 @@ export function DendrogramCuttingLab() {
   >("dendrogram");
   const [copied, setCopied] = useState<boolean>(false);
 
-  const dataset = DATASETS[datasetKey] || DATASETS.benchmark;
+  const dataset = DATASETS[datasetKey] ?? DATASETS["benchmark"]!;
   const points = dataset.points;
   const n = points.length;
 
@@ -152,10 +152,12 @@ export function DendrogramCuttingLab() {
   const distMatrix = useMemo(() => {
     const mat: number[][] = Array.from({ length: n }, () => Array(n).fill(0));
     for (let i = 0; i < n; i++) {
+      const pi = points[i]!;
       for (let j = i + 1; j < n; j++) {
-        const d = Math.hypot(points[i].x - points[j].x, points[i].y - points[j].y);
-        mat[i][j] = d;
-        mat[j][i] = d;
+        const pj = points[j]!;
+        const d = Math.hypot(pi.x - pj.x, pi.y - pj.y);
+        mat[i]![j] = d;
+        mat[j]![i] = d;
       }
     }
     return mat;
@@ -169,7 +171,7 @@ export function DendrogramCuttingLab() {
       node: TreeNode;
     }
 
-    const clusters: (ActiveCluster | null)[] = points.map((p, i) => ({
+    const clusters: (ActiveCluster | null)[] = points.map((_, i) => ({
       id: i,
       pointIndices: [i],
       node: {
@@ -188,7 +190,8 @@ export function DendrogramCuttingLab() {
         let minD = Infinity;
         for (const i of c1.pointIndices) {
           for (const j of c2.pointIndices) {
-            minD = Math.min(minD, distMatrix[i][j]);
+            const d = distMatrix[i]?.[j] ?? 0;
+            minD = Math.min(minD, d);
           }
         }
         return minD;
@@ -196,7 +199,8 @@ export function DendrogramCuttingLab() {
         let maxD = 0;
         for (const i of c1.pointIndices) {
           for (const j of c2.pointIndices) {
-            maxD = Math.max(maxD, distMatrix[i][j]);
+            const d = distMatrix[i]?.[j] ?? 0;
+            maxD = Math.max(maxD, d);
           }
         }
         return maxD;
@@ -204,7 +208,7 @@ export function DendrogramCuttingLab() {
         let sumD = 0;
         for (const i of c1.pointIndices) {
           for (const j of c2.pointIndices) {
-            sumD += distMatrix[i][j];
+            sumD += distMatrix[i]?.[j] ?? 0;
           }
         }
         return sumD / (c1.pointIndices.length * c2.pointIndices.length);
@@ -215,8 +219,11 @@ export function DendrogramCuttingLab() {
         let c1x = 0,
           c1y = 0;
         for (const i of c1.pointIndices) {
-          c1x += points[i].x;
-          c1y += points[i].y;
+          const pt = points[i];
+          if (pt) {
+            c1x += pt.x;
+            c1y += pt.y;
+          }
         }
         c1x /= n1;
         c1y /= n1;
@@ -224,8 +231,11 @@ export function DendrogramCuttingLab() {
         let c2x = 0,
           c2y = 0;
         for (const j of c2.pointIndices) {
-          c2x += points[j].x;
-          c2y += points[j].y;
+          const pt = points[j];
+          if (pt) {
+            c2x += pt.x;
+            c2y += pt.y;
+          }
         }
         c2x /= n2;
         c2y /= n2;
@@ -295,7 +305,7 @@ export function DendrogramCuttingLab() {
 
     const finalCluster = clusters.find((c) => c !== null);
     const root = finalCluster ? finalCluster.node : null;
-    const maxHeight = steps.length > 0 ? steps[steps.length - 1].height : 1;
+    const maxHeight = steps.length > 0 ? (steps[steps.length - 1]?.height ?? 1) : 1;
 
     return { mergeSteps: steps, treeRoot: root, maxTreeHeight: maxHeight };
   }, [points, n, distMatrix, linkageMethod]);
@@ -350,6 +360,7 @@ export function DendrogramCuttingLab() {
         if (stepIdx === undefined) return;
 
         const merge = mergeSteps[stepIdx];
+        if (!merge) return;
         stepHeights.push(merge.height);
 
         collectHeights(merge.clusterA, currentDepth + 1);
@@ -359,14 +370,14 @@ export function DendrogramCuttingLab() {
       collectHeights(n + s, 1);
 
       const m = stepHeights.length;
-      const mean = stepHeights.reduce((acc, v) => acc + v, 0) / m;
+      const mean = m > 0 ? stepHeights.reduce((acc, v) => acc + v, 0) / m : 0;
       let std = 0;
       if (m > 1) {
         const sumSq = stepHeights.reduce((acc, v) => acc + (v - mean) ** 2, 0);
         std = Math.sqrt(sumSq / (m - 1));
       }
 
-      const currentHeight = mergeSteps[s].height;
+      const currentHeight = mergeSteps[s]?.height ?? 0;
       const coeff = std > 1e-7 ? (currentHeight - mean) / std : 0.0;
 
       rows.push({
@@ -397,8 +408,8 @@ export function DendrogramCuttingLab() {
         // The cut height sits right between mergeSteps[n - computedK] and mergeSteps[n - computedK - 1]
         const idx = n - computedK;
         if (idx >= 0 && idx < mergeSteps.length) {
-          const cutH = mergeSteps[idx].height;
-          const prevH = idx > 0 ? mergeSteps[idx - 1].height : 0;
+          const cutH = mergeSteps[idx]?.height ?? 0;
+          const prevH = idx > 0 ? (mergeSteps[idx - 1]?.height ?? 0) : 0;
           effectiveCut = (cutH + prevH) / 2;
         }
       }
@@ -422,7 +433,7 @@ export function DendrogramCuttingLab() {
     const traverseCut = (node: TreeNode) => {
       if (node.height <= effectiveCut) {
         // Entire subtree is a cluster
-        const col = PALETTE[clusterCount % PALETTE.length];
+        const col = PALETTE[clusterCount % PALETTE.length] ?? "#64748b";
         clusters.push({
           id: clusterCount + 1,
           points: node.points,
@@ -452,7 +463,7 @@ export function DendrogramCuttingLab() {
   // Merge height gaps and largest jump
   const mergeGaps = useMemo(() => {
     return mergeSteps.map((m, idx) => {
-      const prev = idx > 0 ? mergeSteps[idx - 1].height : 0;
+      const prev = idx > 0 ? (mergeSteps[idx - 1]?.height ?? 0) : 0;
       const gap = m.height - prev;
       return {
         step: idx,
@@ -466,11 +477,12 @@ export function DendrogramCuttingLab() {
   const maxGapStep = useMemo(() => {
     if (mergeGaps.length <= 1) return null;
     let maxGap = -1;
-    let best = mergeGaps[1];
+    let best = mergeGaps[1] ?? null;
     for (let i = 1; i < mergeGaps.length; i++) {
-      if (mergeGaps[i].gap > maxGap) {
-        maxGap = mergeGaps[i].gap;
-        best = mergeGaps[i];
+      const g = mergeGaps[i];
+      if (g && g.gap > maxGap) {
+        maxGap = g.gap;
+        best = g;
       }
     }
     return best;
@@ -486,7 +498,8 @@ export function DendrogramCuttingLab() {
       const idx = n - k;
       const cutH =
         idx >= 0 && idx < mergeSteps.length
-          ? (mergeSteps[idx].height + (idx > 0 ? mergeSteps[idx - 1].height : 0)) / 2
+          ? ((mergeSteps[idx]?.height ?? 0) + (idx > 0 ? (mergeSteps[idx - 1]?.height ?? 0) : 0)) /
+            2
           : 0;
 
       const labels = new Array<number>(n).fill(0);
@@ -515,22 +528,26 @@ export function DendrogramCuttingLab() {
         for (let j = 0; j < n; j++) {
           if (i === j) continue;
           const otherLabel = labels[j];
-          const d = distMatrix[i][j];
+          const d = distMatrix[i]?.[j] ?? 0;
           if (otherLabel === myLabel) {
             aSum += d;
             aCount++;
-          } else {
+          } else if (otherLabel !== undefined) {
             if (!bSums[otherLabel]) bSums[otherLabel] = { sum: 0, count: 0 };
-            bSums[otherLabel].sum += d;
-            bSums[otherLabel].count++;
+            const entry = bSums[otherLabel]!;
+            entry.sum += d;
+            entry.count++;
           }
         }
 
         const a_i = aCount > 0 ? aSum / aCount : 0;
         let b_i = Infinity;
         for (const oLab in bSums) {
-          const avgDist = bSums[oLab].sum / bSums[oLab].count;
-          if (avgDist < b_i) b_i = avgDist;
+          const entry = bSums[Number(oLab)];
+          if (entry && entry.count > 0) {
+            const avgDist = entry.sum / entry.count;
+            if (avgDist < b_i) b_i = avgDist;
+          }
         }
         if (b_i === Infinity) b_i = 0;
 
@@ -550,7 +567,7 @@ export function DendrogramCuttingLab() {
 
   const bestK = useMemo(() => {
     if (sweepData.length === 0) return 2;
-    let best = sweepData[0];
+    let best = sweepData[0]!;
     for (const d of sweepData) {
       if (d.silhouette > best.silhouette) best = d;
     }
@@ -859,11 +876,27 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                       const rightY = 260 - (right.height / (maxTreeHeight * 1.15)) * 220;
 
                       const isBelowCut = node.height <= activeCutHeight;
-                      const clusterId = isBelowCut ? clusterAssignments[node.points[0]] : undefined;
+                      const pt0 = node.points[0];
+                      const clusterId =
+                        isBelowCut && pt0 !== undefined ? clusterAssignments[pt0] : undefined;
                       const strokeColor =
                         isBelowCut && clusterId !== undefined
-                          ? PALETTE[(clusterId - 1) % PALETTE.length]
+                          ? (PALETTE[(clusterId - 1) % PALETTE.length] ?? "#64748b")
                           : "#64748b";
+
+                      const leftPt = left.points[0];
+                      const leftColor =
+                        left.height <= activeCutHeight && leftPt !== undefined
+                          ? (PALETTE[((clusterAssignments[leftPt] ?? 1) - 1) % PALETTE.length] ??
+                            "#94a3b8")
+                          : "#94a3b8";
+
+                      const rightPt = right.points[0];
+                      const rightColor =
+                        right.height <= activeCutHeight && rightPt !== undefined
+                          ? (PALETTE[((clusterAssignments[rightPt] ?? 1) - 1) % PALETTE.length] ??
+                            "#94a3b8")
+                          : "#94a3b8";
 
                       // Left vertical line
                       links.push(
@@ -873,11 +906,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                           y1={leftY}
                           x2={left.x}
                           y2={nodeY}
-                          stroke={
-                            left.height <= activeCutHeight
-                              ? PALETTE[(clusterAssignments[left.points[0]] - 1) % PALETTE.length]
-                              : "#94a3b8"
-                          }
+                          stroke={leftColor}
                           strokeWidth="2"
                         />,
                       );
@@ -890,11 +919,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                           y1={rightY}
                           x2={right.x}
                           y2={nodeY}
-                          stroke={
-                            right.height <= activeCutHeight
-                              ? PALETTE[(clusterAssignments[right.points[0]] - 1) % PALETTE.length]
-                              : "#94a3b8"
-                          }
+                          stroke={rightColor}
                           strokeWidth="2"
                         />,
                       );
@@ -969,8 +994,9 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                   {/* Leaf labels */}
                   {dendrogramLayout.leaves.map((leaf) => {
                     const p = points[leaf.pointId];
-                    const cId = clusterAssignments[leaf.pointId];
-                    const color = PALETTE[(cId - 1) % PALETTE.length];
+                    if (!p) return null;
+                    const cId = clusterAssignments[leaf.pointId] ?? 1;
+                    const color = PALETTE[(cId - 1) % PALETTE.length] ?? "#64748b";
                     return (
                       <g key={leaf.id}>
                         <circle cx={leaf.x} cy="260" r="4" fill={color} />
@@ -1009,9 +1035,13 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
 
                 <div className="mt-3 space-y-2.5 max-h-64 overflow-y-auto pr-1">
                   {clustersList.map((c) => {
-                    const cPts = c.points.map((idx) => points[idx]);
-                    const avgX = cPts.reduce((acc, p) => acc + p.x, 0) / cPts.length;
-                    const avgY = cPts.reduce((acc, p) => acc + p.y, 0) / cPts.length;
+                    const cPts = c.points
+                      .map((idx) => points[idx])
+                      .filter((p): p is SelPoint => p !== undefined);
+                    const avgX =
+                      cPts.length > 0 ? cPts.reduce((acc, p) => acc + p.x, 0) / cPts.length : 0;
+                    const avgY =
+                      cPts.length > 0 ? cPts.reduce((acc, p) => acc + p.y, 0) / cPts.length : 0;
 
                     return (
                       <div
@@ -1097,10 +1127,11 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                 {mergeGaps.map((g) => {
                   const isMaxGap = maxGapStep && g.step === maxGapStep.step;
                   const m = mergeSteps[g.step];
-                  const cALabel =
-                    m.clusterA < n ? points[m.clusterA].label : `Cluster(${m.clusterA})`;
-                  const cBLabel =
-                    m.clusterB < n ? points[m.clusterB].label : `Cluster(${m.clusterB})`;
+                  if (!m) return null;
+                  const ptA = m.clusterA < n ? points[m.clusterA] : undefined;
+                  const ptB = m.clusterB < n ? points[m.clusterB] : undefined;
+                  const cALabel = ptA ? ptA.label : `Cluster(${m.clusterA})`;
+                  const cBLabel = ptB ? ptB.label : `Cluster(${m.clusterB})`;
 
                   return (
                     <tr

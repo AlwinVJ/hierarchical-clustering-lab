@@ -114,11 +114,11 @@ interface ZRow {
 interface DendroNode {
   id: number;
   isLeaf: boolean;
-  leafIdx?: number;
+  leafIdx?: number | undefined;
   x: number;
   y: number;
-  left?: DendroNode;
-  right?: DendroNode;
+  left?: DendroNode | undefined;
+  right?: DendroNode | undefined;
   dist: number;
   members: number[];
 }

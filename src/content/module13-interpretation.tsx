@@ -174,7 +174,7 @@ export function ClusterInterpretationLab() {
   const [subsampleRatio, setSubsampleRatio] = useState<number>(0.8);
   const [copied, setCopied] = useState<boolean>(false);
 
-  const dataset = PROFILING_DATASETS[datasetKey] || PROFILING_DATASETS.customer_rfm;
+  const dataset = PROFILING_DATASETS[datasetKey] ?? PROFILING_DATASETS["customer_rfm"]!;
   const items = dataset.items;
   const featureNames = dataset.featureNames;
   const n = items.length;
@@ -183,10 +183,10 @@ export function ClusterInterpretationLab() {
   const populationStats = useMemo(() => {
     const stats: Record<string, { mean: number; std: number }> = {};
     for (const f of featureNames) {
-      const vals = items.map((it) => it.features[f]);
-      const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+      const vals = items.map((it) => it.features[f] ?? 0);
+      const mean = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
       const sumSq = vals.reduce((a, b) => a + (b - mean) ** 2, 0);
-      const std = Math.sqrt(sumSq / vals.length) || 1.0;
+      const std = vals.length > 0 ? Math.sqrt(sumSq / vals.length) || 1.0 : 1.0;
       stats[f] = { mean, std };
     }
     return stats;
@@ -196,16 +196,23 @@ export function ClusterInterpretationLab() {
   const distMatrix = useMemo(() => {
     const mat: number[][] = Array.from({ length: n }, () => Array(n).fill(0));
     for (let i = 0; i < n; i++) {
+      const itI = items[i];
+      if (!itI) continue;
       for (let j = i + 1; j < n; j++) {
+        const itJ = items[j];
+        if (!itJ) continue;
         let sumSq = 0;
         for (const f of featureNames) {
-          const z_i = (items[i].features[f] - populationStats[f].mean) / populationStats[f].std;
-          const z_j = (items[j].features[f] - populationStats[f].mean) / populationStats[f].std;
+          const stat = populationStats[f] ?? { mean: 0, std: 1 };
+          const z_i = ((itI.features[f] ?? 0) - stat.mean) / stat.std;
+          const z_j = ((itJ.features[f] ?? 0) - stat.mean) / stat.std;
           sumSq += (z_i - z_j) ** 2;
         }
         const d = Math.sqrt(sumSq);
-        mat[i][j] = d;
-        mat[j][i] = d;
+        const rowI = mat[i];
+        const rowJ = mat[j];
+        if (rowI) rowI[j] = d;
+        if (rowJ) rowJ[i] = d;
       }
     }
     return mat;
@@ -228,7 +235,8 @@ export function ClusterInterpretationLab() {
         let minD = Infinity;
         for (const i of c1.indices) {
           for (const j of c2.indices) {
-            minD = Math.min(minD, distMatrix[i][j]);
+            const d = distMatrix[i]?.[j] ?? 0;
+            minD = Math.min(minD, d);
           }
         }
         return minD;
@@ -236,7 +244,8 @@ export function ClusterInterpretationLab() {
         let maxD = 0;
         for (const i of c1.indices) {
           for (const j of c2.indices) {
-            maxD = Math.max(maxD, distMatrix[i][j]);
+            const d = distMatrix[i]?.[j] ?? 0;
+            maxD = Math.max(maxD, d);
           }
         }
         return maxD;
@@ -244,7 +253,7 @@ export function ClusterInterpretationLab() {
         let sumD = 0;
         for (const i of c1.indices) {
           for (const j of c2.indices) {
-            sumD += distMatrix[i][j];
+            sumD += distMatrix[i]?.[j] ?? 0;
           }
         }
         return sumD / (c1.indices.length * c2.indices.length);
@@ -254,14 +263,21 @@ export function ClusterInterpretationLab() {
         const n2 = c2.indices.length;
         let cDistSq = 0;
         for (const f of featureNames) {
+          const stat = populationStats[f] ?? { mean: 0, std: 1 };
           let mean1 = 0,
             mean2 = 0;
           for (const i of c1.indices) {
-            mean1 += (items[i].features[f] - populationStats[f].mean) / populationStats[f].std;
+            const itI = items[i];
+            if (itI) {
+              mean1 += ((itI.features[f] ?? 0) - stat.mean) / stat.std;
+            }
           }
           mean1 /= n1;
           for (const j of c2.indices) {
-            mean2 += (items[j].features[f] - populationStats[f].mean) / populationStats[f].std;
+            const itJ = items[j];
+            if (itJ) {
+              mean2 += ((itJ.features[f] ?? 0) - stat.mean) / stat.std;
+            }
           }
           mean2 /= n2;
           cDistSq += (mean1 - mean2) ** 2;
@@ -276,8 +292,10 @@ export function ClusterInterpretationLab() {
       let bestB = 1;
 
       for (let i = 0; i < clusters.length; i++) {
+        const cI = clusters[i]!;
         for (let j = i + 1; j < clusters.length; j++) {
-          const d = calcClusterDist(clusters[i], clusters[j]);
+          const cJ = clusters[j]!;
+          const d = calcClusterDist(cI, cJ);
           if (d < bestDist) {
             bestDist = d;
             bestA = i;
@@ -286,9 +304,11 @@ export function ClusterInterpretationLab() {
         }
       }
 
-      const mergedIndices = [...clusters[bestA].indices, ...clusters[bestB].indices];
+      const clA = clusters[bestA]!;
+      const clB = clusters[bestB]!;
+      const mergedIndices = [...clA.indices, ...clB.indices];
       const newCluster: ActiveCluster = {
-        id: clusters[bestA].id,
+        id: clA.id,
         indices: mergedIndices,
       };
 
@@ -326,26 +346,34 @@ export function ClusterInterpretationLab() {
     }[] = [];
 
     for (let c = 0; c < k; c++) {
-      const cIndices = clusterAssignments.clusters[c].indices;
-      const memberLabels = cIndices.map((i) => items[i].label);
+      const clusterObj = clusterAssignments.clusters[c];
+      if (!clusterObj) continue;
+      const cIndices = clusterObj.indices;
+      const memberLabels = cIndices.map((i) => items[i]?.label ?? "");
       const featMap: Record<string, { mean: number; median: number; std: number; zScore: number }> =
         {};
 
       for (const f of featureNames) {
-        const vals = cIndices.map((i) => items[i].features[f]).sort((a, b) => a - b);
-        const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const stat = populationStats[f] ?? { mean: 0, std: 1 };
+        const vals = cIndices.map((i) => items[i]?.features[f] ?? 0).sort((a, b) => a - b);
+        const mean = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
         const mid = Math.floor(vals.length / 2);
-        const median = vals.length % 2 === 0 ? (vals[mid - 1] + vals[mid]) / 2 : vals[mid];
+        const median =
+          vals.length === 0
+            ? 0
+            : vals.length % 2 === 0
+              ? ((vals[mid - 1] ?? 0) + (vals[mid] ?? 0)) / 2
+              : (vals[mid] ?? 0);
         const sumSq = vals.reduce((a, b) => a + (b - mean) ** 2, 0);
-        const std = Math.sqrt(sumSq / vals.length);
-        const zScore = (mean - populationStats[f].mean) / populationStats[f].std;
+        const std = vals.length > 0 ? Math.sqrt(sumSq / vals.length) : 0;
+        const zScore = (mean - stat.mean) / stat.std;
 
         featMap[f] = { mean, median, std, zScore };
       }
 
       profiles.push({
         clusterId: c + 1,
-        color: PALETTE[c % PALETTE.length],
+        color: PALETTE[c % PALETTE.length] ?? "#64748b",
         memberCount: cIndices.length,
         memberLabels,
         features: featMap,
@@ -400,17 +428,26 @@ export function ClusterInterpretationLab() {
         const subIndices: number[] = [];
         for (let s = 0; s < subN; s++) {
           const pick = Math.floor(random() * pool.length);
-          subIndices.push(pool[pick]);
-          pool.splice(pick, 1);
+          const val = pool[pick];
+          if (val !== undefined) {
+            subIndices.push(val);
+            pool.splice(pick, 1);
+          }
         }
 
         // Subsample distance matrix
         const subDist: number[][] = Array.from({ length: subN }, () => Array(subN).fill(0));
         for (let i = 0; i < subN; i++) {
+          const origI = subIndices[i];
+          if (origI === undefined) continue;
           for (let j = i + 1; j < subN; j++) {
-            const origD = distMatrix[subIndices[i]][subIndices[j]];
-            subDist[i][j] = origD;
-            subDist[j][i] = origD;
+            const origJ = subIndices[j];
+            if (origJ === undefined) continue;
+            const origD = distMatrix[origI]?.[origJ] ?? 0;
+            const rowI = subDist[i];
+            const rowJ = subDist[j];
+            if (rowI) rowI[j] = origD;
+            if (rowJ) rowJ[i] = origD;
           }
         }
 
@@ -426,11 +463,15 @@ export function ClusterInterpretationLab() {
           let bA = 0;
           let bB = 1;
           for (let i = 0; i < subClusters.length; i++) {
+            const scI = subClusters[i];
+            if (!scI) continue;
             for (let j = i + 1; j < subClusters.length; j++) {
+              const scJ = subClusters[j];
+              if (!scJ) continue;
               let minD = Infinity;
-              for (const u of subClusters[i].indices) {
-                for (const v of subClusters[j].indices) {
-                  minD = Math.min(minD, subDist[u][v]);
+              for (const u of scI.indices) {
+                for (const v of scJ.indices) {
+                  minD = Math.min(minD, subDist[u]?.[v] ?? 0);
                 }
               }
               if (minD < bDist) {
@@ -440,8 +481,11 @@ export function ClusterInterpretationLab() {
               }
             }
           }
-          const merged = [...subClusters[bA].indices, ...subClusters[bB].indices];
-          const newC: SubCluster = { id: subClusters[bA].id, indices: merged };
+          const scA = subClusters[bA];
+          const scB = subClusters[bB];
+          if (!scA || !scB) break;
+          const merged = [...scA.indices, ...scB.indices];
+          const newC: SubCluster = { id: scA.id, indices: merged };
           subClusters = subClusters.filter((_, idx) => idx !== bA && idx !== bB);
           subClusters.push(newC);
         }
@@ -453,7 +497,7 @@ export function ClusterInterpretationLab() {
           });
         });
 
-        const restrictedRef = subIndices.map((origIdx) => refLabels[origIdx]);
+        const restrictedRef = subIndices.map((origIdx) => refLabels[origIdx] ?? 0);
         const score = calcARI(restrictedRef, subAssigned);
         ariScores.push(score);
       }
@@ -722,6 +766,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                 <div className="mt-4 space-y-3">
                   {featureNames.map((f) => {
                     const feat = c.features[f];
+                    if (!feat) return null;
                     const unit = dataset.featureUnits[f] || "";
                     const isEnriched = feat.zScore > 0.8;
                     const isSuppressed = feat.zScore < -0.8;
@@ -813,11 +858,12 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
               </thead>
               <tbody className="divide-y divide-border dark:divide-border">
                 {clusterProfiles.map((c) => {
-                  let maxFeat = featureNames[0];
+                  let maxFeat = featureNames[0] ?? "";
                   let maxZ = -Infinity;
                   for (const f of featureNames) {
-                    if (c.features[f].zScore > maxZ) {
-                      maxZ = c.features[f].zScore;
+                    const feat = c.features[f];
+                    if (feat && feat.zScore > maxZ) {
+                      maxZ = feat.zScore;
                       maxFeat = f;
                     }
                   }
@@ -832,7 +878,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                       </td>
                       <td className="p-3 font-mono">{c.memberCount}</td>
                       {featureNames.map((f) => {
-                        const z = c.features[f].zScore;
+                        const z = c.features[f]?.zScore ?? 0;
                         let bgColor = "transparent";
                         let textColor = "inherit";
 

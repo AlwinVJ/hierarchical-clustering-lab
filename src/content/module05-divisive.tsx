@@ -105,7 +105,7 @@ export function DianaSimulator() {
     },
   ];
 
-  const current = stepsData[step];
+  const current = stepsData[step]!;
 
   return (
     <div className="rounded-sm border border-border bg-card p-5 space-y-6">

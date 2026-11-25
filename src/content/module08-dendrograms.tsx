@@ -151,10 +151,10 @@ export function DendrogramExplorer() {
   // Node C4 merges leaf 0 and leaf 1: x = (60+140)/2 = 100, y = toSvgY(curr.merge1Height)
   // Node C5 merges leaf 2 and leaf 3: x = (240+320)/2 = 280, y = toSvgY(curr.merge2Height)
   // Root merges C4 and C5: x = (100+280)/2 = 190, y = toSvgY(curr.rootHeight)
-  const xC4 = (xCoords[0] + xCoords[1]) / 2;
+  const xC4 = (xCoords[0]! + xCoords[1]!) / 2;
   const yC4 = toSvgY(curr.merge1Height);
 
-  const xC5 = (xCoords[2] + xCoords[3]) / 2;
+  const xC5 = (xCoords[2]! + xCoords[3]!) / 2;
   const yC5 = toSvgY(curr.merge2Height);
 
   const xRoot = (xC4 + xC5) / 2;
@@ -513,8 +513,8 @@ export function DendrogramExplorer() {
             </thead>
             <tbody className="divide-y divide-border/60 font-mono">
               {pairLabels.map((lbl, pIdx) => {
-                const orig = origDists[pIdx];
-                const coph = curr.copheneticDists[pIdx];
+                const orig = origDists[pIdx]!;
+                const coph = curr.copheneticDists[pIdx]!;
                 const distortion = Math.abs(orig - coph);
                 const lcaName =
                   pIdx === 0
@@ -583,7 +583,7 @@ export function UltrametricPropertyVisualizer() {
 
   // Check triangle side equality
   const sides = [dAB, dBC, dAC].sort((x, y) => x - y);
-  const isIsoscelesUltrametric = Math.abs(sides[1] - sides[2]) < 0.001;
+  const isIsoscelesUltrametric = Math.abs(sides[1]! - sides[2]!) < 0.001;
 
   return (
     <div className="rounded-sm border border-border bg-card p-5 space-y-5">
@@ -632,7 +632,7 @@ export function UltrametricPropertyVisualizer() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs">
         <div className="p-3 rounded-sm border border-border bg-background space-y-1">
           <span className="text-[10px] text-muted-foreground font-sans uppercase">
-            Side 1: d_coph({pointsData[a].name.split("(")[0]}, {pointsData[b].name.split("(")[0]})
+            Side 1: d_coph({pointsData[a]!.name.split("(")[0]}, {pointsData[b]!.name.split("(")[0]})
           </span>
           <div className="text-base font-bold text-navy">{dAB.toFixed(4)}</div>
           <span className="text-[11px] text-muted-foreground font-sans">
@@ -642,7 +642,7 @@ export function UltrametricPropertyVisualizer() {
 
         <div className="p-3 rounded-sm border border-border bg-background space-y-1">
           <span className="text-[10px] text-muted-foreground font-sans uppercase">
-            Side 2: d_coph({pointsData[b].name.split("(")[0]}, {pointsData[c].name.split("(")[0]})
+            Side 2: d_coph({pointsData[b]!.name.split("(")[0]}, {pointsData[c]!.name.split("(")[0]})
           </span>
           <div className="text-base font-bold text-navy">{dBC.toFixed(4)}</div>
           <span className="text-[11px] text-muted-foreground font-sans">
@@ -652,7 +652,7 @@ export function UltrametricPropertyVisualizer() {
 
         <div className="p-3 rounded-sm border border-border bg-background space-y-1">
           <span className="text-[10px] text-muted-foreground font-sans uppercase">
-            Side 3: d_coph({pointsData[a].name.split("(")[0]}, {pointsData[c].name.split("(")[0]})
+            Side 3: d_coph({pointsData[a]!.name.split("(")[0]}, {pointsData[c]!.name.split("(")[0]})
           </span>
           <div className="text-base font-bold text-navy">{dAC.toFixed(4)}</div>
           <span className="text-[11px] text-muted-foreground font-sans">
@@ -687,8 +687,8 @@ export function UltrametricPropertyVisualizer() {
         </div>
 
         <p className="font-sans text-muted-foreground leading-relaxed pt-1">
-          Notice that the two longest sides have identical lengths ({sides[1].toFixed(4)} =={" "}
-          {sides[2].toFixed(4)}). In an ultrametric tree, every triangle is either equilateral or
+          Notice that the two longest sides have identical lengths ({sides[1]!.toFixed(4)} =={" "}
+          {sides[2]!.toFixed(4)}). In an ultrametric tree, every triangle is either equilateral or
           acute isosceles with the base being shorter than the two legs. Scalene triangles with
           three unequal side lengths cannot exist in any hierarchical clustering dendrogram.
         </p>

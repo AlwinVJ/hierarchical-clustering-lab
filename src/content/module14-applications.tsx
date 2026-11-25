@@ -357,7 +357,7 @@ export function CaseStudyExplorer() {
     "pipeline",
   );
 
-  const activeStage = PIPELINE_STAGES.find((s) => s.step === currentStep) || PIPELINE_STAGES[0];
+  const activeStage = PIPELINE_STAGES.find((s) => s.step === currentStep) || PIPELINE_STAGES[0]!;
 
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);

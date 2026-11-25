@@ -425,7 +425,7 @@ export function EvaluationPlayground() {
     const bCols: number[] = new Array(k).fill(0);
     for (let c = 0; c < k; c++) {
       for (let r = 0; r < numTrueClasses; r++) {
-        bCols[c] += contingency[r]![c]!;
+        bCols[c] = (bCols[c] ?? 0) + contingency[r]![c]!;
       }
     }
     const sumA = aRows.reduce((acc, v) => acc + comb2(v), 0);

@@ -15,8 +15,8 @@ describe("App routing and Course Structure", () => {
 
   it("contains all 15 required learning modules plus Overview", () => {
     expect(pages.length).toBeGreaterThanOrEqual(16);
-    expect(pages[0].slug).toBe("");
-    expect(pages[0].title).toBe("Overview");
+    expect(pages[0]!.slug).toBe("");
+    expect(pages[0]!.title).toBe("Overview");
   });
 
   const expectedSlugs = [

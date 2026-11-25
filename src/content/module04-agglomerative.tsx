@@ -305,7 +305,7 @@ export function AgglomerativeSimulator() {
     },
   ];
 
-  const currentStep = stepsData[step];
+  const currentStep = stepsData[step]!;
   const currentMatrix = currentStep.matrix[linkage];
   const currentZ = currentStep.zRows[linkage];
 
@@ -548,7 +548,7 @@ export function AgglomerativeSimulator() {
                       fill="#8b5cf6"
                     >
                       Root C₆ = {"{ P₁, P₂, P₃, P₄ }"} (h ={" "}
-                      {currentStep.zRows[linkage][2][2].toFixed(4)})
+                      {currentStep.zRows[linkage][2]![2]!.toFixed(4)})
                     </text>
                   </g>
                 )}
@@ -718,7 +718,7 @@ export function AgglomerativeSimulator() {
                         <td className="p-2 text-left font-semibold text-foreground bg-muted/20">
                           {rLabel}
                         </td>
-                        {currentMatrix.values[rIdx].map((val, cIdx) => {
+                        {currentMatrix.values[rIdx]!.map((val, cIdx) => {
                           const isMin = currentMatrix.minCoords.some(
                             ([r, c]) => r === rIdx && c === cIdx,
                           );

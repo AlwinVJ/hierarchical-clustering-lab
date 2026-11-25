@@ -41,15 +41,15 @@ The platform is organized into 15 complete learning modules plus an interactive 
 | 04  | Agglomerative Clustering            | 8-stage merge algorithm, distance matrix updates, interactive simulator |
 | 05  | Divisive Clustering                 | Top-down splintering, maximum diameter heuristic, DIANA Simulator       |
 | 06  | Linkage Methods                     | Single, Complete, Average, Centroid, Ward, Lance–Williams Explorer      |
-| 07  | Distance Metrics                    | Euclidean, Manhattan, Minkowski, Cosine, Mahalanobis, Curse of Dim.     |
-| 08  | Dendrograms                         | Tree topology, cophenetic distance, ultrametricity, Dendrogram Explorer |
+| 07  | Distance Metrics                    | Euclidean, Minkowski, Gower (mixed data), Jaccard, Curse of Dim.        |
+| 08  | Dendrograms                         | Tree topology, cophenetic distance, Tanglegrams, Baker's Gamma index    |
 | 09  | Mathematical Foundations            | Metric axioms, WSS expansion, Huygens theorem, Mathematical Playground  |
 | 10  | Practical Implementation            | Pure NumPy scratch engine, SciPy `linkage`, Scikit-learn API            |
 | 11  | Model Evaluation & Validation       | Silhouette, Davies–Bouldin, Calinski–Harabasz, ARI, Evaluation Lab      |
-| 12  | Optimal Cluster Selection (Cutting) | Height cut ($t$), maxclust ($k$), inconsistency sweep, Cutting Lab      |
+| 12  | Optimal Cluster Selection (Cutting) | Height cut ($t$), maxclust ($k$), Gap Statistic (1-SE), Inconsistency   |
 | 13  | Cluster Profiling & Stability       | Median vs mean profiling, radar charts, bootstrap resampling (ARI)      |
-| 14  | Real-World Applications & Showdown  | 15-stage RFM pipeline, Algorithm Showdown (HAC vs K-Means vs DBSCAN)    |
-| 15  | Hands-on Capstone Projects          | 4 verified production blueprints, starter templates, verified solutions |
+| 14  | Real-World Applications & Showdown  | 15-stage RFM, Showdown, Large-Scale 2-Stage Hybrid Clustering           |
+| 15  | Hands-on Capstone Projects          | 4 verified blueprints, 32-abstract NLP corpus, UCI retail stretch goals |
 
 ## Key Learning Features
 
@@ -86,10 +86,32 @@ Explore hierarchical clustering through three verified implementation approaches
 
 Four production-grade capstone blueprints verified against Python 3.12, SciPy 1.14, and Scikit-learn 1.5:
 
-1. **Customer Behavioral Hierarchy & RFM Segmentation**: End-to-end retail pipeline with log1p stabilization, Ward clustering, Silhouette validation ($S=0.4598$), and commercial persona profiling.
+1. **Customer Behavioral Hierarchy & RFM Segmentation**: End-to-end retail pipeline with log1p stabilization, Ward clustering, Silhouette validation ($S=0.4598$), and commercial persona profiling. Includes UCI Online Retail stretch goal.
 2. **Linkage Method Shoot-Out on Geometric Manifolds**: Multi-manifold benchmark across Blobs, Moons, Concentric Circles, and Iris, evaluating ARI, Silhouette, and Cophenetic correlation (CCC).
 3. **Pure NumPy Agglomerative Engine**: Complete from-scratch clustering engine implementing the Lance–Williams recurrence, achieving machine-precision parity with SciPy ($\Delta < 10^{-12}$).
-4. **Document Topic Taxonomy via TF-IDF & Ward**: Natural language taxonomy extraction on $L_2$-normalized text vectors with centroid keyword salience ranking.
+4. **Document Topic Taxonomy via TF-IDF & Ward**: Natural language taxonomy extraction across a realistic 32-abstract multi-domain corpus (Graphics, AI/ML, Space, Genomics) with centroid keyword salience ranking. Includes 20 Newsgroups stretch goal.
+
+## Automated Verification & Testing
+
+Every algorithm, derivation, and code snippet in this platform is continuously tested and verified:
+
+```bash
+# 1. Verify all 24 Python code snippets against Python 3.12, SciPy, and Scikit-learn
+npm run verify:python
+
+# 2. Run the Vitest unit test suite (64 assertions across routing, components, and math)
+npm test
+
+# 3. Perform TypeScript strict typecheck (zero unchecked index or property access errors)
+npx tsc --noEmit
+
+# 4. Production build check
+npm run build
+```
+
+Additionally, automated headless Chrome audits verify that:
+- Desktop viewports (1366px) have **0 horizontal scrollbars** under math formulas and interactive code panes.
+- Mobile viewports (375px) have **0 sideways scrolling/overflow** across all 16 routes.
 
 ## Technology Stack
 

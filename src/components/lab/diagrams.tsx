@@ -1498,18 +1498,8 @@ export const TanglegramDiagram: FC<{ label?: string }> = ({ label }) => {
             stroke="#3b82f6"
             strokeWidth="2"
           />
-          <path
-            d="M 230 75 L 180 75 L 180 60"
-            fill="none"
-            stroke="#3b82f6"
-            strokeWidth="2"
-          />
-          <path
-            d="M 230 105 L 150 105 L 150 75"
-            fill="none"
-            stroke="#3b82f6"
-            strokeWidth="2"
-          />
+          <path d="M 230 75 L 180 75 L 180 60" fill="none" stroke="#3b82f6" strokeWidth="2" />
+          <path d="M 230 105 L 150 105 L 150 75" fill="none" stroke="#3b82f6" strokeWidth="2" />
           {/* P7 bridge link */}
           <path
             d="M 230 135 L 120 135 L 120 90"
@@ -1526,18 +1516,8 @@ export const TanglegramDiagram: FC<{ label?: string }> = ({ label }) => {
             stroke="#0d9488"
             strokeWidth="2"
           />
-          <path
-            d="M 230 195 L 180 195 L 180 180"
-            fill="none"
-            stroke="#0d9488"
-            strokeWidth="2"
-          />
-          <path
-            d="M 230 225 L 150 225 L 150 200"
-            fill="none"
-            stroke="#0d9488"
-            strokeWidth="2"
-          />
+          <path d="M 230 195 L 180 195 L 180 180" fill="none" stroke="#0d9488" strokeWidth="2" />
+          <path d="M 230 225 L 150 225 L 150 200" fill="none" stroke="#0d9488" strokeWidth="2" />
 
           {/* Root merge and Outlier P8 */}
           <path
@@ -1546,18 +1526,8 @@ export const TanglegramDiagram: FC<{ label?: string }> = ({ label }) => {
             stroke="#64748b"
             strokeWidth="2"
           />
-          <path
-            d="M 90 200 L 90 145"
-            fill="none"
-            stroke="#64748b"
-            strokeWidth="2"
-          />
-          <path
-            d="M 230 260 L 60 260 L 60 205"
-            fill="none"
-            stroke="#ef4444"
-            strokeWidth="2"
-          />
+          <path d="M 90 200 L 90 145" fill="none" stroke="#64748b" strokeWidth="2" />
+          <path d="M 230 260 L 60 260 L 60 205" fill="none" stroke="#ef4444" strokeWidth="2" />
 
           {/* Left Title */}
           <text
@@ -1650,18 +1620,8 @@ export const TanglegramDiagram: FC<{ label?: string }> = ({ label }) => {
             stroke="#8b5cf6"
             strokeWidth="2"
           />
-          <path
-            d="M 510 75 L 560 75 L 560 60"
-            fill="none"
-            stroke="#8b5cf6"
-            strokeWidth="2"
-          />
-          <path
-            d="M 510 105 L 590 105 L 590 75"
-            fill="none"
-            stroke="#8b5cf6"
-            strokeWidth="2"
-          />
+          <path d="M 510 75 L 560 75 L 560 60" fill="none" stroke="#8b5cf6" strokeWidth="2" />
+          <path d="M 510 105 L 590 105 L 590 75" fill="none" stroke="#8b5cf6" strokeWidth="2" />
 
           {/* Subtree Ward C2 (P4, P5, P6, P7) */}
           <path
@@ -1670,18 +1630,8 @@ export const TanglegramDiagram: FC<{ label?: string }> = ({ label }) => {
             stroke="#a855f7"
             strokeWidth="2"
           />
-          <path
-            d="M 510 175 L 560 175 L 560 160"
-            fill="none"
-            stroke="#a855f7"
-            strokeWidth="2"
-          />
-          <path
-            d="M 510 205 L 590 205 L 590 185"
-            fill="none"
-            stroke="#a855f7"
-            strokeWidth="2"
-          />
+          <path d="M 510 175 L 560 175 L 560 160" fill="none" stroke="#a855f7" strokeWidth="2" />
+          <path d="M 510 205 L 590 205 L 590 185" fill="none" stroke="#a855f7" strokeWidth="2" />
           {/* P7 joins cluster C2 under Ward */}
           <path
             d="M 510 235 L 620 235 L 620 185"
@@ -1692,18 +1642,8 @@ export const TanglegramDiagram: FC<{ label?: string }> = ({ label }) => {
           />
 
           {/* Ward Root Merge and Outlier P8 */}
-          <path
-            d="M 660 120 L 660 190 L 710 190"
-            fill="none"
-            stroke="#64748b"
-            strokeWidth="2"
-          />
-          <path
-            d="M 510 265 L 660 265 L 660 190"
-            fill="none"
-            stroke="#ef4444"
-            strokeWidth="2"
-          />
+          <path d="M 660 120 L 660 190 L 710 190" fill="none" stroke="#64748b" strokeWidth="2" />
+          <path d="M 510 265 L 660 265 L 660 190" fill="none" stroke="#ef4444" strokeWidth="2" />
 
           {/* Right Title */}
           <text
@@ -1732,4 +1672,3 @@ export const TanglegramDiagram: FC<{ label?: string }> = ({ label }) => {
     </div>
   );
 };
-

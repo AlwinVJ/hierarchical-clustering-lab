@@ -74,16 +74,16 @@ export type BlockKind =
 
 export interface Block {
   kind: BlockKind;
-  label?: string;
-  columns?: string[];
-  rows?: string[];
-  tex?: string;
-  description?: string;
-  content?: ReactNode;
-  code?: string;
-  output?: string;
-  noteTitle?: string;
-  tableData?: Record<string, string[]>;
+  label?: string | undefined;
+  columns?: string[] | undefined;
+  rows?: string[] | undefined;
+  tex?: string | undefined;
+  description?: string | undefined;
+  content?: ReactNode | undefined;
+  code?: string | undefined;
+  output?: string | undefined;
+  noteTitle?: string | undefined;
+  tableData?: Record<string, string[]> | undefined;
 }
 
 export interface Section {
