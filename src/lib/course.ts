@@ -34,6 +34,13 @@ import {
 } from "@/content/module14-applications";
 import { ProjectsCatalog } from "@/content/module15-projects";
 import {
+  FlatVsNestedDiagram,
+  ContinuousCloudCutDiagram,
+  LinkageDistanceGeometryDiagram,
+  AgglomerativeMergeSequenceDiagram,
+  DivisiveSplinterSequenceDiagram,
+} from "@/components/lab/diagrams";
+import {
   Compass,
   BookOpen,
   Layers,
@@ -202,7 +209,11 @@ export const pages: CoursePage[] = [
           String.raw`W(C) = \frac{1}{2} \sum_{k=1}^K \sum_{i, j \in C_k} \|\mathbf{x}_i - \mathbf{x}_j\|^2`,
           "Clustering seeks partitions that minimize within-cluster pairwise dissimilarity W(C) while maximizing separation between cluster boundaries.",
         ),
-        d("Feature space partitioning and cluster boundary geometries"),
+        cust(
+          createElement(FlatVsNestedDiagram, {
+            label: "Feature space partitioning and cluster boundary geometries",
+          }),
+        ),
       ),
       s(
         "What is Hierarchical Clustering?",
@@ -310,7 +321,11 @@ export const pages: CoursePage[] = [
           String.raw`X = \begin{bmatrix} \mathbf{x}_1^T \\ \mathbf{x}_2^T \\ \vdots \\ \mathbf{x}_N^T \end{bmatrix} \in \mathbb{R}^{N \times d}, \quad \mathbf{x}_i = (x_{i1}, x_{i2}, \dots, x_{id}) \in \mathbb{R}^d`,
           "Each row of matrix X represents an observation, and each column represents a measured feature.",
         ),
-        d("Decomposition of continuous feature space into nested hierarchical partitions"),
+        cust(
+          createElement(ContinuousCloudCutDiagram, {
+            label: "Decomposition of continuous feature space into nested hierarchical partitions",
+          }),
+        ),
       ),
       s(
         "Distance Between Data Points",
@@ -345,7 +360,11 @@ export const pages: CoursePage[] = [
           String.raw`\mathcal{D}(C_A, C_B) = f(\{d(\mathbf{x}_i, \mathbf{x}_j) : \mathbf{x}_i \in C_A, \mathbf{x}_j \in C_B\})`,
           "The linkage function f maps pairwise observation distances into a single scalar dissimilarity between clusters C_A and C_B.",
         ),
-        d("Geometric visualization of inter-cluster distance definitions"),
+        cust(
+          createElement(LinkageDistanceGeometryDiagram, {
+            label: "Geometric visualization of inter-cluster distance definitions",
+          }),
+        ),
       ),
       s(
         "Linkage Criteria",
@@ -380,7 +399,7 @@ export const pages: CoursePage[] = [
         ),
         c(
           "Chapter References",
-          "References: Sokal & Rohlf (1962); Lance & Williams (1967); SciPy Spatial Distance Documentation. See docs/references.md.",
+          "• Sokal, R. R., & Rohlf, F. J. (1962). The comparison of dendrograms by objective methods. Taxon, 11(2), 33–40.\n\n• Lance, G. N., & Williams, W. T. (1967). A General Theory of Classificatory Sorting Strategies: 1. Hierarchical Systems. The Computer Journal, 9(4), 373–380.\n\n• SciPy Community. (2024). Spatial Distance Computations (scipy.spatial.distance). SciPy Reference Documentation.",
         ),
       ),
       s(
@@ -430,7 +449,11 @@ export const pages: CoursePage[] = [
           "Greedy Irreversibility",
           "Agglomerative clustering makes irreversible local decisions: once two points merge, they remain unified throughout all subsequent macro-stages. Any early merge error induced by noise or outlier bridges propagates upward.",
         ),
-        d("Bottom-up merge progression from singletons to root"),
+        cust(
+          createElement(AgglomerativeMergeSequenceDiagram, {
+            label: "Bottom-up merge progression from singletons to root",
+          }),
+        ),
       ),
       s(
         "Divisive Clustering",
@@ -452,7 +475,11 @@ export const pages: CoursePage[] = [
           String.raw`\text{diam}(C) = \max_{\mathbf{x}_i, \mathbf{x}_j \in C} d(\mathbf{x}_i, \mathbf{x}_j)`,
           "DIANA selects the cluster with maximum diameter to subdivide, focusing computation on the most widely dispersed group.",
         ),
-        d("Top-down splinter group progression from root to leaves"),
+        cust(
+          createElement(DivisiveSplinterSequenceDiagram, {
+            label: "Top-down splinter group progression from root to leaves",
+          }),
+        ),
       ),
       s(
         "Comparison of Paradigms",
@@ -1851,7 +1878,7 @@ Output:
         },
         c(
           "Module 06 References & Further Reading",
-          "Lance, G. N., & Williams, W. T. (1967). A General Theory of Classificatory Sorting Strategies: 1. Hierarchical Systems. The Computer Journal, 9(4), 373–380. | Batagelj, V. (1981). Note on ultrametric hierarchical clustering algorithms. Psychometrika, 46(3), 351–352. | Ward, J. H. (1963). Hierarchical Grouping to Optimize an Objective Function. JASA, 58(301), 236–244. | Murtagh, F., & Contreras, P. (2012). Algorithms for Hierarchical Clustering: An Overview. WIREs Data Mining and Knowledge Discovery, 2(1), 86–97.",
+          "• Lance, G. N., & Williams, W. T. (1967). A General Theory of Classificatory Sorting Strategies: 1. Hierarchical Systems. The Computer Journal, 9(4), 373–380.\n\n• Batagelj, V. (1981). Note on ultrametric hierarchical clustering algorithms. Psychometrika, 46(3), 351–352.\n\n• Ward, J. H. (1963). Hierarchical Grouping to Optimize an Objective Function. JASA, 58(301), 236–244.\n\n• Murtagh, F., & Contreras, P. (2012). Algorithms for Hierarchical Clustering: An Overview. WIREs Data Mining and Knowledge Discovery, 2(1), 86–97.",
         ),
       ),
     ],
@@ -2124,7 +2151,7 @@ Output:
         },
         c(
           "Module 07 References & Further Reading",
-          "Fréchet, M. (1906). Sur quelques points du calcul fonctionnel. Rendiconti del Circolo Matematico di Palermo, 22(1), 1–72. | Minkowski, H. (1910). Geometrie der Zahlen. Teubner. | Mahalanobis, P. C. (1936). On the generalized distance in statistics. Proceedings of the National Institute of Sciences of India, 2(1), 49–55. | Beyer, K., Goldstein, J., Ramakrishnan, R., & Shaft, U. (1999). When Is 'Nearest Neighbor' Meaningful? ICDT 1999, LNCS 1540, 217–235. | Aggarwal, C. C., Hinneburg, A., & Keim, D. A. (2001). On the Surprising Behavior of Distance Metrics in High Dimensional Space. ICDT 2001, 420–434.",
+          "• Fréchet, M. (1906). Sur quelques points du calcul fonctionnel. Rendiconti del Circolo Matematico di Palermo, 22(1), 1–72.\n\n• Minkowski, H. (1910). Geometrie der Zahlen. Teubner.\n\n• Mahalanobis, P. C. (1936). On the generalized distance in statistics. Proceedings of the National Institute of Sciences of India, 2(1), 49–55.\n\n• Beyer, K., Goldstein, J., Ramakrishnan, R., & Shaft, U. (1999). When Is 'Nearest Neighbor' Meaningful? ICDT 1999, LNCS 1540, 217–235.\n\n• Aggarwal, C. C., Hinneburg, A., & Keim, D. A. (2001). On the Surprising Behavior of Distance Metrics in High Dimensional Space. ICDT 2001, 420–434.",
         ),
       ),
     ],
@@ -2347,7 +2374,7 @@ c_{N-2,1} & c_{N-2,2} & h_{N-2} & N
         },
         c(
           "Module 08 References & Further Reading",
-          "Sokal, R. R., & Rohlf, F. J. (1962). The comparison of dendrograms by objective methods. Taxon, 11(2), 33–40. | Bar-Joseph, Z., Gifford, D. K., & Jaakkola, T. S. (2001). Fast optimal leaf ordering for hierarchical clustering. Bioinformatics, 17(suppl_1), S22–S29. | Farris, J. S. (1969). On the cophenetic correlation coefficient. Systematic Biology, 18(3), 279–285. | Murtagh, F. (1983). A survey of recent advances in hierarchical clustering algorithms. The Computer Journal, 26(4), 354–359.",
+          "• Sokal, R. R., & Rohlf, F. J. (1962). The comparison of dendrograms by objective methods. Taxon, 11(2), 33–40.\n\n• Bar-Joseph, Z., Gifford, D. K., & Jaakkola, T. S. (2001). Fast optimal leaf ordering for hierarchical clustering. Bioinformatics, 17(suppl_1), S22–S29.\n\n• Farris, J. S. (1969). On the cophenetic correlation coefficient. Systematic Biology, 18(3), 279–285.\n\n• Murtagh, F. (1983). A survey of recent advances in hierarchical clustering algorithms. The Computer Journal, 26(4), 354–359.",
         ),
       ),
     ],
@@ -2734,7 +2761,7 @@ x_{n,1} & x_{n,2} & \cdots & x_{n,d}
         },
         c(
           "Module 09 References & Further Reading",
-          "Fréchet, M. (1906). Sur quelques points du calcul fonctionnel. Rendiconti del Circolo Matematico di Palermo, 22(1), 1–72. | Ward, J. H. (1963). Hierarchical Grouping to Optimize an Objective Function. JASA, 58(301), 236–244. | Lance, G. N., & Williams, W. T. (1967). A General Theory of Classificatory Sorting Strategies: 1. Hierarchical Systems. The Computer Journal, 9(4), 373–380. | Murtagh, F. (1983). A survey of recent advances in hierarchical clustering algorithms. The Computer Journal, 26(4), 354–359.",
+          "• Fréchet, M. (1906). Sur quelques points du calcul fonctionnel. Rendiconti del Circolo Matematico di Palermo, 22(1), 1–72.\n\n• Ward, J. H. (1963). Hierarchical Grouping to Optimize an Objective Function. JASA, 58(301), 236–244.\n\n• Lance, G. N., & Williams, W. T. (1967). A General Theory of Classificatory Sorting Strategies: 1. Hierarchical Systems. The Computer Journal, 9(4), 373–380.\n\n• Murtagh, F. (1983). A survey of recent advances in hierarchical clustering algorithms. The Computer Journal, 26(4), 354–359.",
         ),
       ),
     ],
@@ -2760,10 +2787,12 @@ x_{n,1} & x_{n,2} & \cdots & x_{n,d}
         cd(
           "Installation & Dependency Specification",
           `# Standard pip installation in a virtual environment
-pip install numpy>=1.24.0 scipy>=1.10.0 scikit-learn>=1.2.0 matplotlib>=3.7.0 seaborn>=0.12.0 pandas>=2.0.0
+pip install numpy>=1.24.0 scipy>=1.10.0 scikit-learn>=1.2.0 \
+    matplotlib>=3.7.0 seaborn>=0.12.0 pandas>=2.0.0
 
 # Conda / Mamba environment installation
-conda create -n hclust-lab python=3.11 numpy scipy scikit-learn matplotlib seaborn pandas -y
+conda create -n hclust-lab python=3.11 \
+    numpy scipy scikit-learn matplotlib seaborn pandas -y
 conda activate hclust-lab`,
         ),
         cd(
@@ -3089,7 +3118,10 @@ dendro_dict = dendrogram(
 )
 
 # Plot horizontal decision threshold cut line
-plt.axhline(y=4.0, color="#dc2626", linestyle="--", linewidth=1.5, label="Cut Threshold (t=4.0)")
+plt.axhline(
+    y=4.0, color="#dc2626", linestyle="--", linewidth=1.5,
+    label="Cut Threshold (t=4.0)"
+)
 plt.legend(loc="upper left")
 plt.grid(axis="y", linestyle=":", alpha=0.6)
 plt.tight_layout()
@@ -3183,7 +3215,9 @@ for i, merge in enumerate(model.children_):
             current_count += counts[child_idx - n_samples]
     counts[i] = current_count
 
-Z_reconstructed = np.column_stack([model.children_, model.distances_, counts]).astype(float)
+Z_reconstructed = np.column_stack(
+    [model.children_, model.distances_, counts]
+).astype(float)
 print("\\nReconstructed SciPy Linkage Matrix Z:")
 print(np.round(Z_reconstructed, 4))`,
         ),
@@ -3317,9 +3351,12 @@ import matplotlib.pyplot as plt
 # Stage 1: Reproducible Seed & Synthetic Customer Cohorts
 # -------------------------------------------------------------
 np.random.seed(42)
-cohort_vip = np.random.normal(loc=[80, 80], scale=[6, 5], size=(15, 2))      # High Income, High Spend
-cohort_budget = np.random.normal(loc=[30, 25], scale=[5, 6], size=(15, 2))   # Low Income, Low Spend
-cohort_savers = np.random.normal(loc=[80, 20], scale=[6, 6], size=(15, 2))   # High Income, Low Spend
+# High Income, High Spend
+cohort_vip = np.random.normal(loc=[80, 80], scale=[6, 5], size=(15, 2))
+# Low Income, Low Spend
+cohort_budget = np.random.normal(loc=[30, 25], scale=[5, 6], size=(15, 2))
+# High Income, Low Spend
+cohort_savers = np.random.normal(loc=[80, 20], scale=[6, 6], size=(15, 2))
 
 X_raw = np.vstack([cohort_vip, cohort_budget, cohort_savers])
 df = pd.DataFrame(X_raw, columns=["Annual_Income_k", "Spending_Score"])
@@ -3362,11 +3399,17 @@ Z_optimal = linkage(y_dist, method="ward")
 # Stage 7: Dendrogram Plotting & Cut Threshold Selection
 # -------------------------------------------------------------
 plt.figure(figsize=(10, 5))
-plt.title("Customer Segmentation Dendrogram (Ward Linkage)", fontsize=13, fontweight="bold")
+plt.title(
+    "Customer Segmentation Dendrogram (Ward Linkage)",
+    fontsize=13, fontweight="bold"
+)
 plt.xlabel("Customer Sample Index", fontsize=10)
 plt.ylabel("Ward Merge Distance", fontsize=10)
 dendrogram(Z_optimal, color_threshold=5.0, above_threshold_color="#64748b")
-plt.axhline(y=5.0, color="#ef4444", linestyle="--", linewidth=1.5, label="Cut Height (t=5.0)")
+plt.axhline(
+    y=5.0, color="#ef4444", linestyle="--", linewidth=1.5,
+    label="Cut Height (t=5.0)"
+)
 plt.legend(loc="upper right")
 plt.tight_layout()
 
@@ -3387,7 +3430,9 @@ print(f"Davies-Bouldin Index (lower is better):    {dbi:.4f}")
 # -------------------------------------------------------------
 # Stage 10: Customer Persona Profiling
 # -------------------------------------------------------------
-profile = df.groupby("Cluster_SciPy")[["Annual_Income_k", "Spending_Score"]].agg(["mean", "std", "count"])
+profile = df.groupby("Cluster_SciPy")[
+    ["Annual_Income_k", "Spending_Score"]
+].agg(["mean", "std", "count"])
 print("\\n--- Customer Persona Profiles ---")
 print(profile.round(1))
 
@@ -3813,7 +3858,9 @@ import pandas as pd
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, cophenet, fcluster
 from sklearn.metrics import (
-    silhouette_score, davies_bouldin_score, calinski_harabasz_score
+    silhouette_score,
+    davies_bouldin_score,
+    calinski_harabasz_score,
 )
 
 # 1. Canonical 4-point symmetric benchmark dataset
@@ -3968,8 +4015,16 @@ height_diffs = np.diff(heights)
 print("--- Step-by-Step Merge Heights & Gaps ---")
 for i, h in enumerate(heights):
     clusters_remaining = len(X) - i
-    diff_str = f" | Jump to next: {height_diffs[i]:.4f}" if i < len(height_diffs) else " (Root merge)"
-    print(f"Merge {i+1} (creates {clusters_remaining - 1} clusters from {clusters_remaining}): Height = {h:.4f}{diff_str}")
+    diff_str = (
+        f" | Jump to next: {height_diffs[i]:.4f}"
+        if i < len(height_diffs)
+        else " (Root merge)"
+    )
+    msg = (
+        f"Merge {i+1} (creates {clusters_remaining - 1} clusters from "
+        f"{clusters_remaining}): Height = {h:.4f}{diff_str}"
+    )
+    print(msg)
 
 # Optimal cut point: maximum jump occurred between merge 2 and merge 3
 max_jump_idx = np.argmax(height_diffs)
@@ -4025,7 +4080,10 @@ print("--- SciPy Inconsistency Matrix (d=2) ---")
 print("Row | Mean Height | Std Dev | Link Count | Inconsistency Coeff")
 for k, row in enumerate(incon):
     mean_h, std_h, count, coeff = row
-    print(f" {k}  |   {mean_h:.4f}    | {std_h:.4f}  |    {int(count)}       |      {coeff:.4f}")
+    print(
+        f" {k}  |   {mean_h:.4f}    | {std_h:.4f}  |    "
+        f"{int(count)}       |      {coeff:.4f}"
+    )
 
 # Extract clusters where inconsistency exceeds threshold t=1.0
 labels_incon = fcluster(Z, t=1.0, criterion="inconsistent", depth=2)
@@ -4054,7 +4112,11 @@ Inconsistency Cluster Assignments (t=1.0): [1 1 2 2]`,
 import pandas as pd
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, fcluster
-from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
+from sklearn.metrics import (
+    silhouette_score,
+    davies_bouldin_score,
+    calinski_harabasz_score,
+)
 
 # Customer segmentation benchmark dataset (N=45)
 np.random.seed(42)
@@ -4422,7 +4484,8 @@ knn_graph = kneighbors_graph(X, n_neighbors=10, include_self=False)
 
 print(f"Dataset observations: N = {len(X)}")
 print(f"Dense matrix entries:  {len(X)**2:,} elements")
-print(f"Sparse graph non-zeros: {knn_graph.nnz:,} edges ({knn_graph.nnz / len(X)**2 * 100:.2f}% density)")
+density_pct = knn_graph.nnz / len(X)**2 * 100
+print(f"Sparse graph non-zeros: {knn_graph.nnz:,} edges ({density_pct:.2f}% density)")
 
 # Fit graph-constrained Agglomerative Clustering with Ward linkage
 sparse_model = AgglomerativeClustering(
