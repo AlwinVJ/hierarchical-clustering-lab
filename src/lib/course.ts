@@ -305,7 +305,7 @@ export const pages: CoursePage[] = [
         "Key Concepts",
         c(
           "The Four Foundational Pillars",
-          "To master hierarchical clustering, four core components must be understood: 1) The Proximity Matrix (symmetric observation distances), 2) Linkage Criteria (how distances between entire clusters are calculated), 3) The Dendrogram (the tree graph recording merge history), and 4) Tree Cutting (the horizontal slice that produces discrete clusters).",
+          "To master hierarchical clustering, four core components must be understood:\n\n1. The Proximity Matrix: Symmetric matrix of pairwise observation distances.\n2. Linkage Criteria: Mathematical rules for calculating distances between entire clusters.\n3. The Dendrogram: The visual tree graph recording complete merge history.\n4. Tree Cutting: The horizontal slice that produces discrete, flat clusters.",
         ),
         n(
           "Critical Heuristic: Greedy Irreversibility",
@@ -2395,7 +2395,7 @@ x_{n,1} & x_{n,2} & \cdots & x_{n,d}
         ),
         c(
           "Clusters as Disjoint Partitions",
-          "At any discrete stage of the hierarchical clustering process, the dataset X is partitioned into k non-empty, mutually disjoint subsets called clusters: P = {C_1, C_2, ..., C_k}. The partition satisfies two fundamental axioms: (1) Total Coverage: ⋃_{j=1}^k C_j = X, and (2) Mutual Exclusivity: C_a ∩ C_b = ∅ for all a ≠ b. The number of observations in cluster C_j is its cardinality, denoted |C_j| or n_j, satisfying ∑_{j=1}^k n_j = n.",
+          "At any discrete stage of the hierarchical clustering process, the dataset X is partitioned into k non-empty, mutually disjoint subsets called clusters: P = {C_1, C_2, ..., C_k}.\n\nThe partition satisfies two fundamental axioms:\n\n1. Total Coverage: ⋃_{j=1}^k C_j = X\n2. Mutual Exclusivity: C_a ∩ C_b = ∅ for all a ≠ b\n\nThe number of observations in cluster C_j is its cardinality, denoted |C_j| or n_j, satisfying ∑_{j=1}^k n_j = n.",
         ),
         c(
           "Concrete Benchmark Dataset Representation",
@@ -3538,7 +3538,7 @@ Conclusion: Both libraries yield identical 3-cluster partitions with 0.8151 Silh
         "Internal Validation Metrics",
         c(
           "Geometric Foundations of Internal Cluster Validation",
-          "Internal validation metrics evaluate partition quality using only the geometry of the coordinate matrix X and cluster assignments C. They measure two competing geometric objectives: (1) Within-cluster Compactness (cohesion): data points belonging to the same cluster should be tightly concentrated near each other or their centroid; and (2) Between-cluster Separation (isolation): distinct clusters should be widely separated across empty space. We examine the mathematical formulation, geometric assumptions, and edge cases of the three premier internal metrics.",
+          "Internal validation metrics evaluate partition quality using only the geometry of the coordinate matrix X and cluster assignments C.\n\nThey measure two competing geometric objectives:\n\n1. Within-cluster Compactness (cohesion): Data points belonging to the same cluster should be tightly concentrated near each other or their centroid.\n2. Between-cluster Separation (isolation): Distinct clusters should be widely separated across empty space.\n\nWe examine the mathematical formulation, geometric assumptions, and edge cases of the three premier internal metrics.",
         ),
         c(
           "A. Silhouette Coefficient (Rousseeuw, 1987)",
