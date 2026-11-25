@@ -1,4 +1,15 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import {
+  generateTwoMoons,
+  generateAnisotropicBlobs,
+  generateGaussianMixture,
+  kMeans,
+  dbscan,
+  singleLinkage,
+  wardLinkage,
+  computeAdjustedRandIndex,
+  computeSilhouetteScore,
+} from "@/lib/clustering";
 import {
   Briefcase,
   RotateCcw,
@@ -22,6 +33,7 @@ import {
   ArrowRight,
   ShieldCheck,
   Gauge,
+  ScatterChart,
 } from "lucide-react";
 
 interface PipelineStage {
@@ -835,6 +847,420 @@ print("Pipeline completed successfully.")
 }
 
 /** 4-Question Interactive Self-Assessment Quiz for Module 14 */
+const CLUSTER_COLORS = [
+  "#1e3a8a", // Navy (Cluster 0)
+  "#0d9488", // Teal (Cluster 1)
+  "#b45309", // Amber (Cluster 2)
+  "#7c3aed", // Violet (Cluster 3)
+  "#be185d", // Rose (Cluster 4)
+  "#0369a1", // Sky (Cluster 5)
+];
+
+export function AlgorithmShowdown() {
+  const [datasetKey, setDatasetKey] = useState<"moons" | "blobs" | "mixture">("moons");
+  const [kParam, setKParam] = useState<number>(2);
+  const [epsParam, setEpsParam] = useState<number>(0.35);
+  const [minPtsParam, setMinPtsParam] = useState<number>(3);
+
+  const dataset = useMemo(() => {
+    if (datasetKey === "moons") return generateTwoMoons(140, 0.08, 42);
+    if (datasetKey === "blobs") return generateAnisotropicBlobs(150, 42);
+    return generateGaussianMixture(150, 42);
+  }, [datasetKey]);
+
+  useEffect(() => {
+    setKParam(dataset.recommendedK);
+    setEpsParam(dataset.recommendedEps);
+  }, [dataset]);
+
+  const singleRes = useMemo(
+    () => singleLinkage(dataset.points, kParam),
+    [dataset, kParam]
+  );
+  const wardRes = useMemo(
+    () => wardLinkage(dataset.points, kParam),
+    [dataset, kParam]
+  );
+  const kMeansRes = useMemo(
+    () => kMeans(dataset.points, kParam, 50, 42),
+    [dataset, kParam]
+  );
+  const dbscanRes = useMemo(
+    () => dbscan(dataset.points, epsParam, minPtsParam),
+    [dataset, epsParam, minPtsParam]
+  );
+
+  const singleARI = useMemo(
+    () => computeAdjustedRandIndex(dataset.groundTruth, singleRes.labels),
+    [dataset, singleRes]
+  );
+  const singleSil = useMemo(
+    () => computeSilhouetteScore(dataset.points, singleRes.labels),
+    [dataset, singleRes]
+  );
+
+  const wardARI = useMemo(
+    () => computeAdjustedRandIndex(dataset.groundTruth, wardRes.labels),
+    [dataset, wardRes]
+  );
+  const wardSil = useMemo(
+    () => computeSilhouetteScore(dataset.points, wardRes.labels),
+    [dataset, wardRes]
+  );
+
+  const kMeansARI = useMemo(
+    () => computeAdjustedRandIndex(dataset.groundTruth, kMeansRes.labels),
+    [dataset, kMeansRes]
+  );
+  const kMeansSil = useMemo(
+    () => computeSilhouetteScore(dataset.points, kMeansRes.labels),
+    [dataset, kMeansRes]
+  );
+
+  const dbscanARI = useMemo(
+    () => computeAdjustedRandIndex(dataset.groundTruth, dbscanRes.labels),
+    [dataset, dbscanRes]
+  );
+  const dbscanSil = useMemo(
+    () => computeSilhouetteScore(dataset.points, dbscanRes.labels),
+    [dataset, dbscanRes]
+  );
+
+  const bounds = useMemo(() => {
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const [x, y] of dataset.points) {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+    const spanX = maxX - minX || 1;
+    const spanY = maxY - minY || 1;
+    return { minX, maxX, minY, maxY, spanX, spanY };
+  }, [dataset]);
+
+  const scalePoint = (x: number, y: number, width = 300, height = 190, pad = 20) => {
+    const sx = pad + ((x - bounds.minX) / bounds.spanX) * (width - 2 * pad);
+    const sy = height - pad - ((y - bounds.minY) / bounds.spanY) * (height - 2 * pad);
+    return [sx, sy];
+  };
+
+  const renderBadge = (ari: number) => {
+    if (ari >= 0.85) {
+      return (
+        <span className="font-mono text-[11px] font-semibold px-2 py-0.5 rounded-sm bg-teal/10 text-teal border border-teal/20">
+          ARI: {ari.toFixed(3)}
+        </span>
+      );
+    }
+    if (ari >= 0.5) {
+      return (
+        <span className="font-mono text-[11px] font-semibold px-2 py-0.5 rounded-sm bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+          ARI: {ari.toFixed(3)}
+        </span>
+      );
+    }
+    return (
+      <span className="font-mono text-[11px] font-semibold px-2 py-0.5 rounded-sm bg-destructive/10 text-destructive border border-destructive/20">
+        ARI: {ari.toFixed(3)}
+      </span>
+    );
+  };
+
+  return (
+    <div className="my-8 rounded-sm border border-border bg-card p-6 shadow-xs space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between border-b border-border pb-4">
+        <div>
+          <div className="inline-flex items-center gap-1.5 rounded-sm bg-teal/10 border border-teal/20 px-2.5 py-1 text-xs font-mono font-medium text-teal">
+            <Activity className="h-3.5 w-3.5" />
+            Cross-Paradigm Algorithm Showdown
+          </div>
+          <h3 className="mt-1.5 text-lg font-bold text-foreground">
+            Benchmarking Single Linkage, Ward, K-Means & DBSCAN
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            Compare non-convex manifold continuity, spherical variance partitioning, and density-based clustering across complex 2D geometries.
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            setKParam(dataset.recommendedK);
+            setEpsParam(dataset.recommendedEps);
+            setMinPtsParam(3);
+          }}
+          className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary/40 hover:text-foreground self-start md:self-auto"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+          Reset Parameters
+        </button>
+      </div>
+
+      {/* Control Toolbar */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 rounded-sm border border-border bg-secondary/30 p-4">
+        <div>
+          <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+            Geometric Dataset
+          </label>
+          <select
+            value={datasetKey}
+            onChange={(e) => setDatasetKey(e.target.value as "moons" | "blobs" | "mixture")}
+            className="w-full rounded-sm border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:outline-hidden"
+          >
+            <option value="moons">Two Interleaving Moons (Non-Convex)</option>
+            <option value="blobs">Anisotropic Blobs (Elongated)</option>
+            <option value="mixture">Gaussian Mixture (Spherical Overlap)</option>
+          </select>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between text-[11px] font-semibold text-muted-foreground mb-1">
+            <span className="uppercase tracking-wider">Cluster Count (k)</span>
+            <span className="font-mono text-teal">{kParam}</span>
+          </div>
+          <input
+            type="range"
+            min={2}
+            max={6}
+            step={1}
+            value={kParam}
+            onChange={(e) => setKParam(parseInt(e.target.value, 10))}
+            className="w-full accent-teal cursor-pointer"
+          />
+          <span className="text-[10px] text-muted-foreground">Applies to HAC & K-Means</span>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between text-[11px] font-semibold text-muted-foreground mb-1">
+            <span className="uppercase tracking-wider">DBSCAN Radius (ε)</span>
+            <span className="font-mono text-teal">{epsParam.toFixed(2)}</span>
+          </div>
+          <input
+            type="range"
+            min={0.15}
+            max={0.9}
+            step={0.05}
+            value={epsParam}
+            onChange={(e) => setEpsParam(parseFloat(e.target.value))}
+            className="w-full accent-teal cursor-pointer"
+          />
+          <span className="text-[10px] text-muted-foreground">Neighborhood threshold</span>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between text-[11px] font-semibold text-muted-foreground mb-1">
+            <span className="uppercase tracking-wider">DBSCAN MinPts</span>
+            <span className="font-mono text-teal">{minPtsParam}</span>
+          </div>
+          <input
+            type="range"
+            min={2}
+            max={8}
+            step={1}
+            value={minPtsParam}
+            onChange={(e) => setMinPtsParam(parseInt(e.target.value, 10))}
+            className="w-full accent-teal cursor-pointer"
+          />
+          <span className="text-[10px] text-muted-foreground">Core point density threshold</span>
+        </div>
+      </div>
+
+      {/* 2x2 Small Multiples Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Panel 1: Single Linkage */}
+        <div className="rounded-sm border border-border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                <Network className="h-3.5 w-3.5 text-teal" />
+                <span>Single Linkage (HAC)</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                Min pairwise distance | Chaining manifold connectivity
+              </p>
+            </div>
+            {renderBadge(singleARI)}
+          </div>
+          <svg viewBox="0 0 300 190" className="w-full h-auto bg-background rounded-sm border border-border">
+            {dataset.points.map((p, i) => {
+              const [cx, cy] = scalePoint(p[0], p[1]);
+              const l = singleRes.labels[i] ?? 0;
+              const color = CLUSTER_COLORS[l % CLUSTER_COLORS.length];
+              return (
+                <circle
+                  key={i}
+                  cx={cx}
+                  cy={cy}
+                  r={3.5}
+                  fill={color}
+                  stroke="#ffffff"
+                  strokeWidth={0.8}
+                />
+              );
+            })}
+          </svg>
+          <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground border-t border-border pt-2">
+            <span>Silhouette: {singleSil.toFixed(3)}</span>
+            <span>k = {kParam}</span>
+          </div>
+        </div>
+
+        {/* Panel 2: Ward Linkage */}
+        <div className="rounded-sm border border-border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                <Layers className="h-3.5 w-3.5 text-navy" />
+                <span>Ward Linkage (HAC)</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                Min variance increase (ΔWSS) | Compact spherical partitions
+              </p>
+            </div>
+            {renderBadge(wardARI)}
+          </div>
+          <svg viewBox="0 0 300 190" className="w-full h-auto bg-background rounded-sm border border-border">
+            {dataset.points.map((p, i) => {
+              const [cx, cy] = scalePoint(p[0], p[1]);
+              const l = wardRes.labels[i] ?? 0;
+              const color = CLUSTER_COLORS[l % CLUSTER_COLORS.length];
+              return (
+                <circle
+                  key={i}
+                  cx={cx}
+                  cy={cy}
+                  r={3.5}
+                  fill={color}
+                  stroke="#ffffff"
+                  strokeWidth={0.8}
+                />
+              );
+            })}
+          </svg>
+          <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground border-t border-border pt-2">
+            <span>Silhouette: {wardSil.toFixed(3)}</span>
+            <span>k = {kParam}</span>
+          </div>
+        </div>
+
+        {/* Panel 3: K-Means */}
+        <div className="rounded-sm border border-border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                <Compass className="h-3.5 w-3.5 text-amber-600" />
+                <span>K-Means (Lloyd)</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                Euclidean Voronoi cells | Iterative centroid reassignment
+              </p>
+            </div>
+            {renderBadge(kMeansARI)}
+          </div>
+          <svg viewBox="0 0 300 190" className="w-full h-auto bg-background rounded-sm border border-border">
+            {dataset.points.map((p, i) => {
+              const [cx, cy] = scalePoint(p[0], p[1]);
+              const l = kMeansRes.labels[i] ?? 0;
+              const color = CLUSTER_COLORS[l % CLUSTER_COLORS.length];
+              return (
+                <circle
+                  key={i}
+                  cx={cx}
+                  cy={cy}
+                  r={3.5}
+                  fill={color}
+                  stroke="#ffffff"
+                  strokeWidth={0.8}
+                />
+              );
+            })}
+            {/* Draw Centroids */}
+            {kMeansRes.centroids.map((cent, ci) => {
+              const [cx, cy] = scalePoint(cent[0] ?? 0, cent[1] ?? 0);
+              return (
+                <g key={`cent-${ci}`}>
+                  <circle cx={cx} cy={cy} r={6} fill="#ffffff" stroke="#0f172a" strokeWidth={2} />
+                  <circle cx={cx} cy={cy} r={2.5} fill="#0f172a" />
+                </g>
+              );
+            })}
+          </svg>
+          <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground border-t border-border pt-2">
+            <span>Silhouette: {kMeansSil.toFixed(3)}</span>
+            <span>{kMeansRes.iterations} iterations</span>
+          </div>
+        </div>
+
+        {/* Panel 4: DBSCAN */}
+        <div className="rounded-sm border border-border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                <Gauge className="h-3.5 w-3.5 text-teal" />
+                <span>DBSCAN (Density-Based)</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                Density-reachability | Automatic cluster count & noise rejection
+              </p>
+            </div>
+            {renderBadge(dbscanARI)}
+          </div>
+          <svg viewBox="0 0 300 190" className="w-full h-auto bg-background rounded-sm border border-border">
+            {dataset.points.map((p, i) => {
+              const [cx, cy] = scalePoint(p[0], p[1]);
+              const l = dbscanRes.labels[i] ?? -1;
+              if (l === -1) {
+                // Noise point
+                return (
+                  <circle
+                    key={i}
+                    cx={cx}
+                    cy={cy}
+                    r={3}
+                    fill="#94a3b8"
+                    stroke="#475569"
+                    strokeWidth={0.8}
+                    strokeDasharray="1 1"
+                  />
+                );
+              }
+              const color = CLUSTER_COLORS[l % CLUSTER_COLORS.length];
+              return (
+                <circle
+                  key={i}
+                  cx={cx}
+                  cy={cy}
+                  r={3.5}
+                  fill={color}
+                  stroke="#ffffff"
+                  strokeWidth={0.8}
+                />
+              );
+            })}
+          </svg>
+          <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground border-t border-border pt-2">
+            <span>Silhouette: {dbscanSil.toFixed(3)}</span>
+            <span>
+              {dbscanRes.clusterCount} clusters ({dbscanRes.noiseCount} noise)
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Educational Synthesis Callout */}
+      <div className="rounded-sm border border-teal/20 bg-teal/5 p-4 text-xs text-foreground space-y-1">
+        <span className="font-bold flex items-center gap-1.5 text-teal">
+          <Info className="h-4 w-4" />
+          Key Theoretical Takeaway
+        </span>
+        <p className="text-muted-foreground leading-relaxed">
+          On non-convex geometries (such as Two Moons), Single Linkage and DBSCAN achieve perfect separation (ARI = 1.000) by tracing continuous local proximity paths. By contrast, K-Means and Ward Linkage enforce convex, spherical partitions around central points—fracturing the non-linear crescent moons despite achieving higher raw Silhouette scores!
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function Module14Quiz() {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState<boolean>(false);
@@ -895,6 +1321,34 @@ export function Module14Quiz() {
       correct: 1,
       explanation:
         "Hierarchical clustering is uniquely well-suited when domain problems feature multi-scale taxonomies (e.g. biological phylogeny, topic trees), when the optimal cluster count is unknown a priori, and when non-Euclidean metrics (e.g., Cosine, Manhattan, Mahalanobis) are necessary.",
+    },
+    {
+      id: 5,
+      prompt:
+        "On non-convex geometric structures (such as two interleaving crescent moons), why does Ward linkage fail while Single linkage and DBSCAN succeed?",
+      options: [
+        "Ward linkage minimizes intra-cluster variance, greedily forming convex spherical partitions around Euclidean centroids that split non-linear continuous curves.",
+        "Single linkage requires all observations to lie on a straight line.",
+        "DBSCAN computes an exact Voronoi tessellation that bends around curves.",
+        "Ward linkage is mathematically restricted to Manhattan distance in 2D space.",
+      ],
+      correct: 0,
+      explanation:
+        "Ward linkage minimizes increase in within-cluster sum of squares (ΔWSS). It mathematically assumes spherical, convex, equal-variance clusters with a central mean. On non-linear manifolds like moons or concentric rings, the distance between crescent tips is greater than the distance between moons across the center, causing Ward (and K-Means) to cut across the crescents. By contrast, Single Linkage and DBSCAN evaluate local connectivity and density paths.",
+    },
+    {
+      id: 6,
+      prompt:
+        "When comparing clustering paradigms for massive production streaming deployment (N > 5,000,000 observations), which algorithm is most appropriate and why?",
+      options: [
+        "Agglomerative Hierarchical Clustering, because dendrograms can be serialized directly into JSON.",
+        "Mini-Batch K-Means, because it operates in linear time O(N · k · d) and constant memory O(k · d) via online stochastic gradient updates.",
+        "DBSCAN, because it evaluates pairwise ε-balls in constant O(1) time without spatial indexes.",
+        "Divisive Hierarchical Clustering (DIANA), because 2^N splits execute naturally on parallel GPUs.",
+      ],
+      correct: 1,
+      explanation:
+        "Mini-Batch K-Means uses stochastic gradient descent with small random subsets, processing millions of observations in linear time O(N · k · d) with fixed memory O(k · d). Agglomerative and divisive hierarchical algorithms require at least quadratic O(N²) distance evaluation or graph construction, making unconstrained massive streaming intractable.",
     },
   ];
 
