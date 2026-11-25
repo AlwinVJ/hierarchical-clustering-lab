@@ -41,12 +41,33 @@ const PIPELINE_STAGES: PipelineStage[] = [
     title: "1. Business Formulation & Cohort Definition",
     summary:
       "Define customer behavioral entity: 60 accounts with 12-month transaction histories evaluated across Recency, Frequency, and Monetary spend (RFM).",
-    pythonSnippet: `# 1. Business Problem: Segment accounts to optimize retention and marketing spend
-import pandas as pd
+    pythonSnippet: `# 1. Business Problem: Synthetic 12-month RFM Cohort Generation (N=60)
 import numpy as np
+import pandas as pd
 
-# Load 12-month account transaction aggregates
-df_raw = pd.read_csv("enterprise_accounts_rfm.csv")
+np.random.seed(42)
+recency = np.concatenate([
+    np.random.normal(5, 2, 20),
+    np.random.normal(30, 8, 20),
+    np.random.normal(90, 15, 20)
+])
+frequency = np.concatenate([
+    np.random.poisson(25, 20),
+    np.random.poisson(10, 20),
+    np.random.poisson(2, 20)
+])
+monetary = np.concatenate([
+    np.random.normal(12000, 1500, 20),
+    np.random.normal(3500, 600, 20),
+    np.random.normal(400, 100, 20)
+])
+
+df_raw = pd.DataFrame({
+    'AccountID': [f'ACC-{i+1:03d}' for i in range(60)],
+    'Recency_Days': np.clip(recency, 1, None).round(1),
+    'Frequency_Orders': np.clip(frequency, 1, None),
+    'Monetary_Spend': np.clip(monetary, 50, None).round(2)
+})
 print(f"Loaded {len(df_raw)} enterprise accounts with features: {list(df_raw.columns)}")`,
     outputSummary:
       "60 accounts loaded; raw feature columns: ['AccountID', 'Recency_Days', 'Frequency_Orders', 'Monetary_Spend']",
@@ -73,7 +94,7 @@ print("Data validation passed: 0 missing fields, all non-negative.")`,
 skew_metrics = df_raw[['Recency_Days', 'Frequency_Orders', 'Monetary_Spend']].skew()
 print("Feature Skewness:\\n", skew_metrics.round(3))`,
     outputSummary:
-      "Recency: 0.842 (moderate), Frequency: 1.120 (skewed), Monetary: 2.314 (heavy right skew).",
+      "Recency: 0.590 (moderate), Frequency: 0.531 (moderate), Monetary: 0.582 (moderate right skew).",
   },
   {
     step: 4,
@@ -86,7 +107,7 @@ print("Feature Skewness:\\n", skew_metrics.round(3))`,
 X_log = np.log1p(df_raw[['Recency_Days', 'Frequency_Orders', 'Monetary_Spend']])
 print("Post-transformation skewness:\\n", X_log.skew().round(3))`,
     outputSummary:
-      "Post-log skewness: Recency: -0.12, Frequency: 0.05, Monetary: 0.18 (near-Gaussian symmetry).",
+      "Post-log skewness: Recency: -0.307, Frequency: -0.343, Monetary: -0.336 (stabilized variance).",
   },
   {
     step: 5,
@@ -116,7 +137,7 @@ print("Means:", X_scaled.mean(axis=0).round(2), "Stds:", X_scaled.std(axis=0).ro
 # Compute condensed pairwise Euclidean distance array (N*(N-1)/2 = 1,770 distances)
 dist_array = pdist(X_scaled, metric="euclidean")
 print(f"Condensed distance elements: {len(dist_array)}")`,
-    outputSummary: "Computed 1,770 pairwise distances; min distance = 0.241, max distance = 5.892.",
+    outputSummary: "Computed 1,770 pairwise distances; min distance = 0.049, max distance = 5.146.",
   },
   {
     step: 7,
@@ -139,7 +160,7 @@ print(f"Linkage matrix shape: {Z.shape} (59 successive merges)")`,
     phase: "Phase 2: Tree Modeling",
     title: "8. Cophenetic Correlation Verification",
     summary:
-      "Evaluate tree fidelity by comparing ultrametric cophenetic distances against original pairwise distances: CCC = 0.8568, confirming low distortion.",
+      "Evaluate tree fidelity by comparing ultrametric cophenetic distances against original pairwise distances: CCC = 0.8571, confirming low distortion.",
     mathFormula:
       "CCC = \\frac{\\sum (d_{ij} - \\bar{d})(c_{ij} - \\bar{c})}{\\sqrt{\\sum (d_{ij} - \\bar{d})^2 \\sum (c_{ij} - \\bar{c})^2}}",
     pythonSnippet: `from scipy.cluster.hierarchy import cophenet
@@ -148,7 +169,7 @@ ccc, coph_dists = cophenet(Z, dist_array)
 print(f"Cophenetic Correlation Coefficient (CCC): {ccc:.4f}")
 assert ccc > 0.80, "Dendrogram severely distorts original metric distances!"`,
     outputSummary:
-      "CCC = 0.8568 (strong metric space preservation; tree faithfully models data geometry).",
+      "CCC = 0.8571 (strong metric space preservation; dendrogram faithfully models data geometry).",
   },
   {
     step: 9,
@@ -173,7 +194,7 @@ plt.savefig("customer_dendrogram_truncated.png")`,
     phase: "Phase 3: Validation & Slicing",
     title: "10. Merge-Height Gap Leap Analysis",
     summary:
-      "Analyze distance increments (Δh = h_k - h_{k-1}). The largest merge height leap occurs between k=3 and k=2 (Δh = 8.14), signaling that k=3 is the natural cut.",
+      "Analyze distance increments (Δh = h_k - h_{k-1}). Merge step 57->58 yields gap = +6.094 (k=3), and step 58->59 yields gap = +7.700 (k=2).",
     mathFormula: "\\Delta h_k = h_k - h_{k-1}",
     pythonSnippet: `heights = Z[:, 2]
 gaps = np.diff(heights)
@@ -182,7 +203,7 @@ for i in np.argsort(gaps)[-3:][::-1]:
     k_val = len(heights) - i
     print(f"Merge step {i+1} -> {i+2}: jump = +{gaps[i]:.3f} (yields k={k_val})")`,
     outputSummary:
-      "Largest jump occurs at Step 58: jump = +8.142 -> strongly recommends cutting at k = 3.",
+      "Top merge jumps: Step 58->59 (+7.700, k=2), Step 57->58 (+6.094, k=3), Step 56->57 (+0.500, k=4).",
   },
   {
     step: 11,
@@ -202,7 +223,7 @@ for k in range(2, 6):
     ch = calinski_harabasz_score(X_scaled, labs)
     print(f"k={k}: Silhouette={s:.4f}, DB={db:.4f}, CH={ch:.1f}")`,
     outputSummary:
-      "k=2: s=0.584, DB=0.541 | k=3: s=0.721 (PEAK), DB=0.374 (BEST), CH=419.3 (PEAK) | k=4: s=0.598.",
+      "k=2: s=0.6427, DB=0.4588, CH=159.6 | k=3: s=0.7218 (PEAK), DB=0.3736 (BEST), CH=420.8 (PEAK) | k=4: s=0.6591.",
   },
   {
     step: 12,
@@ -228,7 +249,7 @@ profile = df_raw.groupby('Cluster')[rfm_cols].agg(['median', 'mean']).round(1)
 print("--- Business Profiling Table ---")
 print(profile)`,
     outputSummary:
-      "C1: Recency 5d, Freq 25/mo, Spend $12.1k | C2: Recency 30d, Freq 10/mo, Spend $3.5k | C3: Recency 90d, Freq 2/mo, Spend $410.",
+      "C1 (Dormant): Recency 90.5d, Freq 2/mo, Spend $410 | C2 (VIP): Recency 4.5d, Freq 25/mo, Spend $12.6k | C3 (Growth): Recency 28.0d, Freq 10/mo, Spend $3.6k.",
   },
   {
     step: 14,
@@ -265,9 +286,9 @@ print(f"Mean Resampling Stability: ARI = {mean_ari:.4f} (±{std_ari:.4f})")`,
       "Map abstract cluster IDs into strategic personas: Enterprise Champions (VIP concierge), Growing Accounts (upsell triggers), and Churn Risks (re-engagement campaigns).",
     pythonSnippet: `# 15. Strategic Business Persona Mapping
 persona_map = {
-    1: "Enterprise Champions (VIP High-Value)",
-    2: "Core Growth Accounts (Steady Mid-Tier)",
-    3: "Dormant / Churn Risk (Low-Touch Intervention)"
+    1: "At-Risk / Dormant Shoppers",
+    2: "Enterprise Champions (VIP)",
+    3: "Core Growth Mid-Tier"
 }
 df_raw['Persona'] = df_raw['Cluster'].map(persona_map)
 df_raw.to_csv("customer_segmentation_deployed.csv", index=False)
@@ -404,9 +425,9 @@ print(f"\\nOptimal Cluster Count by Peak Silhouette: k = {best_k}")
 df['Cluster'] = fcluster(Z, t=best_k, criterion='maxclust')
 
 persona_map = {
-    1: "Enterprise Champions (VIP)",
-    2: "Core Growth Mid-Tier",
-    3: "Dormant / At-Risk"
+    1: "At-Risk / Dormant Shoppers",
+    2: "Enterprise Champions (VIP)",
+    3: "Core Growth Mid-Tier"
 }
 df['Persona'] = df['Cluster'].map(persona_map)
 
