@@ -225,5 +225,23 @@ describe("App routing and Course Structure", () => {
     expect(profilingPage.sections.map((s) => s.title)).toContain(
       "Knowledge Check & Self-Assessment",
     );
+
+    // Page 15: Applications, Limitations & Scalability (slug: "applications")
+    const appPage = pages.find((p) => p.slug === "applications")!;
+    expect(appPage.sections.length).toBe(6);
+    expect(appPage.sections.map((s) => s.title)).toContain(
+      "Real-World Industrial & Scientific Applications",
+    );
+    expect(appPage.sections.map((s) => s.title)).toContain(
+      "Computational Complexity & Algorithmic Limitations",
+    );
+    expect(appPage.sections.map((s) => s.title)).toContain(
+      "Scalability & Sparse Connectivity Constraints",
+    );
+    expect(appPage.sections.map((s) => s.title)).toContain(
+      "Comparative Paradigm Matrix: Choosing the Right Clustering Algorithm",
+    );
+    expect(appPage.sections.map((s) => s.title)).toContain("End-to-End Production Case Study");
+    expect(appPage.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
   });
 });
