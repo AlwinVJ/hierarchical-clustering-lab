@@ -3053,7 +3053,7 @@ Squareform Distance Matrix D (shape 4x4):
  [7.2111 5.831  1.4142 0.    ]]
 
 Manhattan Condensed Vector: [ 2.  8. 10.  6.  8.  2.]
-Cosine Condensed Vector:    [0.0194 0.0052 0.0016 0.0076 0.0094 0.0003]`,
+Cosine Condensed Vector:    [0.0077 0.0838 0.0784 0.0412 0.0373 0.0001]`,
         ),
         c(
           "The 7 Linkage Criteria in SciPy (scipy.cluster.hierarchy.linkage)",
@@ -3116,7 +3116,7 @@ print("Leaf execution order:", dendro_dict["ivl"])`,
         ),
         out(
           "Console Output: Dendrogram Attributes",
-          `Dendrogram dictionary keys: ['icoord', 'dcoord', 'ivl', 'leaves', 'color_list']
+          `Dendrogram dictionary keys: ['icoord', 'dcoord', 'ivl', 'leaves', 'color_list', 'leaves_color_list']
 Leaf execution order: ['P_1', 'P_2', 'P_3', 'P_4']`,
         ),
         c(
@@ -3808,49 +3808,81 @@ Monolith:    Homogeneity = 0.0000 | Completeness = 1.0000 (Max whole) | V-Measur
 import pandas as pd
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, cophenet, fcluster
-from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
+from sklearn.metrics import (
+    silhouette_score, davies_bouldin_score, calinski_harabasz_score
+)
 
-# Canonical 4-point benchmark dataset
-X = np.array([
+# 1. Canonical 4-point symmetric benchmark dataset
+X4 = np.array([
     [1.0, 2.0],  # P_1
     [2.0, 3.0],  # P_2
     [6.0, 5.0],  # P_3
     [7.0, 6.0],  # P_4
 ])
-y_dist = pdist(X, metric="euclidean")
+y4 = pdist(X4, metric="euclidean")
 
-methods = ["single", "complete", "average", "ward"]
-results = []
+# 2. Extended 8-point asymmetric benchmark dataset
+X8 = np.array([
+    [1.0, 2.0], [2.0, 3.0], [2.0, 1.0],
+    [6.0, 5.0], [7.0, 6.0], [7.0, 4.0],
+    [4.0, 3.5], [12.0, 12.0]
+])
+y8 = pdist(X8, metric="euclidean")
 
-for method in methods:
-    Z = linkage(y_dist, method=method)
-    ccc, _ = cophenet(Z, y_dist)
-    labels = fcluster(Z, t=2, criterion="maxclust")
-    
-    sil = silhouette_score(X, labels)
-    db = davies_bouldin_score(X, labels)
-    ch = calinski_harabasz_score(X, labels)
-    
-    results.append({
-        "Linkage": method.upper(),
-        "Cophenetic (CCC)": round(ccc, 4),
-        "Silhouette (s)": round(sil, 4),
-        "Davies-Bouldin (DB)": round(db, 4),
-        "Calinski-Harabasz (CH)": round(ch, 1),
+methods = ["single", "complete", "average", "ward", "centroid"]
+results_x4, results_x8 = [], []
+
+for m in methods:
+    # Benchmark on X4
+    Z4 = linkage(y4, method=m)
+    c4, _ = cophenet(Z4, y4)
+    labs4 = fcluster(Z4, t=2, criterion="maxclust")
+    results_x4.append({
+        "Linkage": m.upper(),
+        "CCC": round(c4, 4),
+        "Silhouette": round(silhouette_score(X4, labs4), 4),
+        "DB": round(davies_bouldin_score(X4, labs4), 4),
+        "CH": round(calinski_harabasz_score(X4, labs4), 1),
     })
 
-df_comparison = pd.DataFrame(results)
-print("--- Relative Validation: Multi-Linkage Benchmarking (k=2) ---")
-print(df_comparison.to_string(index=False))`,
+    # Benchmark on X8
+    Z8 = linkage(y8, method=m)
+    c8, _ = cophenet(Z8, y8)
+    labs8 = fcluster(Z8, t=2, criterion="maxclust")
+    results_x8.append({
+        "Linkage": m.upper(),
+        "CCC": round(c8, 4),
+        "Silhouette": round(silhouette_score(X8, labs8), 4),
+        "DB": round(davies_bouldin_score(X8, labs8), 4),
+        "CH": round(calinski_harabasz_score(X8, labs8), 1),
+    })
+
+print("--- Benchmark 1: Canonical 4-Point Dataset (Symmetric) ---")
+print(pd.DataFrame(results_x4).to_string(index=False))
+print("\\n--- Benchmark 2: Extended 8-Point Dataset (Asymmetric) ---")
+print(pd.DataFrame(results_x8).to_string(index=False))`,
         ),
         out(
-          "Console Output: Multi-Linkage Comparison Matrix",
-          `--- Relative Validation: Multi-Linkage Benchmarking (k=2) ---
- Linkage  Cophenetic (CCC)  Silhouette (s)  Davies-Bouldin (DB)  Calinski-Harabasz (CH)
-  SINGLE            0.8528          0.7543               0.2425                    34.0
-COMPLETE            0.8732          0.7543               0.2425                    34.0
- AVERAGE            0.8654          0.7543               0.2425                    34.0
-    WARD            0.8732          0.7543               0.2425                    34.0`,
+          "Console Output: Multi-Linkage Benchmarking",
+          `--- Benchmark 1: Canonical 4-Point Dataset (Symmetric) ---
+ Linkage    CCC  Silhouette     DB    CH
+  SINGLE 0.9350      0.7543 0.2425  34.0
+COMPLETE 0.9350      0.7543 0.2425  34.0
+ AVERAGE 0.9350      0.7543 0.2425  34.0
+    WARD 0.9350      0.7543 0.2425  34.0
+CENTROID 0.9350      0.7543 0.2425  34.0
+
+--- Benchmark 2: Extended 8-Point Dataset (Asymmetric) ---
+ Linkage    CCC  Silhouette     DB    CH
+  SINGLE 0.8863      0.5657 0.2247  12.5
+COMPLETE 0.9096      0.5657 0.2247  12.5
+ AVERAGE 0.9120      0.5657 0.2247  12.5
+    WARD 0.8741      0.5657 0.2247  12.5
+CENTROID 0.9120      0.5657 0.2247  12.5`,
+        ),
+        c(
+          "Mathematical Explanation: The 4-Point Benchmark Invariance",
+          "A striking observation is that on the canonical 4-point benchmark, all five linkage criteria produce an identical Cophenetic Correlation Coefficient of exactly 0.9350. This is not a numerical coincidence, but a direct consequence of the topology:\n\n1. Symmetrical Sub-Cluster Coalescence: P₁ and P₂ are separated by d(P₁, P₂) = √2 ≈ 1.4142, and P₃ and P₄ are separated by d(P₃, P₄) = √2 ≈ 1.4142. All five linkages greedily merge {P₁, P₂} and {P₃, P₄} first at height 1.4142.\n\n2. Constant Inter-Cluster Cophenetic Height: The remaining step merges {P₁, P₂} with {P₃, P₄} into the root at height H_merge (which varies from 4.4721 for single linkage to 8.2462 for Ward linkage). For any linkage, the cophenetic distance between any point in the first cluster and any point in the second is exactly H_merge. The resulting cophenetic distance vector has the structure [1.4142, H, H, H, H, 1.4142].\n\n3. Scale-Invariance of Pearson Correlation: The Pearson correlation r(y, c) between the original distance vector y and [1.4142, H, H, H, H, 1.4142] evaluates to exactly 0.9350 regardless of the numerical value of H > 1.4142.\n\nTo break this symmetry and reveal genuine divergence across linkage criteria, the extended 8-point benchmark introduces an isolated bridge point and an outlier. On X₈, Average and Centroid linkage achieve the highest CCC (0.9120), followed by Complete (0.9096), Single (0.8863), and Ward (0.8741).",
         ),
         c(
           "Synthesizing Numerical Scores with Domain Grounding",
@@ -4062,11 +4094,11 @@ print(f"Recommended k by Lowest Davies-Bouldin: k = {int(best_db_k)}")`,
           "Console Output: Cluster Count Sweep",
           `--- Cluster Count Sweep Diagnostics ---
  k  Silhouette (s)  Davies-Bouldin (DB)  Calinski-Harabasz (CH)  Min Cluster Size
- 2          0.5755               0.5658                   120.3                15
- 3          0.8352               0.2312                   364.5                15
- 4          0.6970               0.5401                   301.2                 7
- 5          0.5714               0.7643                   265.8                 6
- 6          0.4492               0.9821                   240.5                 5
+ 2          0.6476               0.5076                    79.7                15
+ 3          0.8348               0.2211                   634.2                15
+ 4          0.6651               0.6000                   488.5                 6
+ 5          0.5150               0.7856                   429.6                 4
+ 6          0.3536               0.9961                   408.4                 4
 
 Recommended k by Peak Silhouette:     k = 3
 Recommended k by Lowest Davies-Bouldin: k = 3`,
@@ -4140,6 +4172,9 @@ df = pd.DataFrame({
 })
 
 # Standardize and perform Ward hierarchical clustering
+pd.set_option("display.max_columns", 20)
+pd.set_option("display.width", 120)
+
 X_norm = (df - df.mean()) / df.std()
 Z = linkage(pdist(X_norm), method="ward")
 df["cluster"] = fcluster(Z, t=3, criterion="maxclust")
@@ -4155,26 +4190,27 @@ print("--- Multi-Feature Cluster Profiles ---")
 print(profile_table)
 
 # Standardized Z-scores to pinpoint defining attributes
-z_scores = (df.groupby("cluster").mean() - df.drop(columns="cluster").mean()) / df.drop(columns="cluster").std()
+mean_diff = df.groupby("cluster").mean() - df.drop(columns="cluster").mean()
+z_scores = mean_diff / df.drop(columns="cluster").std()
 print("\\n--- Standardized Feature Z-Scores ---")
 print(z_scores.round(3))`,
         ),
         out(
           "Console Output: Cluster Profiling Table",
           `--- Multi-Feature Cluster Profiles ---
-        annual_spend                     visit_frequency       discount_affinity      
-        count     mean   median      std    mean median   std    mean median   std
-cluster                                                                          
-1          40  1221.45  1198.50   241.12    4.12    4.0  1.92    0.72   0.74  0.15
-2          35  5480.12  5412.80   762.40   18.25   18.0  4.11    0.28   0.26  0.12
-3          25 15840.60 13120.40  6890.30   31.80   32.0  5.40    0.09   0.07  0.08
+        annual_spend                              visit_frequency              discount_affinity             
+               count      mean    median      std            mean median   std              mean median   std
+cluster                                                                                                      
+1                 40   1156.27   1153.17   190.56            4.03    4.0  2.11              0.73   0.77  0.16
+2                 35   5502.84   5471.34   771.28           18.26   19.0  4.41              0.29   0.27  0.16
+3                 25  13549.90  13387.08  3994.06           34.04   34.0  6.74              0.09   0.06  0.11
 
 --- Standardized Feature Z-Scores ---
          annual_spend  visit_frequency  discount_affinity
 cluster                                                  
-1              -0.912           -0.954              1.145
-2               0.114            0.245             -0.421
-3               1.302            1.082             -0.892`,
+1              -0.873           -0.984              1.019
+2              -0.052            0.138             -0.405
+3               1.469            1.381             -1.063`,
         ),
       ),
       s(
@@ -4206,7 +4242,9 @@ from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.metrics import adjusted_rand_score
 
-def evaluate_cluster_stability(X, k_range=[2, 3, 4, 5], n_bootstrap=40, sample_ratio=0.8):
+def evaluate_cluster_stability(
+    X, k_range=[2, 3, 4, 5], n_bootstrap=40, sample_ratio=0.8
+):
     n = len(X)
     sub_size = int(sample_ratio * n)
     stability_records = []
@@ -4230,11 +4268,18 @@ def evaluate_cluster_stability(X, k_range=[2, 3, 4, 5], n_bootstrap=40, sample_r
             
         mean_ari = np.mean(ari_scores)
         std_ari = np.std(ari_scores)
+        if mean_ari > 0.85:
+            status = "Highly Stable"
+        elif mean_ari > 0.70:
+            status = "Moderate"
+        else:
+            status = "Unstable"
+
         stability_records.append({
             "k": k,
             "Mean ARI": round(mean_ari, 4),
             "Std ARI": round(std_ari, 4),
-            "Status": "Highly Stable" if mean_ari > 0.85 else ("Moderate" if mean_ari > 0.70 else "Unstable")
+            "Status": status
         })
         
     return pd.DataFrame(stability_records)
@@ -4255,10 +4300,10 @@ print(df_stability.to_string(index=False))`,
           "Console Output: Resampling Stability Table",
           `--- Cluster Stability Diagnostics ---
  k  Mean ARI  Std ARI        Status
- 2    0.7321   0.1420      Moderate
+ 2    0.6138   0.4498      Unstable
  3    1.0000   0.0000 Highly Stable
- 4    0.7180   0.1852      Moderate
- 5    0.6425   0.2104      Unstable`,
+ 4    0.8555   0.1171 Highly Stable
+ 5    0.7677   0.1419      Moderate`,
         ),
       ),
       s(
