@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import {
   FolderKanban,
   Database,
@@ -1014,678 +1014,339 @@ Topic 4 (Docs [24, 25, 26, 27, 28, 29, 30, 31]): cellular, dna, biology, sequenc
   },
 ];
 
-/** Visual Architecture Diagram for Project 1: RFM Customer Pipeline */
+/** Common Stage Definition for Project Visual Architecture Pipelines */
+interface PipelineStage {
+  width: number;
+  title: string;
+  lines: { text: string; color?: "foreground" | "muted" | "teal" | "navy" }[];
+  highlight?: boolean;
+}
+
+interface PipelineDiagramProps {
+  title: string;
+  ariaLabel: string;
+  stages: PipelineStage[];
+}
+
+const RFM_STAGES: PipelineStage[] = [
+  {
+    width: 130,
+    title: "Raw RFM Ingestion",
+    lines: [
+      { text: "Recency, Freq, Spend", color: "muted" },
+      { text: "Severe Skewness", color: "teal" },
+    ],
+  },
+  {
+    width: 130,
+    title: "Log1p & Scaling",
+    lines: [
+      { text: "np.log1p(X)", color: "muted" },
+      { text: "StandardScaler (z-score)", color: "teal" },
+    ],
+  },
+  {
+    width: 130,
+    title: "Ward Linkage",
+    lines: [
+      { text: "Min-Variance Tree", color: "muted" },
+      { text: "O(N²) Lance–Williams", color: "teal" },
+    ],
+    highlight: true,
+  },
+  {
+    width: 130,
+    title: "Tree Cut & Profiling",
+    lines: [
+      { text: "K=3 Validation Sweep", color: "muted" },
+      { text: "Silhouette: 0.4598", color: "muted" },
+      { text: "Business Personas", color: "teal" },
+    ],
+  },
+];
+
+const SHOOTOUT_STAGES: PipelineStage[] = [
+  {
+    width: 160,
+    title: "4 Test Manifolds",
+    lines: [
+      { text: "• Blobs (Convex Gaussian)", color: "muted" },
+      { text: "• Moons (Interleaved)", color: "muted" },
+      { text: "• Circles (Concentric)", color: "muted" },
+      { text: "• Iris (Biological 4D)", color: "teal" },
+    ],
+  },
+  {
+    width: 160,
+    title: "4 Linkage Criteria",
+    lines: [
+      { text: "• Single (Chaining)", color: "muted" },
+      { text: "• Complete (Compact)", color: "muted" },
+      { text: "• Average (UPGMA)", color: "muted" },
+      { text: "• Ward (Min-Variance)", color: "teal" },
+    ],
+    highlight: true,
+  },
+  {
+    width: 140,
+    title: "Metric Engine",
+    lines: [
+      { text: "1. Adjusted Rand Index", color: "muted" },
+      { text: "2. Silhouette Score", color: "muted" },
+      { text: "3. Cophenetic (CCC)", color: "teal" },
+    ],
+  },
+  {
+    width: 130,
+    title: "Synthesis",
+    lines: [
+      { text: "Comparative Matrix", color: "muted" },
+      { text: "Paradox Analysis", color: "muted" },
+      { text: "Failure Taxonomy", color: "teal" },
+    ],
+  },
+];
+
+const LANCE_WILLIAMS_STAGES: PipelineStage[] = [
+  {
+    width: 160,
+    title: "Proximity Matrix D₀",
+    lines: [
+      { text: "pdist(X, 'euclidean')", color: "muted" },
+      { text: "diag(D) = +∞", color: "muted" },
+      { text: "Active Dict: {0..N-1}", color: "teal" },
+    ],
+  },
+  {
+    width: 160,
+    title: "Greedy argmin(D)",
+    lines: [
+      { text: "Find min d(C_i, C_j)", color: "muted" },
+      { text: "New cluster ID = N+step", color: "muted" },
+      { text: "Append to Z_rows", color: "teal" },
+    ],
+  },
+  {
+    width: 160,
+    title: "Lance–Williams Update",
+    lines: [
+      { text: "d_new = αᵢd_ki + αⱼd_kj", color: "foreground" },
+      { text: "+ βd_ij + γ|d_ki - d_kj|", color: "foreground" },
+      { text: "O(1) per cluster k", color: "teal" },
+    ],
+    highlight: true,
+  },
+  {
+    width: 110,
+    title: "SciPy Parity",
+    lines: [
+      { text: "||Z - Z_scipy||", color: "muted" },
+      { text: "< 1e-12", color: "muted" },
+      { text: "Machine Precision", color: "teal" },
+    ],
+  },
+];
+
+const TOPIC_TAXONOMY_STAGES: PipelineStage[] = [
+  {
+    width: 150,
+    title: "Corpus Ingestion",
+    lines: [
+      { text: "32 Multi-Domain Docs", color: "muted" },
+      { text: "TF-IDF Feature Space", color: "muted" },
+      { text: "Vocabulary V", color: "teal" },
+    ],
+  },
+  {
+    width: 160,
+    title: "L2 Unit Normalization",
+    lines: [
+      { text: "||x||₂ = 1.0", color: "foreground" },
+      { text: "||u - v||² = 2(1 - cos θ)", color: "muted" },
+      { text: "Euclidean = Angular Space", color: "teal" },
+    ],
+  },
+  {
+    width: 150,
+    title: "Ward Hierarchy",
+    lines: [
+      { text: "linkage(X, 'ward')", color: "muted" },
+      { text: "Spherical Variance Min", color: "muted" },
+      { text: "Semantic Tree", color: "teal" },
+    ],
+    highlight: true,
+  },
+  {
+    width: 130,
+    title: "Taxonomy & Keywords",
+    lines: [
+      { text: "Cut at K=4 Topics", color: "muted" },
+      { text: "Centroid TF-IDF Salience", color: "muted" },
+      { text: "Top Ranked Terms", color: "teal" },
+    ],
+  },
+];
+
+/** Unified Pipeline Diagram using Tailwind classes & dynamic useId markers */
+export function PipelineDiagram({ title, ariaLabel, stages }: PipelineDiagramProps) {
+  const rawId = useId();
+  const markerId = `arrow-${rawId.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+
+  let currentX = 10;
+  const layout = stages.map((stage, idx) => {
+    const x = currentX;
+    const centerX = x + stage.width / 2;
+    const arrowStartX = x + stage.width;
+    const arrowEndX = arrowStartX + 50;
+    currentX = arrowEndX;
+    return {
+      ...stage,
+      x,
+      centerX,
+      hasArrow: idx < stages.length - 1,
+      arrowStartX,
+      arrowEndX,
+    };
+  });
+
+  return (
+    <div className="rounded-sm border border-border bg-card p-4">
+      <div className="text-xs font-mono font-semibold text-teal mb-3 uppercase">
+        {title}
+      </div>
+      <svg
+        viewBox="0 0 760 140"
+        className="w-full h-auto text-foreground"
+        aria-label={ariaLabel}
+      >
+        <defs>
+          <marker
+            id={markerId}
+            viewBox="0 0 10 10"
+            refX="6"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 1 L 8 5 L 0 9 z" className="fill-navy" />
+          </marker>
+        </defs>
+
+        {layout.map((s, idx) => {
+          const rectClass = s.highlight
+            ? "fill-secondary stroke-navy"
+            : "fill-secondary stroke-border";
+          const titleClass = s.highlight
+            ? "fill-navy font-bold text-[11px]"
+            : "fill-foreground font-bold text-[11px]";
+
+          return (
+            <g key={idx}>
+              <rect
+                x={s.x}
+                y={25}
+                width={s.width}
+                height={90}
+                rx={4}
+                className={rectClass}
+                strokeWidth={s.highlight ? 1.5 : 1}
+              />
+              <text
+                x={s.centerX}
+                y={s.lines.length >= 4 ? 46 : 50}
+                textAnchor="middle"
+                className={titleClass}
+              >
+                {s.title}
+              </text>
+              {s.lines.map((l, lIdx) => {
+                const colorClass =
+                  l.color === "teal"
+                    ? "fill-teal"
+                    : l.color === "foreground"
+                      ? "fill-foreground"
+                      : l.color === "navy"
+                        ? "fill-navy"
+                        : "fill-muted-foreground";
+                const lineSpacing = s.lines.length >= 4 ? 14 : 16;
+                const startY = s.lines.length >= 4 ? 64 : 70;
+                return (
+                  <text
+                    key={lIdx}
+                    x={s.centerX}
+                    y={startY + lIdx * lineSpacing}
+                    textAnchor="middle"
+                    className={`text-[9px] font-sans ${colorClass}`}
+                  >
+                    {l.text}
+                  </text>
+                );
+              })}
+
+              {s.hasArrow && (
+                <path
+                  d={`M ${s.arrowStartX} 70 L ${s.arrowEndX} 70`}
+                  className="stroke-navy"
+                  strokeWidth="2"
+                  markerEnd={`url(#${markerId})`}
+                />
+              )}
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 function RfmPipelineDiagram() {
   return (
-    <div className="rounded-sm border border-border bg-card p-4">
-      <div className="text-xs font-mono font-semibold text-teal mb-3 uppercase">
-        Project Architecture: RFM Hierarchical Segmentation Flow
-      </div>
-      <svg
-        viewBox="0 0 760 140"
-        className="w-full h-auto text-foreground"
-        aria-label="RFM pipeline diagram"
-      >
-        <rect
-          x="10"
-          y="30"
-          width="130"
-          height="80"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="75"
-          y="60"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          Raw RFM Ingestion
-        </text>
-        <text x="75" y="78" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          Recency, Freq, Spend
-        </text>
-        <text x="75" y="93" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          Severe Skewness
-        </text>
-
-        <path
-          d="M 140 70 L 190 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow)"
-        />
-
-        <rect
-          x="190"
-          y="30"
-          width="130"
-          height="80"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="255"
-          y="60"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          Log1p & Scaling
-        </text>
-        <text x="255" y="78" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          np.log1p(X)
-        </text>
-        <text x="255" y="93" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          StandardScaler (z-score)
-        </text>
-
-        <path
-          d="M 320 70 L 370 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow)"
-        />
-
-        <rect
-          x="370"
-          y="30"
-          width="130"
-          height="80"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--navy))"
-          strokeWidth="1.5"
-        />
-        <text
-          x="435"
-          y="60"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--navy))"
-        >
-          Ward Linkage
-        </text>
-        <text x="435" y="78" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          Min-Variance Tree
-        </text>
-        <text x="435" y="93" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          O(N²) Lance–Williams
-        </text>
-
-        <path
-          d="M 500 70 L 550 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow)"
-        />
-
-        <rect
-          x="550"
-          y="30"
-          width="130"
-          height="80"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="615"
-          y="55"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          Tree Cut & Profiling
-        </text>
-        <text x="615" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          K=3 Validation Sweep
-        </text>
-        <text x="615" y="87" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          Silhouette: 0.4598
-        </text>
-        <text x="615" y="101" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          Business Personas
-        </text>
-
-        <defs>
-          <marker
-            id="arrow"
-            viewBox="0 0 10 10"
-            refX="6"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 1 L 8 5 L 0 9 z" fill="hsl(var(--navy))" />
-          </marker>
-        </defs>
-      </svg>
-    </div>
+    <PipelineDiagram
+      title="Project Architecture: RFM Hierarchical Segmentation Flow"
+      ariaLabel="RFM pipeline diagram"
+      stages={RFM_STAGES}
+    />
   );
 }
 
-/** Visual Architecture Diagram for Project 2: Linkage Shoot-Out Flow */
 function ShootoutDiagram() {
   return (
-    <div className="rounded-sm border border-border bg-card p-4">
-      <div className="text-xs font-mono font-semibold text-teal mb-3 uppercase">
-        Project Architecture: Multi-Manifold Cross-Linkage Evaluation
-      </div>
-      <svg
-        viewBox="0 0 760 140"
-        className="w-full h-auto text-foreground"
-        aria-label="Linkage shootout diagram"
-      >
-        <rect
-          x="10"
-          y="25"
-          width="160"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="90"
-          y="48"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          4 Test Manifolds
-        </text>
-        <text x="90" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          • Blobs (Convex Gaussian)
-        </text>
-        <text x="90" y="80" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          • Moons (Interleaved)
-        </text>
-        <text x="90" y="94" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          • Circles (Concentric)
-        </text>
-        <text x="90" y="108" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          • Iris (Biological 4D)
-        </text>
-
-        <path
-          d="M 170 70 L 220 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow2)"
-        />
-
-        <rect
-          x="220"
-          y="25"
-          width="160"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--navy))"
-          strokeWidth="1.5"
-        />
-        <text
-          x="300"
-          y="48"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--navy))"
-        >
-          4 Linkage Criteria
-        </text>
-        <text x="300" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          • Single (Chaining)
-        </text>
-        <text x="300" y="80" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          • Complete (Compact)
-        </text>
-        <text x="300" y="94" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          • Average (UPGMA)
-        </text>
-        <text x="300" y="108" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          • Ward (Min-Variance)
-        </text>
-
-        <path
-          d="M 380 70 L 430 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow2)"
-        />
-
-        <rect
-          x="430"
-          y="25"
-          width="140"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="500"
-          y="52"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          Metric Engine
-        </text>
-        <text x="500" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          1. Adjusted Rand Index
-        </text>
-        <text x="500" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          2. Silhouette Score
-        </text>
-        <text x="500" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          3. Cophenetic (CCC)
-        </text>
-
-        <path
-          d="M 570 70 L 620 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow2)"
-        />
-
-        <rect
-          x="620"
-          y="25"
-          width="130"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="685"
-          y="52"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          Synthesis
-        </text>
-        <text x="685" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          Comparative Matrix
-        </text>
-        <text x="685" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          Paradox Analysis
-        </text>
-        <text x="685" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          Failure Taxonomy
-        </text>
-
-        <defs>
-          <marker
-            id="arrow2"
-            viewBox="0 0 10 10"
-            refX="6"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 1 L 8 5 L 0 9 z" fill="hsl(var(--navy))" />
-          </marker>
-        </defs>
-      </svg>
-    </div>
+    <PipelineDiagram
+      title="Project Architecture: Multi-Manifold Cross-Linkage Evaluation"
+      ariaLabel="Linkage shootout diagram"
+      stages={SHOOTOUT_STAGES}
+    />
   );
 }
 
-/** Visual Architecture Diagram for Project 3: Lance–Williams Scratch Engine */
 function LanceWilliamsDiagram() {
   return (
-    <div className="rounded-sm border border-border bg-card p-4">
-      <div className="text-xs font-mono font-semibold text-teal mb-3 uppercase">
-        Project Architecture: Pure NumPy Lance–Williams Update Loop
-      </div>
-      <svg
-        viewBox="0 0 760 140"
-        className="w-full h-auto text-foreground"
-        aria-label="Lance Williams scratch engine diagram"
-      >
-        <rect
-          x="10"
-          y="25"
-          width="160"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="90"
-          y="52"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          Proximity Matrix D₀
-        </text>
-        <text x="90" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          pdist(X, 'euclidean')
-        </text>
-        <text x="90" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          diag(D) = +∞
-        </text>
-        <text x="90" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          Active Dict: &#123;0..N-1&#125;
-        </text>
-
-        <path
-          d="M 170 70 L 220 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow3)"
-        />
-
-        <rect
-          x="220"
-          y="25"
-          width="160"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="300"
-          y="52"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          Greedy argmin(D)
-        </text>
-        <text x="300" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          Find min d(C_i, C_j)
-        </text>
-        <text x="300" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          New cluster ID = N+step
-        </text>
-        <text x="300" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          Append to Z_rows
-        </text>
-
-        <path
-          d="M 380 70 L 430 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow3)"
-        />
-
-        <rect
-          x="430"
-          y="25"
-          width="160"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--navy))"
-          strokeWidth="1.5"
-        />
-        <text
-          x="510"
-          y="48"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--navy))"
-        >
-          Lance–Williams Update
-        </text>
-        <text x="510" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--foreground))">
-          d_new = αᵢd_ki + αⱼd_kj
-        </text>
-        <text x="510" y="80" textAnchor="middle" fontSize="9" fill="hsl(var(--foreground))">
-          + βd_ij + γ|d_ki - d_kj|
-        </text>
-        <text x="510" y="98" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          O(1) per cluster k
-        </text>
-
-        <path
-          d="M 590 70 L 640 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow3)"
-        />
-
-        <rect
-          x="640"
-          y="25"
-          width="110"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="695"
-          y="52"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          SciPy Parity
-        </text>
-        <text x="695" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          ||Z - Z_scipy||
-        </text>
-        <text x="695" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          &lt; 1e-12
-        </text>
-        <text x="695" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          Machine Precision
-        </text>
-
-        <defs>
-          <marker
-            id="arrow3"
-            viewBox="0 0 10 10"
-            refX="6"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 1 L 8 5 L 0 9 z" fill="hsl(var(--navy))" />
-          </marker>
-        </defs>
-      </svg>
-    </div>
+    <PipelineDiagram
+      title="Project Architecture: Pure NumPy Lance–Williams Update Loop"
+      ariaLabel="Lance Williams scratch engine diagram"
+      stages={LANCE_WILLIAMS_STAGES}
+    />
   );
 }
 
-/** Visual Architecture Diagram for Project 4: Topic Taxonomy Flow */
 function TopicTaxonomyDiagram() {
   return (
-    <div className="rounded-sm border border-border bg-card p-4">
-      <div className="text-xs font-mono font-semibold text-teal mb-3 uppercase">
-        Project Architecture: Text Taxonomy via L2 Unit-Norm & Ward
-      </div>
-      <svg
-        viewBox="0 0 760 140"
-        className="w-full h-auto text-foreground"
-        aria-label="Text topic taxonomy diagram"
-      >
-        <rect
-          x="10"
-          y="25"
-          width="150"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="85"
-          y="52"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          Corpus Ingestion
-        </text>
-        <text x="85" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          8 Multi-Domain Docs
-        </text>
-        <text x="85" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          TF-IDF Feature Space
-        </text>
-        <text x="85" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          Vocabulary V
-        </text>
-
-        <path
-          d="M 160 70 L 210 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow4)"
-        />
-
-        <rect
-          x="210"
-          y="25"
-          width="160"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="290"
-          y="48"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          L2 Unit Normalization
-        </text>
-        <text x="290" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--foreground))">
-          ||x||₂ = 1.0
-        </text>
-        <text x="290" y="82" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          ||u - v||² = 2(1 - cos θ)
-        </text>
-        <text x="290" y="98" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          Euclidean = Angular Space
-        </text>
-
-        <path
-          d="M 370 70 L 420 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow4)"
-        />
-
-        <rect
-          x="420"
-          y="25"
-          width="150"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--navy))"
-          strokeWidth="1.5"
-        />
-        <text
-          x="495"
-          y="52"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--navy))"
-        >
-          Ward Hierarchy
-        </text>
-        <text x="495" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          linkage(X, 'ward')
-        </text>
-        <text x="495" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          Spherical Variance Min
-        </text>
-        <text x="495" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          Semantic Tree
-        </text>
-
-        <path
-          d="M 570 70 L 620 70"
-          stroke="hsl(var(--navy))"
-          strokeWidth="2"
-          markerEnd="url(#arrow4)"
-        />
-
-        <rect
-          x="620"
-          y="25"
-          width="130"
-          height="90"
-          rx="4"
-          fill="hsl(var(--secondary))"
-          stroke="hsl(var(--border))"
-        />
-        <text
-          x="685"
-          y="52"
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="bold"
-          fill="hsl(var(--foreground))"
-        >
-          Taxonomy & Keywords
-        </text>
-        <text x="685" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          Cut at K=4 Topics
-        </text>
-        <text x="685" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
-          Centroid TF-IDF Salience
-        </text>
-        <text x="685" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
-          Top Ranked Terms
-        </text>
-
-        <defs>
-          <marker
-            id="arrow4"
-            viewBox="0 0 10 10"
-            refX="6"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 1 L 8 5 L 0 9 z" fill="hsl(var(--navy))" />
-          </marker>
-        </defs>
-      </svg>
-    </div>
+    <PipelineDiagram
+      title="Project Architecture: Text Taxonomy via L2 Unit-Norm & Ward"
+      ariaLabel="Text topic taxonomy diagram"
+      stages={TOPIC_TAXONOMY_STAGES}
+    />
   );
 }
 
 /** Interactive Projects Catalog Component */
-export function ProjectsCatalog() {
-  const [selectedId, setSelectedId] = useState<number>(1);
+export function ProjectsCatalog({
+  initialSelectedId = 1,
+}: {
+  initialSelectedId?: number;
+} = {}) {
+  const [selectedId, setSelectedId] = useState<number>(initialSelectedId);
   const [filterDifficulty, setFilterDifficulty] = useState<string>("all");
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
   const [expandedSolution, setExpandedSolution] = useState<boolean>(false);
@@ -1740,7 +1401,7 @@ export function ProjectsCatalog() {
       </div>
 
       {/* 2. Project Selection Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {filteredProjects.map((proj) => {
           const isSelected = proj.id === selectedId;
           return (
@@ -1776,11 +1437,13 @@ export function ProjectsCatalog() {
               </div>
 
               <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-2 text-[11px] text-muted-foreground font-mono">
-                <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3 text-teal" />
+                <span className="flex items-center gap-1 whitespace-nowrap">
+                  <Clock className="h-3 w-3 text-teal shrink-0" />
                   {proj.estimatedTime}
                 </span>
-                <span className="text-teal font-medium">Select Blueprint &rarr;</span>
+                <span className="text-teal font-medium whitespace-nowrap">
+                  Select Blueprint &rarr;
+                </span>
               </div>
             </button>
           );
