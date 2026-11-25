@@ -34,6 +34,7 @@ import { MathematicalPlayground, Module09Quiz } from "@/content/module09-mathema
 import { ImplementationExplorer, Module10Quiz } from "@/content/module10-implementation";
 import { EvaluationPlayground, Module11Quiz } from "@/content/module11-evaluation";
 import { DendrogramCuttingLab, Module12Quiz } from "@/content/module12-selection";
+import { ClusterInterpretationLab, Module13Quiz } from "@/content/module13-interpretation";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -222,6 +223,19 @@ describe("Reusable Lab Components", () => {
 
     const quizHtml = renderToString(<Module12Quiz />);
     expect(quizHtml).toContain("Module 12: Cluster Selection");
+    expect(quizHtml).toContain("Submit Answers");
+  });
+
+  it("renders ClusterInterpretationLab and Module13Quiz", () => {
+    const labHtml = renderToString(<ClusterInterpretationLab />);
+    expect(labHtml).toContain("Feature Profiling");
+    expect(labHtml).toContain("Resampling Stability");
+    expect(labHtml).toContain("Dataset Domain");
+    expect(labHtml).toContain("Linkage Criterion");
+    expect(labHtml).toContain("Cluster Distribution Profiles");
+
+    const quizHtml = renderToString(<Module13Quiz />);
+    expect(quizHtml).toContain("Module 13: Cluster Profiling");
     expect(quizHtml).toContain("Submit Answers");
   });
 });

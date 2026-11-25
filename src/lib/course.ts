@@ -24,6 +24,7 @@ import { MathematicalPlayground, Module09Quiz } from "@/content/module09-mathema
 import { ImplementationExplorer, Module10Quiz } from "@/content/module10-implementation";
 import { EvaluationPlayground, Module11Quiz } from "@/content/module11-evaluation";
 import { DendrogramCuttingLab, Module12Quiz } from "@/content/module12-selection";
+import { ClusterInterpretationLab, Module13Quiz } from "@/content/module13-interpretation";
 import {
   Compass,
   BookOpen,
@@ -4280,15 +4281,17 @@ print(df_stability.to_string(index=False))`,
       s(
         "Interactive Cluster Interpretation Laboratory",
         c(
-          "Cluster Profiling & Stability Explorer Placeholder",
-          "Interactive laboratory for exploring feature distribution profiles, centroid z-score heatmaps, and bootstrap resampling stability.",
+          "Multi-Feature Profiling & Resampling Stability Studio",
+          "Inspect cluster feature distributions across enterprise customer RFM and cellular transcriptomics datasets. Generate standardized centroid z-scores, inspect cluster heatmaps, and evaluate bootstrap resampling stability (ARI) across subsamples.",
         ),
+        cust(createElement(ClusterInterpretationLab)),
       ),
       s(
         "Knowledge Check & Self-Assessment",
+        cust(createElement(Module13Quiz)),
         c(
-          "Module 13 Self-Assessment Placeholder",
-          "Interactive quiz testing understanding of cluster profiling, distribution skewness, bootstrap stability, and outlier vulnerabilities.",
+          "Module References",
+          "Verified against Ben-Hur et al. (2002) stability methodologies, Hennig (2007) cluster validation, and Scikit-Learn cluster evaluation documentation. See docs/references.md.",
         ),
       ),
     ],
