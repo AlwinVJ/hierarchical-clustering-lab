@@ -1,12 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, Layers, CheckCircle2, Milestone, ShieldCheck, Cpu, GitMerge, LineChart } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Layers,
+  CheckCircle2,
+  Milestone,
+  ShieldCheck,
+  Cpu,
+  GitMerge,
+  LineChart,
+} from "lucide-react";
 import { pages, groups } from "@/lib/course";
 import { PageShell } from "@/components/lab/page-shell";
-import {
-  ContentCard,
-  SectionHeader,
-  NoteBox,
-} from "@/components/lab/blocks";
+import { ContentCard, SectionHeader, NoteBox } from "@/components/lab/blocks";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -74,7 +80,8 @@ const STAGE_METADATA: Record<string, { desc: string; modules: string; outcome: s
   "Validation, Production & Projects": {
     desc: "Perform automated cluster count selection, multi-feature profiling, resampling stability tests, and capstone project blueprints.",
     modules: "Modules 11 – 15",
-    outcome: "Deploy validated clustering solutions with comprehensive profiling and stability proofs.",
+    outcome:
+      "Deploy validated clustering solutions with comprehensive profiling and stability proofs.",
   },
 };
 
@@ -121,7 +128,8 @@ function Overview() {
         <SectionHeader index={2} title="Learning Objectives" />
         <div className="space-y-4">
           <p className="text-xs text-muted-foreground font-mono">
-            Upon completing this comprehensive learning series, practitioners will achieve verified mastery of:
+            Upon completing this comprehensive learning series, practitioners will achieve verified
+            mastery of:
           </p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {LEARNING_OBJECTIVES.map((obj, idx) => (
@@ -135,9 +143,7 @@ function Overview() {
                   </div>
                   <h4 className="text-xs font-bold text-foreground">{obj.title}</h4>
                 </div>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  {obj.desc}
-                </p>
+                <p className="text-xs leading-relaxed text-muted-foreground">{obj.desc}</p>
               </div>
             ))}
           </div>
@@ -148,9 +154,7 @@ function Overview() {
       <ContentCard>
         <SectionHeader index={3} title="Course & Curriculum Overview" />
         <div className="space-y-4 text-sm leading-relaxed text-foreground/90">
-          <p>
-            The curriculum is architected around four foundational pedagogical pillars:
-          </p>
+          <p>The curriculum is architected around four foundational pedagogical pillars:</p>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-sm border border-border bg-card p-3.5 space-y-1.5">
               <div className="flex items-center gap-2 text-xs font-bold text-teal font-mono">
@@ -158,7 +162,8 @@ function Overview() {
                 <span>1. First-Principles Mathematics</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                No black boxes. Every objective function, recurrence formula (Lance–Williams), and distance norm is derived rigorously from geometric and statistical definitions.
+                No black boxes. Every objective function, recurrence formula (Lance–Williams), and
+                distance norm is derived rigorously from geometric and statistical definitions.
               </p>
             </div>
 
@@ -168,7 +173,9 @@ function Overview() {
                 <span>2. Interactive Visual Geometry</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Pure inline vector SVG simulations bridge algebraic equations with spatial intuition, allowing dynamic exploration of threshold cuts, dendrograms, and manifold behavior.
+                Pure inline vector SVG simulations bridge algebraic equations with spatial
+                intuition, allowing dynamic exploration of threshold cuts, dendrograms, and manifold
+                behavior.
               </p>
             </div>
 
@@ -178,7 +185,8 @@ function Overview() {
                 <span>3. Production-Ready Code</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Complete, runnable Python implementations verified against NumPy 2.x, SciPy 1.14+, and Scikit-Learn 1.5+ with exact reproducible console outputs.
+                Complete, runnable Python implementations verified against NumPy 2.x, SciPy 1.14+,
+                and Scikit-Learn 1.5+ with exact reproducible console outputs.
               </p>
             </div>
 
@@ -188,16 +196,18 @@ function Overview() {
                 <span>4. Defensible Decision Protocols</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Structured frameworks for selecting cluster counts, diagnosing cophenetic distortion, evaluating bootstrap stability, and deploying actionable personas.
+                Structured frameworks for selecting cluster counts, diagnosing cophenetic
+                distortion, evaluating bootstrap stability, and deploying actionable personas.
               </p>
             </div>
           </div>
 
           <NoteBox title="Prerequisites & Academic Target">
             <span>
-              Targeted at machine learning practitioners, data scientists, and computational researchers.
-              Foundational familiarity with basic linear algebra, Euclidean vector norms, and Python is helpful;
-              all clustering mechanics are derived step-by-step from first principles.
+              Targeted at machine learning practitioners, data scientists, and computational
+              researchers. Foundational familiarity with basic linear algebra, Euclidean vector
+              norms, and Python is helpful; all clustering mechanics are derived step-by-step from
+              first principles.
             </span>
           </NoteBox>
         </div>
@@ -225,17 +235,13 @@ function Overview() {
                     <span>{meta.modules}</span>
                   </div>
                   <h3 className="mt-2 text-sm font-bold text-foreground">{groupName}</h3>
-                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                    {meta.desc}
-                  </p>
+                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{meta.desc}</p>
                 </div>
                 <div className="pt-3 border-t border-border/60">
                   <span className="text-[10px] font-mono text-teal font-medium uppercase tracking-wider block">
                     Core Competency:
                   </span>
-                  <p className="text-[11px] text-foreground mt-0.5">
-                    {meta.outcome}
-                  </p>
+                  <p className="text-[11px] text-foreground mt-0.5">{meta.outcome}</p>
                 </div>
               </div>
             );

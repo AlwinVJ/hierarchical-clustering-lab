@@ -50,12 +50,7 @@ export interface KMeansResult {
   iterations: number;
 }
 
-export function kMeans(
-  points: number[][],
-  k: number,
-  maxIterations = 50,
-  seed = 42
-): KMeansResult {
+export function kMeans(points: number[][], k: number, maxIterations = 50, seed = 42): KMeansResult {
   const n = points.length;
   if (n === 0 || k <= 0) return { labels: [], centroids: [], iterations: 0 };
   if (k >= n) {
@@ -161,11 +156,7 @@ export interface DBSCANResult {
   noiseCount: number;
 }
 
-export function dbscan(
-  points: number[][],
-  eps: number,
-  minPts: number
-): DBSCANResult {
+export function dbscan(points: number[][], eps: number, minPts: number): DBSCANResult {
   const n = points.length;
   const labels = new Array<number>(n).fill(0); // 0 = unvisited
   const coreIndices = new Set<number>();
@@ -408,7 +399,8 @@ export function generateTwoMoons(n = 160, noise = 0.08, seed = 42): SyntheticDat
 
   return {
     name: "Two Interleaving Moons",
-    description: "Non-convex manifold structure where density connectivity succeeds but centroid Euclidean cuts fail.",
+    description:
+      "Non-convex manifold structure where density connectivity succeeds but centroid Euclidean cuts fail.",
     points,
     groundTruth,
     recommendedK: 2,
@@ -450,7 +442,8 @@ export function generateAnisotropicBlobs(n = 150, seed = 42): SyntheticDataset {
 
   return {
     name: "Anisotropic Elongated Blobs",
-    description: "Directional variance and unequal covariance ellipses testing metric adaptability.",
+    description:
+      "Directional variance and unequal covariance ellipses testing metric adaptability.",
     points,
     groundTruth,
     recommendedK: 3,

@@ -613,9 +613,7 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
         <div>
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground dark:text-muted-foreground">
             <span>Cluster Count (k)</span>
-            <span className="font-mono text-teal dark:text-teal font-bold">
-              k = {kClusters}
-            </span>
+            <span className="font-mono text-teal dark:text-teal font-bold">k = {kClusters}</span>
           </div>
           <input
             type="range"
@@ -715,7 +713,9 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                 </div>
 
                 <div className="mt-2 text-xs text-muted-foreground dark:text-muted-foreground">
-                  <span className="font-semibold text-muted-foreground dark:text-muted-foreground">Cohort:</span>{" "}
+                  <span className="font-semibold text-muted-foreground dark:text-muted-foreground">
+                    Cohort:
+                  </span>{" "}
                   {c.memberLabels.join(", ")}
                 </div>
 
@@ -917,7 +917,9 @@ print(f"\\nStability for k={kClusters}: Mean ARI = {mean_ari:.4f} (±{std_ari:.4
                   </span>
                 )}
               </div>
-              <div className="mt-1 text-xs text-muted-foreground">Ben-Hur et al. (2002) Criteria</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                Ben-Hur et al. (2002) Criteria
+              </div>
             </div>
           </div>
 

@@ -129,13 +129,7 @@ export function renderRichTextItemContent(text: string): ReactNode {
 }
 
 /** Formats multi-paragraph prose and ordered/unordered lists with nesting */
-export function RichText({
-  text,
-  className = "",
-}: {
-  text: ReactNode;
-  className?: string;
-}) {
+export function RichText({ text, className = "" }: { text: ReactNode; className?: string }) {
   if (typeof text !== "string") {
     return <>{text}</>;
   }
@@ -152,14 +146,19 @@ export function RichText({
     const groups: RichTextGroup[] = [];
 
     lines.forEach((line) => {
-      const topListMatch = line.match(/^(\s{0,1})(?:([0-9]+[\.\)]|[a-zA-Z][\.\)])|([•\-\*]))\s+(.*)$/);
-      const nestedMatch = line.match(/^(\s{2,}|\t+)(?:([0-9]+[\.\)]|[a-zA-Z][\.\)])|([•\-\*]))\s+(.*)$/);
+      const topListMatch = line.match(/^(\s{0,1})(?:([0-9]+[.)]|[a-zA-Z][.)])|([•\-*]))\s+(.*)$/);
+      const nestedMatch = line.match(/^(\s{2,}|\t+)(?:([0-9]+[.)]|[a-zA-Z][.)])|([•\-*]))\s+(.*)$/);
 
       if (nestedMatch) {
         const subType: "ol" | "ul" = nestedMatch[2] ? "ol" : "ul";
         const content = nestedMatch[4] ?? "";
         const lastGroup = groups[groups.length - 1];
-        if (lastGroup && lastGroup.type === "list" && lastGroup.items && lastGroup.items.length > 0) {
+        if (
+          lastGroup &&
+          lastGroup.type === "list" &&
+          lastGroup.items &&
+          lastGroup.items.length > 0
+        ) {
           const lastItem = lastGroup.items[lastGroup.items.length - 1]!;
           if (!lastItem.subList) {
             lastItem.subList = { type: subType, items: [content] };
@@ -174,7 +173,12 @@ export function RichText({
         const listType: "ol" | "ul" = topListMatch[2] ? "ol" : "ul";
         const content = topListMatch[4] ?? "";
         const lastGroup = groups[groups.length - 1];
-        if (lastGroup && lastGroup.type === "list" && lastGroup.listType === listType && lastGroup.items) {
+        if (
+          lastGroup &&
+          lastGroup.type === "list" &&
+          lastGroup.listType === listType &&
+          lastGroup.items
+        ) {
           lastGroup.items.push({ content });
         } else {
           groups.push({
@@ -209,12 +213,15 @@ export function RichText({
       } else if (group.type === "list" && group.items) {
         if (group.listType === "ol") {
           elements.push(
-            <ol key={key} className="list-decimal pl-5 space-y-1.5 text-left sm:text-justify hyphens-auto">
+            <ol
+              key={key}
+              className="list-decimal pl-5 space-y-1.5 text-left sm:text-justify hyphens-auto"
+            >
               {group.items.map((it, iIdx) => (
                 <li key={iIdx} className="leading-relaxed">
                   {renderRichTextItemContent(it.content)}
-                  {it.subList && (
-                    it.subList.type === "ol" ? (
+                  {it.subList &&
+                    (it.subList.type === "ol" ? (
                       <ol className="list-decimal pl-5 mt-1.5 space-y-1">
                         {it.subList.items.map((sub, subIdx) => (
                           <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
@@ -226,20 +233,22 @@ export function RichText({
                           <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
                         ))}
                       </ul>
-                    )
-                  )}
+                    ))}
                 </li>
               ))}
             </ol>,
           );
         } else {
           elements.push(
-            <ul key={key} className="list-disc pl-5 space-y-1.5 text-left sm:text-justify hyphens-auto">
+            <ul
+              key={key}
+              className="list-disc pl-5 space-y-1.5 text-left sm:text-justify hyphens-auto"
+            >
               {group.items.map((it, iIdx) => (
                 <li key={iIdx} className="leading-relaxed">
                   {renderRichTextItemContent(it.content)}
-                  {it.subList && (
-                    it.subList.type === "ol" ? (
+                  {it.subList &&
+                    (it.subList.type === "ol" ? (
                       <ol className="list-decimal pl-5 mt-1.5 space-y-1">
                         {it.subList.items.map((sub, subIdx) => (
                           <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
@@ -251,8 +260,7 @@ export function RichText({
                           <li key={subIdx}>{renderRichTextItemContent(sub)}</li>
                         ))}
                       </ul>
-                    )
-                  )}
+                    ))}
                 </li>
               ))}
             </ul>,
@@ -449,13 +457,22 @@ import {
 
 /** Static Diagram and Schematic Component */
 export function DiagramPlaceholder({ label }: { label?: string | undefined }) {
-  if (label?.includes("Feature space partitioning") || label?.includes("cluster boundary geometries")) {
+  if (
+    label?.includes("Feature space partitioning") ||
+    label?.includes("cluster boundary geometries")
+  ) {
     return <FlatVsNestedDiagram label={label} />;
   }
-  if (label?.includes("continuous feature space") || label?.includes("nested hierarchical partitions")) {
+  if (
+    label?.includes("continuous feature space") ||
+    label?.includes("nested hierarchical partitions")
+  ) {
     return <ContinuousCloudCutDiagram label={label} />;
   }
-  if (label?.includes("inter-cluster distance definitions") || label?.includes("distance definitions")) {
+  if (
+    label?.includes("inter-cluster distance definitions") ||
+    label?.includes("distance definitions")
+  ) {
     return <LinkageDistanceGeometryDiagram label={label} />;
   }
   if (label?.includes("Bottom-up merge progression") || label?.includes("singletons to root")) {

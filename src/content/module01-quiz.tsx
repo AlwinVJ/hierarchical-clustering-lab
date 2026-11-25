@@ -8,7 +8,8 @@ export function Module01Quiz() {
   const questions = [
     {
       id: 1,
-      prompt: "What is the defining mathematical property that distinguishes clustering from supervised classification?",
+      prompt:
+        "What is the defining mathematical property that distinguishes clustering from supervised classification?",
       options: [
         "Clustering operates strictly on scalar values, while classification handles vectors.",
         "Clustering discovers natural geometric partitions without access to predefined ground-truth target labels.",
@@ -21,7 +22,8 @@ export function Module01Quiz() {
     },
     {
       id: 2,
-      prompt: "In hierarchical clustering of N observations, what constitutes the formal nested partition sequence?",
+      prompt:
+        "In hierarchical clustering of N observations, what constitutes the formal nested partition sequence?",
       options: [
         "A sequence of partitions P₀ ≺ P₁ ≺ ... ≺ P_{N-1} where every cluster at level t is a subset of some cluster at level t+1.",
         "N completely independent disjoint Voronoi tessellations of the feature space.",
@@ -34,7 +36,8 @@ export function Module01Quiz() {
     },
     {
       id: 3,
-      prompt: "What is the primary algorithmic distinction between Agglomerative and Divisive hierarchical clustering?",
+      prompt:
+        "What is the primary algorithmic distinction between Agglomerative and Divisive hierarchical clustering?",
       options: [
         "Agglomerative is bottom-up (merges singletons into root); Divisive is top-down (splits root into singletons).",
         "Agglomerative works only with Euclidean distance, while Divisive requires Manhattan distance.",
@@ -60,7 +63,8 @@ export function Module01Quiz() {
     },
     {
       id: 5,
-      prompt: "Why is a naive exhaustive search for divisive clustering splits computationally intractable for moderate N?",
+      prompt:
+        "Why is a naive exhaustive search for divisive clustering splits computationally intractable for moderate N?",
       options: [
         "Distance matrices cannot be evaluated top-down.",
         "Bisecting a cluster of m observations into two non-empty subsets entails evaluating 2^(m-1) - 1 possible splits, which explodes exponentially.",
@@ -73,7 +77,8 @@ export function Module01Quiz() {
     },
     {
       id: 6,
-      prompt: "Which of the following real-world applications is most naturally suited to hierarchical clustering rather than flat K-Means?",
+      prompt:
+        "Which of the following real-world applications is most naturally suited to hierarchical clustering rather than flat K-Means?",
       options: [
         "Biological phylogenetic trees and evolutionary taxonomic classification.",
         "Real-time streaming fraud detection over 100 million transactions per minute.",
@@ -108,7 +113,8 @@ export function Module01Quiz() {
             Module 01: Introduction &amp; Foundations Self-Assessment
           </h3>
           <p className="text-xs text-muted-foreground">
-            Test your comprehension of clustering definitions, nested partition hierarchies, and agglomerative vs. divisive paradigms.
+            Test your comprehension of clustering definitions, nested partition hierarchies, and
+            agglomerative vs. divisive paradigms.
           </p>
         </div>
         {showResults && (
@@ -134,20 +140,17 @@ export function Module01Quiz() {
 
               <div className="space-y-2">
                 {q.options.map((opt, optIdx) => {
-                  let btnStyle =
-                    "border-border bg-card text-foreground hover:bg-secondary/40";
+                  let btnStyle = "border-border bg-card text-foreground hover:bg-secondary/40";
 
                   if (showResults) {
                     if (optIdx === q.correct) {
-                      btnStyle =
-                        "border-teal bg-teal/10 text-teal font-medium border-teal/40";
+                      btnStyle = "border-teal bg-teal/10 text-teal font-medium border-teal/40";
                     } else if (userAns === optIdx) {
                       btnStyle =
                         "border-destructive bg-destructive/10 text-destructive font-medium border-destructive/40";
                     }
                   } else if (userAns === optIdx) {
-                    btnStyle =
-                      "border-navy bg-teal/10 text-teal font-medium";
+                    btnStyle = "border-navy bg-teal/10 text-teal font-medium";
                   }
 
                   return (

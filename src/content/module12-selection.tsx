@@ -703,9 +703,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
             <div>
               <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
                 <span>Cut Height (t)</span>
-                <span className="font-mono text-teal">
-                  {thresholdHeight.toFixed(2)}
-                </span>
+                <span className="font-mono text-teal">{thresholdHeight.toFixed(2)}</span>
               </div>
               <input
                 type="range"
@@ -721,9 +719,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
             <div>
               <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
                 <span>Target Clusters (k)</span>
-                <span className="font-mono text-teal">
-                  k = {targetK}
-                </span>
+                <span className="font-mono text-teal">k = {targetK}</span>
               </div>
               <input
                 type="range"
@@ -1158,9 +1154,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
               </p>
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <span className="font-semibold text-muted-foreground">
-                Subtree Depth (d):
-              </span>
+              <span className="font-semibold text-muted-foreground">Subtree Depth (d):</span>
               <select
                 value={inconsistencyDepth}
                 onChange={(e) => setInconsistencyDepth(parseInt(e.target.value, 10))}
@@ -1265,11 +1259,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                   </div>
                   <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
                     <span>Mean Silhouette (s̄)</span>
-                    {isCurrent && (
-                      <span className="text-teal font-semibold">
-                        (Active Cut)
-                      </span>
-                    )}
+                    {isCurrent && <span className="text-teal font-semibold">(Active Cut)</span>}
                   </div>
                 </div>
               );

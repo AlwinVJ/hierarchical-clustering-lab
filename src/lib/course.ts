@@ -123,55 +123,6 @@ const tbl = (columns: string[], rows: string[], tableData?: Record<string, strin
 });
 const cust = (content: ReactNode): Block => ({ kind: "custom", content });
 
-const linkage = (name: string) =>
-  s(
-    name,
-    c("Definition"),
-    m("Mathematical formula"),
-    d("Geometric diagram"),
-    c("Advantages and disadvantages"),
-  );
-
-const metric = (name: string) =>
-  s(
-    name,
-    c("Definition & properties"),
-    m("Mathematical formula"),
-    m("Numerical calculation example"),
-    c("Practical context"),
-  );
-
-const impl = (name: string) =>
-  s(
-    name,
-    c("Explanation"),
-    { kind: "code", label: "Code editor" },
-    { kind: "output", label: "Console output" },
-    { kind: "viz", label: "Visualization placeholder" },
-  );
-
-const evalM = (name: string) =>
-  s(name, c("Definition & rationale"), m("Formula"), c("Interpretation criteria"), {
-    kind: "output",
-    label: "Example evaluation results",
-  });
-
-const cmp = (otherAlgorithm: string): Block => ({
-  kind: "table",
-  columns: ["Criterion", otherAlgorithm, "Hierarchical Clustering"],
-  rows: [
-    "Clustering Paradigm",
-    "Predefined Number of Clusters (k)",
-    "Cluster Shape Assumption",
-    "Time Complexity",
-    "Space Complexity",
-    "Scalability to Large Datasets",
-    "Sensitivity to Outliers & Noise",
-    "Interpretability (Dendrogram)",
-    "Deterministic Output",
-  ],
-});
-
 export const pages: CoursePage[] = [
   {
     slug: "",
@@ -2194,13 +2145,7 @@ Output:
         ),
         tbl(
           ["Anatomical Component", "Geometric Representation", "Mathematical Meaning"],
-          [
-            "Leaf Nodes",
-            "Vertical Legs",
-            "Horizontal Crossbar",
-            "Internal Nodes",
-            "Root Node",
-          ],
+          ["Leaf Nodes", "Vertical Legs", "Horizontal Crossbar", "Internal Nodes", "Root Node"],
           {
             "Leaf Nodes": [
               "Terminating points along the bottom horizontal axis at height h = 0",

@@ -63,7 +63,12 @@ export const CAPSTONE_PROJECTS: ProjectBlueprint[] = [
     category: "Commercial Analytics",
     difficulty: "Intermediate",
     estimatedTime: "2–3 Hours",
-    prerequisites: ["Module 04 (Agglomerative)", "Module 06 (Linkage)", "Module 11 (Validation)", "Module 13 (Profiling)"],
+    prerequisites: [
+      "Module 04 (Agglomerative)",
+      "Module 06 (Linkage)",
+      "Module 11 (Validation)",
+      "Module 13 (Profiling)",
+    ],
     dataset: {
       name: "Enterprise Retail RFM Transaction Matrix",
       size: "N = 120 customer accounts (synthetic benchmark)",
@@ -250,30 +255,39 @@ Cluster
       {
         criteria: "Data Preprocessing & Scaling",
         weight: "25%",
-        exemplary: "Applies log1p variance stabilization and StandardScaler; handles scale imbalances.",
-        competent: "Applies scaling without log transform, or applies log without standardized scaling.",
-        developing: "Operates directly on unscaled skewed raw features; Ward objective is distorted.",
+        exemplary:
+          "Applies log1p variance stabilization and StandardScaler; handles scale imbalances.",
+        competent:
+          "Applies scaling without log transform, or applies log without standardized scaling.",
+        developing:
+          "Operates directly on unscaled skewed raw features; Ward objective is distorted.",
       },
       {
         criteria: "Ward Linkage Formulation",
         weight: "25%",
-        exemplary: "Fits Euclidean Ward linkage correctly; inspects merge heights for monotonic increments.",
-        competent: "Executes linkage but fails to explain why Euclidean distance is required for Ward.",
+        exemplary:
+          "Fits Euclidean Ward linkage correctly; inspects merge heights for monotonic increments.",
+        competent:
+          "Executes linkage but fails to explain why Euclidean distance is required for Ward.",
         developing: "Uses non-Euclidean metric with Ward or misconfigures linkage arguments.",
       },
       {
         criteria: "Cluster Validation & Sweeping",
         weight: "25%",
-        exemplary: "Calculates both Silhouette and Davies–Bouldin scores across candidate K; justifies K=3.",
+        exemplary:
+          "Calculates both Silhouette and Davies–Bouldin scores across candidate K; justifies K=3.",
         competent: "Computes a single validation metric without exploring alternative cuts.",
         developing: "Arbitrarily chooses K=3 without metric computation or mathematical rationale.",
       },
       {
         criteria: "Persona Profiling & Interpretation",
         weight: "25%",
-        exemplary: "Accurately profiles cluster medians on unscaled units and assigns logical commercial personas.",
-        competent: "Extracts cluster summaries but leaves them in standardized z-score coordinates.",
-        developing: "Omits segment profiling or provides generic interpretations without data grounding.",
+        exemplary:
+          "Accurately profiles cluster medians on unscaled units and assigns logical commercial personas.",
+        competent:
+          "Extracts cluster summaries but leaves them in standardized z-score coordinates.",
+        developing:
+          "Omits segment profiling or provides generic interpretations without data grounding.",
       },
     ],
   },
@@ -286,7 +300,12 @@ Cluster
     category: "Algorithmic Benchmarking",
     difficulty: "Intermediate",
     estimatedTime: "2–3 Hours",
-    prerequisites: ["Module 06 (Linkage)", "Module 07 (Metrics)", "Module 08 (Dendrograms)", "Module 14 (Applications)"],
+    prerequisites: [
+      "Module 06 (Linkage)",
+      "Module 07 (Metrics)",
+      "Module 08 (Dendrograms)",
+      "Module 14 (Applications)",
+    ],
     dataset: {
       name: "Four-Manifold Topological Benchmark Suite",
       size: "Blobs (N=150), Moons (N=150), Concentric Circles (N=150), Iris (N=150)",
@@ -433,28 +452,36 @@ Circles     Ward -0.0062      0.3174 0.6304
       {
         criteria: "Benchmark Pipeline Implementation",
         weight: "25%",
-        exemplary: "Builds a modular testing harness iterating across all 4 datasets and 4 linkage criteria cleanly.",
-        competent: "Implements the benchmark for some datasets or hard-codes redundant script loops.",
-        developing: "Fails to automate cross-dataset testing; manual copy-pasting with indexing bugs.",
+        exemplary:
+          "Builds a modular testing harness iterating across all 4 datasets and 4 linkage criteria cleanly.",
+        competent:
+          "Implements the benchmark for some datasets or hard-codes redundant script loops.",
+        developing:
+          "Fails to automate cross-dataset testing; manual copy-pasting with indexing bugs.",
       },
       {
         criteria: "Metric Computation & Correctness",
         weight: "30%",
-        exemplary: "Computes ARI, Silhouette, and CCC precisely; handles singular cluster edge cases safely.",
+        exemplary:
+          "Computes ARI, Silhouette, and CCC precisely; handles singular cluster edge cases safely.",
         competent: "Computes ARI and Silhouette correctly but omits Cophenetic Correlation (CCC).",
         developing: "Incorrect metric calls or misaligned true/predicted cluster labels.",
       },
       {
         criteria: "Topological Analysis & Synthesis",
         weight: "25%",
-        exemplary: "Explains why Single linkage dominates Moons/Circles despite low Silhouette, and why Ward wins Iris/Blobs.",
-        competent: "Identifies winning algorithms per dataset without explaining geometric mechanisms.",
-        developing: "Superficial interpretation without connecting results to linkage distance definitions.",
+        exemplary:
+          "Explains why Single linkage dominates Moons/Circles despite low Silhouette, and why Ward wins Iris/Blobs.",
+        competent:
+          "Identifies winning algorithms per dataset without explaining geometric mechanisms.",
+        developing:
+          "Superficial interpretation without connecting results to linkage distance definitions.",
       },
       {
         criteria: "Code Structure & Clarity",
         weight: "20%",
-        exemplary: "Clean, idiomatic Python code with type hints, formatted console outputs, and reproducible seeds.",
+        exemplary:
+          "Clean, idiomatic Python code with type hints, formatted console outputs, and reproducible seeds.",
         competent: "Working code but lacks formatting, modularization, or clear documentation.",
         developing: "Messy, disorganized script with hardcoded numbers and unhandled exceptions.",
       },
@@ -469,7 +496,12 @@ Circles     Ward -0.0062      0.3174 0.6304
     category: "Numerical Systems",
     difficulty: "Advanced",
     estimatedTime: "3–4 Hours",
-    prerequisites: ["Module 04 (Agglomerative)", "Module 06 (Lance-Williams)", "Module 09 (Mathematics)", "Module 10 (Implementation)"],
+    prerequisites: [
+      "Module 04 (Agglomerative)",
+      "Module 06 (Lance-Williams)",
+      "Module 09 (Mathematics)",
+      "Module 10 (Implementation)",
+    ],
     dataset: {
       name: "Geometric Coordinate Matrix",
       size: "N = 6 point verification benchmark X_test",
@@ -670,28 +702,35 @@ PARITY TEST PASSED: Linkage matrix matches SciPy down to machine precision.`,
       {
         criteria: "Lance–Williams Recurrence Implementation",
         weight: "35%",
-        exemplary: "Implements general recurrence without accessing raw data points; supports multiple criteria seamlessly.",
+        exemplary:
+          "Implements general recurrence without accessing raw data points; supports multiple criteria seamlessly.",
         competent: "Implements Single and Complete correctly but hardcodes specific formulas.",
-        developing: "Incorrect recurrence coefficients or recomputes pairwise distances across all points.",
+        developing:
+          "Incorrect recurrence coefficients or recomputes pairwise distances across all points.",
       },
       {
         criteria: "Dynamic Matrix Management & Indexing",
         weight: "25%",
-        exemplary: "Correctly grows distance array and handles cluster ID creation (N to 2N-2) with no memory leaks.",
-        competent: "Maintains cluster tracking but uses fixed preallocated buffers with index offset bugs.",
+        exemplary:
+          "Correctly grows distance array and handles cluster ID creation (N to 2N-2) with no memory leaks.",
+        competent:
+          "Maintains cluster tracking but uses fixed preallocated buffers with index offset bugs.",
         developing: "Confuses internal node IDs with initial leaf observation indices.",
       },
       {
         criteria: "SciPy Format Compatibility & Parity",
         weight: "20%",
-        exemplary: "Outputs (N-1)×4 matrix matching SciPy linkage format; passes automated assert np.allclose.",
-        competent: "Produces valid merge steps but formats dimensions or cluster sizes incorrectly.",
+        exemplary:
+          "Outputs (N-1)×4 matrix matching SciPy linkage format; passes automated assert np.allclose.",
+        competent:
+          "Produces valid merge steps but formats dimensions or cluster sizes incorrectly.",
         developing: "Produces incompatible output structures or fails numerical verification.",
       },
       {
         criteria: "Code Quality & Numerical Robustness",
         weight: "20%",
-        exemplary: "Clean OOP interface modeled after scikit-learn (.fit()); vectorised operations where appropriate.",
+        exemplary:
+          "Clean OOP interface modeled after scikit-learn (.fit()); vectorised operations where appropriate.",
         competent: "Working script without clear object encapsulation.",
         developing: "Fragile imperative script with global state variables.",
       },
@@ -706,7 +745,12 @@ PARITY TEST PASSED: Linkage matrix matches SciPy down to machine precision.`,
     category: "Natural Language Processing",
     difficulty: "Advanced",
     estimatedTime: "3–4 Hours",
-    prerequisites: ["Module 07 (Metrics)", "Module 08 (Dendrograms)", "Module 12 (Selection)", "Module 13 (Profiling)"],
+    prerequisites: [
+      "Module 07 (Metrics)",
+      "Module 08 (Dendrograms)",
+      "Module 12 (Selection)",
+      "Module 13 (Profiling)",
+    ],
     dataset: {
       name: "Multidisciplinary Scientific Corpus",
       size: "N = 8 technical document abstracts across 4 distinct thematic domains",
@@ -843,28 +887,35 @@ Topic 4 (Docs [6, 7]): therapeutic, sequencing, rna, protein`,
       {
         criteria: "Text Preprocessing & Normalization",
         weight: "25%",
-        exemplary: "Correctly leverages TfidfVectorizer with norm='l2' and explains why unit length preserves cosine properties.",
-        competent: "Applies TF-IDF without unit normalization, degrading Ward's Euclidean variance assumption.",
+        exemplary:
+          "Correctly leverages TfidfVectorizer with norm='l2' and explains why unit length preserves cosine properties.",
+        competent:
+          "Applies TF-IDF without unit normalization, degrading Ward's Euclidean variance assumption.",
         developing: "Uses raw count matrices or fails to extract feature vocabulary.",
       },
       {
         criteria: "Mathematical Alignment of Ward on Text",
         weight: "25%",
-        exemplary: "Articulates the mathematical relationship between Euclidean distance on unit vectors and Cosine distance.",
-        competent: "Applies Ward successfully but cannot explain why it works on high-dimensional text.",
-        developing: "Uses cosine distance directly in Ward (which causes mathematically undefined inversions in SciPy).",
+        exemplary:
+          "Articulates the mathematical relationship between Euclidean distance on unit vectors and Cosine distance.",
+        competent:
+          "Applies Ward successfully but cannot explain why it works on high-dimensional text.",
+        developing:
+          "Uses cosine distance directly in Ward (which causes mathematically undefined inversions in SciPy).",
       },
       {
         criteria: "Multi-Scale Hierarchy Extraction",
         weight: "25%",
-        exemplary: "Demonstrates both macro-domain (K=2) and micro-topic (K=4) cuts with consistent semantic logic.",
+        exemplary:
+          "Demonstrates both macro-domain (K=2) and micro-topic (K=4) cuts with consistent semantic logic.",
         competent: "Extracts only a single cut without exploring hierarchical sub-groupings.",
         developing: "Fails to correctly assign cluster labels to documents.",
       },
       {
         criteria: "Topical Interpretation & Salience",
         weight: "25%",
-        exemplary: "Computes TF-IDF centroid weights and extracts ranked distinctive keywords per cluster.",
+        exemplary:
+          "Computes TF-IDF centroid weights and extracts ranked distinctive keywords per cluster.",
         competent: "Lists words present in documents without weighting by centroid salience.",
         developing: "Omits keyword extraction or manually guesses topic identities.",
       },
@@ -884,35 +935,145 @@ function RfmPipelineDiagram() {
         className="w-full h-auto text-foreground"
         aria-label="RFM pipeline diagram"
       >
-        <rect x="10" y="30" width="130" height="80" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="75" y="60" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">Raw RFM Ingestion</text>
-        <text x="75" y="78" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">Recency, Freq, Spend</text>
-        <text x="75" y="93" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">Severe Skewness</text>
+        <rect
+          x="10"
+          y="30"
+          width="130"
+          height="80"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="75"
+          y="60"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          Raw RFM Ingestion
+        </text>
+        <text x="75" y="78" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          Recency, Freq, Spend
+        </text>
+        <text x="75" y="93" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          Severe Skewness
+        </text>
 
-        <path d="M 140 70 L 190 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow)" />
+        <path
+          d="M 140 70 L 190 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow)"
+        />
 
-        <rect x="190" y="30" width="130" height="80" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="255" y="60" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">Log1p & Scaling</text>
-        <text x="255" y="78" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">np.log1p(X)</text>
-        <text x="255" y="93" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">StandardScaler (z-score)</text>
+        <rect
+          x="190"
+          y="30"
+          width="130"
+          height="80"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="255"
+          y="60"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          Log1p & Scaling
+        </text>
+        <text x="255" y="78" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          np.log1p(X)
+        </text>
+        <text x="255" y="93" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          StandardScaler (z-score)
+        </text>
 
-        <path d="M 320 70 L 370 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow)" />
+        <path
+          d="M 320 70 L 370 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow)"
+        />
 
-        <rect x="370" y="30" width="130" height="80" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--navy))" strokeWidth="1.5" />
-        <text x="435" y="60" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--navy))">Ward Linkage</text>
-        <text x="435" y="78" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">Min-Variance Tree</text>
-        <text x="435" y="93" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">O(N²) Lance–Williams</text>
+        <rect
+          x="370"
+          y="30"
+          width="130"
+          height="80"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--navy))"
+          strokeWidth="1.5"
+        />
+        <text
+          x="435"
+          y="60"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--navy))"
+        >
+          Ward Linkage
+        </text>
+        <text x="435" y="78" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          Min-Variance Tree
+        </text>
+        <text x="435" y="93" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          O(N²) Lance–Williams
+        </text>
 
-        <path d="M 500 70 L 550 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow)" />
+        <path
+          d="M 500 70 L 550 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow)"
+        />
 
-        <rect x="550" y="30" width="130" height="80" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="615" y="55" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">Tree Cut & Profiling</text>
-        <text x="615" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">K=3 Validation Sweep</text>
-        <text x="615" y="87" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">Silhouette: 0.4598</text>
-        <text x="615" y="101" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">Business Personas</text>
+        <rect
+          x="550"
+          y="30"
+          width="130"
+          height="80"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="615"
+          y="55"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          Tree Cut & Profiling
+        </text>
+        <text x="615" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          K=3 Validation Sweep
+        </text>
+        <text x="615" y="87" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          Silhouette: 0.4598
+        </text>
+        <text x="615" y="101" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          Business Personas
+        </text>
 
         <defs>
-          <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <marker
+            id="arrow"
+            viewBox="0 0 10 10"
+            refX="6"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
             <path d="M 0 1 L 8 5 L 0 9 z" fill="hsl(var(--navy))" />
           </marker>
         </defs>
@@ -933,40 +1094,160 @@ function ShootoutDiagram() {
         className="w-full h-auto text-foreground"
         aria-label="Linkage shootout diagram"
       >
-        <rect x="10" y="25" width="160" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="90" y="48" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">4 Test Manifolds</text>
-        <text x="90" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">• Blobs (Convex Gaussian)</text>
-        <text x="90" y="80" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">• Moons (Interleaved)</text>
-        <text x="90" y="94" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">• Circles (Concentric)</text>
-        <text x="90" y="108" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">• Iris (Biological 4D)</text>
+        <rect
+          x="10"
+          y="25"
+          width="160"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="90"
+          y="48"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          4 Test Manifolds
+        </text>
+        <text x="90" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          • Blobs (Convex Gaussian)
+        </text>
+        <text x="90" y="80" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          • Moons (Interleaved)
+        </text>
+        <text x="90" y="94" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          • Circles (Concentric)
+        </text>
+        <text x="90" y="108" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          • Iris (Biological 4D)
+        </text>
 
-        <path d="M 170 70 L 220 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow2)" />
+        <path
+          d="M 170 70 L 220 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow2)"
+        />
 
-        <rect x="220" y="25" width="160" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--navy))" strokeWidth="1.5" />
-        <text x="300" y="48" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--navy))">4 Linkage Criteria</text>
-        <text x="300" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">• Single (Chaining)</text>
-        <text x="300" y="80" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">• Complete (Compact)</text>
-        <text x="300" y="94" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">• Average (UPGMA)</text>
-        <text x="300" y="108" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">• Ward (Min-Variance)</text>
+        <rect
+          x="220"
+          y="25"
+          width="160"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--navy))"
+          strokeWidth="1.5"
+        />
+        <text
+          x="300"
+          y="48"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--navy))"
+        >
+          4 Linkage Criteria
+        </text>
+        <text x="300" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          • Single (Chaining)
+        </text>
+        <text x="300" y="80" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          • Complete (Compact)
+        </text>
+        <text x="300" y="94" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          • Average (UPGMA)
+        </text>
+        <text x="300" y="108" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          • Ward (Min-Variance)
+        </text>
 
-        <path d="M 380 70 L 430 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow2)" />
+        <path
+          d="M 380 70 L 430 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow2)"
+        />
 
-        <rect x="430" y="25" width="140" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="500" y="52" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">Metric Engine</text>
-        <text x="500" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">1. Adjusted Rand Index</text>
-        <text x="500" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">2. Silhouette Score</text>
-        <text x="500" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">3. Cophenetic (CCC)</text>
+        <rect
+          x="430"
+          y="25"
+          width="140"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="500"
+          y="52"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          Metric Engine
+        </text>
+        <text x="500" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          1. Adjusted Rand Index
+        </text>
+        <text x="500" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          2. Silhouette Score
+        </text>
+        <text x="500" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          3. Cophenetic (CCC)
+        </text>
 
-        <path d="M 570 70 L 620 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow2)" />
+        <path
+          d="M 570 70 L 620 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow2)"
+        />
 
-        <rect x="620" y="25" width="130" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="685" y="52" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">Synthesis</text>
-        <text x="685" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">Comparative Matrix</text>
-        <text x="685" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">Paradox Analysis</text>
-        <text x="685" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">Failure Taxonomy</text>
+        <rect
+          x="620"
+          y="25"
+          width="130"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="685"
+          y="52"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          Synthesis
+        </text>
+        <text x="685" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          Comparative Matrix
+        </text>
+        <text x="685" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          Paradox Analysis
+        </text>
+        <text x="685" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          Failure Taxonomy
+        </text>
 
         <defs>
-          <marker id="arrow2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <marker
+            id="arrow2"
+            viewBox="0 0 10 10"
+            refX="6"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
             <path d="M 0 1 L 8 5 L 0 9 z" fill="hsl(var(--navy))" />
           </marker>
         </defs>
@@ -987,38 +1268,154 @@ function LanceWilliamsDiagram() {
         className="w-full h-auto text-foreground"
         aria-label="Lance Williams scratch engine diagram"
       >
-        <rect x="10" y="25" width="160" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="90" y="52" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">Proximity Matrix D₀</text>
-        <text x="90" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">pdist(X, 'euclidean')</text>
-        <text x="90" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">diag(D) = +∞</text>
-        <text x="90" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">Active Dict: &#123;0..N-1&#125;</text>
+        <rect
+          x="10"
+          y="25"
+          width="160"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="90"
+          y="52"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          Proximity Matrix D₀
+        </text>
+        <text x="90" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          pdist(X, 'euclidean')
+        </text>
+        <text x="90" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          diag(D) = +∞
+        </text>
+        <text x="90" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          Active Dict: &#123;0..N-1&#125;
+        </text>
 
-        <path d="M 170 70 L 220 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow3)" />
+        <path
+          d="M 170 70 L 220 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow3)"
+        />
 
-        <rect x="220" y="25" width="160" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="300" y="52" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">Greedy argmin(D)</text>
-        <text x="300" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">Find min d(C_i, C_j)</text>
-        <text x="300" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">New cluster ID = N+step</text>
-        <text x="300" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">Append to Z_rows</text>
+        <rect
+          x="220"
+          y="25"
+          width="160"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="300"
+          y="52"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          Greedy argmin(D)
+        </text>
+        <text x="300" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          Find min d(C_i, C_j)
+        </text>
+        <text x="300" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          New cluster ID = N+step
+        </text>
+        <text x="300" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          Append to Z_rows
+        </text>
 
-        <path d="M 380 70 L 430 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow3)" />
+        <path
+          d="M 380 70 L 430 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow3)"
+        />
 
-        <rect x="430" y="25" width="160" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--navy))" strokeWidth="1.5" />
-        <text x="510" y="48" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--navy))">Lance–Williams Update</text>
-        <text x="510" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--foreground))">d_new = αᵢd_ki + αⱼd_kj</text>
-        <text x="510" y="80" textAnchor="middle" fontSize="9" fill="hsl(var(--foreground))">+ βd_ij + γ|d_ki - d_kj|</text>
-        <text x="510" y="98" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">O(1) per cluster k</text>
+        <rect
+          x="430"
+          y="25"
+          width="160"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--navy))"
+          strokeWidth="1.5"
+        />
+        <text
+          x="510"
+          y="48"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--navy))"
+        >
+          Lance–Williams Update
+        </text>
+        <text x="510" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--foreground))">
+          d_new = αᵢd_ki + αⱼd_kj
+        </text>
+        <text x="510" y="80" textAnchor="middle" fontSize="9" fill="hsl(var(--foreground))">
+          + βd_ij + γ|d_ki - d_kj|
+        </text>
+        <text x="510" y="98" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          O(1) per cluster k
+        </text>
 
-        <path d="M 590 70 L 640 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow3)" />
+        <path
+          d="M 590 70 L 640 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow3)"
+        />
 
-        <rect x="640" y="25" width="110" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="695" y="52" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">SciPy Parity</text>
-        <text x="695" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">||Z - Z_scipy||</text>
-        <text x="695" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">&lt; 1e-12</text>
-        <text x="695" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">Machine Precision</text>
+        <rect
+          x="640"
+          y="25"
+          width="110"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="695"
+          y="52"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          SciPy Parity
+        </text>
+        <text x="695" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          ||Z - Z_scipy||
+        </text>
+        <text x="695" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          &lt; 1e-12
+        </text>
+        <text x="695" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          Machine Precision
+        </text>
 
         <defs>
-          <marker id="arrow3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <marker
+            id="arrow3"
+            viewBox="0 0 10 10"
+            refX="6"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
             <path d="M 0 1 L 8 5 L 0 9 z" fill="hsl(var(--navy))" />
           </marker>
         </defs>
@@ -1039,38 +1436,154 @@ function TopicTaxonomyDiagram() {
         className="w-full h-auto text-foreground"
         aria-label="Text topic taxonomy diagram"
       >
-        <rect x="10" y="25" width="150" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="85" y="52" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">Corpus Ingestion</text>
-        <text x="85" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">8 Multi-Domain Docs</text>
-        <text x="85" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">TF-IDF Feature Space</text>
-        <text x="85" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">Vocabulary V</text>
+        <rect
+          x="10"
+          y="25"
+          width="150"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="85"
+          y="52"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          Corpus Ingestion
+        </text>
+        <text x="85" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          8 Multi-Domain Docs
+        </text>
+        <text x="85" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          TF-IDF Feature Space
+        </text>
+        <text x="85" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          Vocabulary V
+        </text>
 
-        <path d="M 160 70 L 210 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow4)" />
+        <path
+          d="M 160 70 L 210 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow4)"
+        />
 
-        <rect x="210" y="25" width="160" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="290" y="48" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">L2 Unit Normalization</text>
-        <text x="290" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--foreground))">||x||₂ = 1.0</text>
-        <text x="290" y="82" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">||u - v||² = 2(1 - cos θ)</text>
-        <text x="290" y="98" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">Euclidean = Angular Space</text>
+        <rect
+          x="210"
+          y="25"
+          width="160"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="290"
+          y="48"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          L2 Unit Normalization
+        </text>
+        <text x="290" y="66" textAnchor="middle" fontSize="9" fill="hsl(var(--foreground))">
+          ||x||₂ = 1.0
+        </text>
+        <text x="290" y="82" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          ||u - v||² = 2(1 - cos θ)
+        </text>
+        <text x="290" y="98" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          Euclidean = Angular Space
+        </text>
 
-        <path d="M 370 70 L 420 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow4)" />
+        <path
+          d="M 370 70 L 420 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow4)"
+        />
 
-        <rect x="420" y="25" width="150" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--navy))" strokeWidth="1.5" />
-        <text x="495" y="52" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--navy))">Ward Hierarchy</text>
-        <text x="495" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">linkage(X, 'ward')</text>
-        <text x="495" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">Spherical Variance Min</text>
-        <text x="495" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">Semantic Tree</text>
+        <rect
+          x="420"
+          y="25"
+          width="150"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--navy))"
+          strokeWidth="1.5"
+        />
+        <text
+          x="495"
+          y="52"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--navy))"
+        >
+          Ward Hierarchy
+        </text>
+        <text x="495" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          linkage(X, 'ward')
+        </text>
+        <text x="495" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          Spherical Variance Min
+        </text>
+        <text x="495" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          Semantic Tree
+        </text>
 
-        <path d="M 570 70 L 620 70" stroke="hsl(var(--navy))" strokeWidth="2" markerEnd="url(#arrow4)" />
+        <path
+          d="M 570 70 L 620 70"
+          stroke="hsl(var(--navy))"
+          strokeWidth="2"
+          markerEnd="url(#arrow4)"
+        />
 
-        <rect x="620" y="25" width="130" height="90" rx="4" fill="hsl(var(--secondary))" stroke="hsl(var(--border))" />
-        <text x="685" y="52" textAnchor="middle" fontSize="11" fontWeight="bold" fill="hsl(var(--foreground))">Taxonomy & Keywords</text>
-        <text x="685" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">Cut at K=4 Topics</text>
-        <text x="685" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">Centroid TF-IDF Salience</text>
-        <text x="685" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">Top Ranked Terms</text>
+        <rect
+          x="620"
+          y="25"
+          width="130"
+          height="90"
+          rx="4"
+          fill="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
+        />
+        <text
+          x="685"
+          y="52"
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="bold"
+          fill="hsl(var(--foreground))"
+        >
+          Taxonomy & Keywords
+        </text>
+        <text x="685" y="72" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          Cut at K=4 Topics
+        </text>
+        <text x="685" y="88" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">
+          Centroid TF-IDF Salience
+        </text>
+        <text x="685" y="104" textAnchor="middle" fontSize="9" fill="hsl(var(--teal))">
+          Top Ranked Terms
+        </text>
 
         <defs>
-          <marker id="arrow4" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <marker
+            id="arrow4"
+            viewBox="0 0 10 10"
+            refX="6"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
             <path d="M 0 1 L 8 5 L 0 9 z" fill="hsl(var(--navy))" />
           </marker>
         </defs>
@@ -1091,8 +1604,7 @@ export function ProjectsCatalog() {
     return proj.difficulty.toLowerCase() === filterDifficulty.toLowerCase();
   });
 
-  const activeProject =
-    CAPSTONE_PROJECTS.find((p) => p.id === selectedId) ?? CAPSTONE_PROJECTS[0]!;
+  const activeProject = CAPSTONE_PROJECTS.find((p) => p.id === selectedId) ?? CAPSTONE_PROJECTS[0]!;
 
   const handleCopy = (code: string, id: string) => {
     navigator.clipboard.writeText(code);
@@ -1110,7 +1622,8 @@ export function ProjectsCatalog() {
             <h2 className="text-lg font-bold text-foreground">Capstone Project Blueprints</h2>
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            Four production-ready hierarchical clustering capstones with end-to-end datasets, starter code, and verified solutions.
+            Four production-ready hierarchical clustering capstones with end-to-end datasets,
+            starter code, and verified solutions.
           </p>
         </div>
 
@@ -1168,9 +1681,7 @@ export function ProjectsCatalog() {
                 <h3 className="text-sm font-bold text-foreground leading-snug line-clamp-2">
                   {proj.title}
                 </h3>
-                <p className="mt-2 text-xs text-muted-foreground line-clamp-2">
-                  {proj.subtitle}
-                </p>
+                <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{proj.subtitle}</p>
               </div>
 
               <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-2 text-[11px] text-muted-foreground font-mono">
@@ -1372,9 +1883,7 @@ export function ProjectsCatalog() {
                   Verified Executable Script (All Output Empirically Confirmed)
                 </span>
                 <button
-                  onClick={() =>
-                    handleCopy(activeProject.solutionCode, `sol-${activeProject.id}`)
-                  }
+                  onClick={() => handleCopy(activeProject.solutionCode, `sol-${activeProject.id}`)}
                   className="flex items-center gap-1.5 rounded-sm border border-border bg-secondary/50 px-2.5 py-1 text-xs font-mono text-muted-foreground transition-colors hover:border-navy hover:text-navy"
                 >
                   {copiedCodeId === `sol-${activeProject.id}` ? (

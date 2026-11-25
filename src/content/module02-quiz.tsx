@@ -8,7 +8,8 @@ export function Module02Quiz() {
   const questions = [
     {
       id: 1,
-      prompt: "Which of the following is NOT one of the four formal mathematical axioms of a metric space (M, d)?",
+      prompt:
+        "Which of the following is NOT one of the four formal mathematical axioms of a metric space (M, d)?",
       options: [
         "Non-negativity: d(x, y) ≥ 0 for all x, y.",
         "Identity of Indiscernibles: d(x, y) = 0 if and only if x = y.",
@@ -21,7 +22,8 @@ export function Module02Quiz() {
     },
     {
       id: 2,
-      prompt: "How many unique pairwise distances must be stored for a dataset of N = 100 observations in a condensed distance vector?",
+      prompt:
+        "How many unique pairwise distances must be stored for a dataset of N = 100 observations in a condensed distance vector?",
       options: [
         "100 elements (O(N))",
         "4,950 elements (N(N - 1) / 2)",
@@ -34,7 +36,8 @@ export function Module02Quiz() {
     },
     {
       id: 3,
-      prompt: "What is the key geometric difference between Euclidean distance (L₂ norm) and Manhattan distance (L₁ norm) isocontours?",
+      prompt:
+        "What is the key geometric difference between Euclidean distance (L₂ norm) and Manhattan distance (L₁ norm) isocontours?",
       options: [
         "L₂ isocontours are circular / spherical; L₁ isocontours are diamonds / rhombuses rotated at 45 degrees.",
         "L₁ isocontours are elliptical, while L₂ isocontours are square.",
@@ -47,7 +50,8 @@ export function Module02Quiz() {
     },
     {
       id: 4,
-      prompt: "What is the defining property of an Ultrametric Space, which governs dendrogram cophenetic distances?",
+      prompt:
+        "What is the defining property of an Ultrametric Space, which governs dendrogram cophenetic distances?",
       options: [
         "Distances can be negative if clusters overlap.",
         "Strong Triangle Inequality: d(x, z) ≤ max(d(x, y), d(y, z)) for all triples (x, y, z).",
@@ -60,7 +64,8 @@ export function Module02Quiz() {
     },
     {
       id: 5,
-      prompt: "Why does an observation distance metric d(x, y) not automatically define cluster-to-cluster distance D(A, B)?",
+      prompt:
+        "Why does an observation distance metric d(x, y) not automatically define cluster-to-cluster distance D(A, B)?",
       options: [
         "Clusters A and B are sets of points, so a linkage criterion f must define how pairwise point distances are aggregated into a single scalar dissimilarity.",
         "Observation distances cannot be evaluated when clusters have unequal cardinalities.",
@@ -73,7 +78,8 @@ export function Module02Quiz() {
     },
     {
       id: 6,
-      prompt: "What is the 'chaining phenomenon' and which linkage method is notoriously susceptible to it?",
+      prompt:
+        "What is the 'chaining phenomenon' and which linkage method is notoriously susceptible to it?",
       options: [
         "Ward linkage forming equal-sized clusters regardless of data density.",
         "Single linkage extending elongated, strand-like clusters across noise bridges, merging two distinct clusters prematurely.",
@@ -108,7 +114,8 @@ export function Module02Quiz() {
             Module 02: Fundamentals &amp; Distance Space Self-Assessment
           </h3>
           <p className="text-xs text-muted-foreground">
-            Test your comprehension of metric axioms, norm geometries, ultrametric properties, and condensed distance vectors.
+            Test your comprehension of metric axioms, norm geometries, ultrametric properties, and
+            condensed distance vectors.
           </p>
         </div>
         {showResults && (
@@ -134,20 +141,17 @@ export function Module02Quiz() {
 
               <div className="space-y-2">
                 {q.options.map((opt, optIdx) => {
-                  let btnStyle =
-                    "border-border bg-card text-foreground hover:bg-secondary/40";
+                  let btnStyle = "border-border bg-card text-foreground hover:bg-secondary/40";
 
                   if (showResults) {
                     if (optIdx === q.correct) {
-                      btnStyle =
-                        "border-teal bg-teal/10 text-teal font-medium border-teal/40";
+                      btnStyle = "border-teal bg-teal/10 text-teal font-medium border-teal/40";
                     } else if (userAns === optIdx) {
                       btnStyle =
                         "border-destructive bg-destructive/10 text-destructive font-medium border-destructive/40";
                     }
                   } else if (userAns === optIdx) {
-                    btnStyle =
-                      "border-navy bg-teal/10 text-teal font-medium";
+                    btnStyle = "border-navy bg-teal/10 text-teal font-medium";
                   }
 
                   return (

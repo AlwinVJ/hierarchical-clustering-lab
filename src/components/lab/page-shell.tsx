@@ -112,9 +112,7 @@ export function PageShell({ index, children }: { index: number; children?: React
         </h1>
 
         {page.subtitle && (
-          <p className="mt-3 text-base text-muted-foreground leading-relaxed">
-            {page.subtitle}
-          </p>
+          <p className="mt-3 text-base text-muted-foreground leading-relaxed">{page.subtitle}</p>
         )}
       </header>
 

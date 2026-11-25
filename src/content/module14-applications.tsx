@@ -34,6 +34,7 @@ import {
   ShieldCheck,
   Gauge,
   ScatterChart,
+  Info,
 } from "lucide-react";
 
 interface PipelineStage {
@@ -693,9 +694,7 @@ print("Pipeline completed successfully.")
                   <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Recommended Automation:
                   </span>
-                  <p className="mt-1 text-xs text-teal dark:text-teal font-medium">
-                    {p.action}
-                  </p>
+                  <p className="mt-1 text-xs text-teal dark:text-teal font-medium">{p.action}</p>
                 </div>
               </div>
             ))}
@@ -708,7 +707,9 @@ print("Pipeline completed successfully.")
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card">
-              <span className="text-xs font-semibold uppercase text-muted-foreground">Cophenetic CCC</span>
+              <span className="text-xs font-semibold uppercase text-muted-foreground">
+                Cophenetic CCC
+              </span>
               <div className="mt-2 text-2xl font-bold font-mono text-muted-foreground dark:text-muted-foreground">
                 0.8568
               </div>
@@ -730,7 +731,9 @@ print("Pipeline completed successfully.")
             </div>
 
             <div className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card">
-              <span className="text-xs font-semibold uppercase text-muted-foreground">Davies–Bouldin</span>
+              <span className="text-xs font-semibold uppercase text-muted-foreground">
+                Davies–Bouldin
+              </span>
               <div className="mt-2 text-2xl font-bold font-mono text-muted-foreground dark:text-muted-foreground">
                 0.3742
               </div>
@@ -776,21 +779,11 @@ print("Pipeline completed successfully.")
                     <td className="p-3 text-muted-foreground">Coarse macro split</td>
                   </tr>
                   <tr className="bg-teal/10 font-semibold dark:bg-teal/10">
-                    <td className="p-3 font-bold text-teal dark:text-teal">
-                      k = 3 (SELECTED)
-                    </td>
-                    <td className="p-3 font-mono text-teal dark:text-teal">
-                      0.7214 (PEAK)
-                    </td>
-                    <td className="p-3 font-mono text-teal dark:text-teal">
-                      0.3742 (MINIMUM)
-                    </td>
-                    <td className="p-3 font-mono text-teal dark:text-teal">
-                      419.3 (PEAK)
-                    </td>
-                    <td className="p-3 text-teal dark:text-teal">
-                      Optimal multi-metric consensus
-                    </td>
+                    <td className="p-3 font-bold text-teal dark:text-teal">k = 3 (SELECTED)</td>
+                    <td className="p-3 font-mono text-teal dark:text-teal">0.7214 (PEAK)</td>
+                    <td className="p-3 font-mono text-teal dark:text-teal">0.3742 (MINIMUM)</td>
+                    <td className="p-3 font-mono text-teal dark:text-teal">419.3 (PEAK)</td>
+                    <td className="p-3 text-teal dark:text-teal">Optimal multi-metric consensus</td>
                   </tr>
                   <tr className="hover:bg-secondary/30 dark:hover:bg-secondary/30">
                     <td className="p-3 font-bold">k = 4</td>
@@ -873,61 +866,55 @@ export function AlgorithmShowdown() {
     setEpsParam(dataset.recommendedEps);
   }, [dataset]);
 
-  const singleRes = useMemo(
-    () => singleLinkage(dataset.points, kParam),
-    [dataset, kParam]
-  );
-  const wardRes = useMemo(
-    () => wardLinkage(dataset.points, kParam),
-    [dataset, kParam]
-  );
-  const kMeansRes = useMemo(
-    () => kMeans(dataset.points, kParam, 50, 42),
-    [dataset, kParam]
-  );
+  const singleRes = useMemo(() => singleLinkage(dataset.points, kParam), [dataset, kParam]);
+  const wardRes = useMemo(() => wardLinkage(dataset.points, kParam), [dataset, kParam]);
+  const kMeansRes = useMemo(() => kMeans(dataset.points, kParam, 50, 42), [dataset, kParam]);
   const dbscanRes = useMemo(
     () => dbscan(dataset.points, epsParam, minPtsParam),
-    [dataset, epsParam, minPtsParam]
+    [dataset, epsParam, minPtsParam],
   );
 
   const singleARI = useMemo(
     () => computeAdjustedRandIndex(dataset.groundTruth, singleRes.labels),
-    [dataset, singleRes]
+    [dataset, singleRes],
   );
   const singleSil = useMemo(
     () => computeSilhouetteScore(dataset.points, singleRes.labels),
-    [dataset, singleRes]
+    [dataset, singleRes],
   );
 
   const wardARI = useMemo(
     () => computeAdjustedRandIndex(dataset.groundTruth, wardRes.labels),
-    [dataset, wardRes]
+    [dataset, wardRes],
   );
   const wardSil = useMemo(
     () => computeSilhouetteScore(dataset.points, wardRes.labels),
-    [dataset, wardRes]
+    [dataset, wardRes],
   );
 
   const kMeansARI = useMemo(
     () => computeAdjustedRandIndex(dataset.groundTruth, kMeansRes.labels),
-    [dataset, kMeansRes]
+    [dataset, kMeansRes],
   );
   const kMeansSil = useMemo(
     () => computeSilhouetteScore(dataset.points, kMeansRes.labels),
-    [dataset, kMeansRes]
+    [dataset, kMeansRes],
   );
 
   const dbscanARI = useMemo(
     () => computeAdjustedRandIndex(dataset.groundTruth, dbscanRes.labels),
-    [dataset, dbscanRes]
+    [dataset, dbscanRes],
   );
   const dbscanSil = useMemo(
     () => computeSilhouetteScore(dataset.points, dbscanRes.labels),
-    [dataset, dbscanRes]
+    [dataset, dbscanRes],
   );
 
   const bounds = useMemo(() => {
-    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    let minX = Infinity,
+      maxX = -Infinity,
+      minY = Infinity,
+      maxY = -Infinity;
     for (const [x, y] of dataset.points) {
       if (x < minX) minX = x;
       if (x > maxX) maxX = x;
@@ -980,7 +967,8 @@ export function AlgorithmShowdown() {
             Benchmarking Single Linkage, Ward, K-Means & DBSCAN
           </h3>
           <p className="text-xs text-muted-foreground">
-            Compare non-convex manifold continuity, spherical variance partitioning, and density-based clustering across complex 2D geometries.
+            Compare non-convex manifold continuity, spherical variance partitioning, and
+            density-based clustering across complex 2D geometries.
           </p>
         </div>
         <button
@@ -1081,7 +1069,10 @@ export function AlgorithmShowdown() {
             </div>
             {renderBadge(singleARI)}
           </div>
-          <svg viewBox="0 0 300 190" className="w-full h-auto bg-background rounded-sm border border-border">
+          <svg
+            viewBox="0 0 300 190"
+            className="w-full h-auto bg-background rounded-sm border border-border"
+          >
             {dataset.points.map((p, i) => {
               const [cx, cy] = scalePoint(p[0], p[1]);
               const l = singleRes.labels[i] ?? 0;
@@ -1119,7 +1110,10 @@ export function AlgorithmShowdown() {
             </div>
             {renderBadge(wardARI)}
           </div>
-          <svg viewBox="0 0 300 190" className="w-full h-auto bg-background rounded-sm border border-border">
+          <svg
+            viewBox="0 0 300 190"
+            className="w-full h-auto bg-background rounded-sm border border-border"
+          >
             {dataset.points.map((p, i) => {
               const [cx, cy] = scalePoint(p[0], p[1]);
               const l = wardRes.labels[i] ?? 0;
@@ -1157,7 +1151,10 @@ export function AlgorithmShowdown() {
             </div>
             {renderBadge(kMeansARI)}
           </div>
-          <svg viewBox="0 0 300 190" className="w-full h-auto bg-background rounded-sm border border-border">
+          <svg
+            viewBox="0 0 300 190"
+            className="w-full h-auto bg-background rounded-sm border border-border"
+          >
             {dataset.points.map((p, i) => {
               const [cx, cy] = scalePoint(p[0], p[1]);
               const l = kMeansRes.labels[i] ?? 0;
@@ -1205,7 +1202,10 @@ export function AlgorithmShowdown() {
             </div>
             {renderBadge(dbscanARI)}
           </div>
-          <svg viewBox="0 0 300 190" className="w-full h-auto bg-background rounded-sm border border-border">
+          <svg
+            viewBox="0 0 300 190"
+            className="w-full h-auto bg-background rounded-sm border border-border"
+          >
             {dataset.points.map((p, i) => {
               const [cx, cy] = scalePoint(p[0], p[1]);
               const l = dbscanRes.labels[i] ?? -1;
@@ -1254,7 +1254,10 @@ export function AlgorithmShowdown() {
           Key Theoretical Takeaway
         </span>
         <p className="text-muted-foreground leading-relaxed">
-          On non-convex geometries (such as Two Moons), Single Linkage and DBSCAN achieve perfect separation (ARI = 1.000) by tracing continuous local proximity paths. By contrast, K-Means and Ward Linkage enforce convex, spherical partitions around central points—fracturing the non-linear crescent moons despite achieving higher raw Silhouette scores!
+          On non-convex geometries (such as Two Moons), Single Linkage and DBSCAN achieve perfect
+          separation (ARI = 1.000) by tracing continuous local proximity paths. By contrast, K-Means
+          and Ward Linkage enforce convex, spherical partitions around central points—fracturing the
+          non-linear crescent moons despite achieving higher raw Silhouette scores!
         </p>
       </div>
     </div>

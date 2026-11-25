@@ -8,9 +8,10 @@ Explore the mathematics, algorithms, visualizations, and practical implementatio
 
 <br/>
 
-![Status](https://img.shields.io/badge/Status-In%20Development-673EE5?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Complete-22c55e?style=for-the-badge)
 ![Machine Learning](https://img.shields.io/badge/Domain-Machine%20Learning-5125D2?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-8D85FF?style=for-the-badge)
+![Tests](https://img.shields.io/badge/Tests-64%20Passing-14b8a6?style=for-the-badge)
 
 <br/>
 
@@ -24,80 +25,71 @@ Explore the mathematics, algorithms, visualizations, and practical implementatio
 
 **Hierarchical Clustering Lab** is an educational platform designed to provide a comprehensive understanding of Hierarchical Clustering, one of the fundamental unsupervised machine learning algorithms.
 
-Rather than focusing solely on theoretical explanations, this platform aims to bridge the gap between mathematical foundations and practical implementation through structured lessons, numerical examples, interactive visualizations, and hands-on Python projects.
+Rather than focusing solely on theoretical explanations, this platform bridges the gap between mathematical foundations and practical implementation through structured lessons, numerical examples, interactive visualizations, and hands-on Python projects.
 
 The learning experience progresses from fundamental clustering concepts to advanced algorithmic mechanisms, helping learners understand not just how hierarchical clustering works, but also why particular clustering decisions are made.
 
 ## Learning Roadmap
 
-The platform is organized into 15 learning modules.
+The platform is organized into 15 complete learning modules plus an interactive curriculum overview.
 
-|  #  | Module                           | Topics Covered                                                        |
-| :-: | -------------------------------- | --------------------------------------------------------------------- |
-| 01  | Introduction                     | Clustering fundamentals, unsupervised learning, applications          |
-| 02  | Fundamentals                     | Similarity, dissimilarity, distance matrices, cluster formation       |
-| 03  | Types of Hierarchical Clustering | Agglomerative and Divisive approaches                                 |
-| 04  | Agglomerative Clustering         | Initialization, merging, distance updates, stopping criteria          |
-| 05  | Divisive Clustering              | Top-down clustering, splitting mechanisms, DIANA                      |
-| 06  | Linkage Methods                  | Single, Complete, Average, Centroid, and Ward's Linkage               |
-| 07  | Distance Metrics                 | Euclidean, Manhattan, Minkowski, Cosine, and Hamming distances        |
-| 08  | Dendrograms                      | Construction, interpretation, cluster selection, cutting dendrograms  |
-| 09  | Mathematical Foundation          | Distance calculations, linkage formulas, variance minimization        |
-| 10  | Practical Implementation         | NumPy, SciPy, and Scikit-learn                                        |
-| 11  | Model Evaluation                 | Silhouette Score, Davies-Bouldin Index, Cophenetic Correlation        |
-| 12  | Algorithm Comparison             | K-Means vs Hierarchical Clustering, DBSCAN vs Hierarchical Clustering |
-| 13  | Limitations                      | Computational complexity, scalability, outliers, feature sensitivity  |
-| 14  | Real-World Applications          | Customer segmentation, biological classification, document clustering |
-| 15  | Hands-on Projects                | Practical clustering implementations and real-world datasets          |
+|  #  | Module                              | Topics Covered & Interactive Workspaces                                 |
+| :-: | ----------------------------------- | ----------------------------------------------------------------------- |
+| 01  | Introduction                        | Unsupervised taxonomy, flat vs nested partitions, 6-question quiz       |
+| 02  | Fundamentals                        | Spatial feature space, distance matrices, linkage criteria, anatomy     |
+| 03  | Types of Hierarchical Clustering    | Agglomerative vs Divisive, DIANA heuristics, Paradigm Visualizer        |
+| 04  | Agglomerative Clustering            | 8-stage merge algorithm, distance matrix updates, interactive simulator |
+| 05  | Divisive Clustering                 | Top-down splintering, maximum diameter heuristic, DIANA Simulator       |
+| 06  | Linkage Methods                     | Single, Complete, Average, Centroid, Ward, Lance–Williams Explorer      |
+| 07  | Distance Metrics                    | Euclidean, Manhattan, Minkowski, Cosine, Mahalanobis, Curse of Dim.     |
+| 08  | Dendrograms                         | Tree topology, cophenetic distance, ultrametricity, Dendrogram Explorer |
+| 09  | Mathematical Foundations            | Metric axioms, WSS expansion, Huygens theorem, Mathematical Playground  |
+| 10  | Practical Implementation            | Pure NumPy scratch engine, SciPy `linkage`, Scikit-learn API            |
+| 11  | Model Evaluation & Validation       | Silhouette, Davies–Bouldin, Calinski–Harabasz, ARI, Evaluation Lab      |
+| 12  | Optimal Cluster Selection (Cutting) | Height cut ($t$), maxclust ($k$), inconsistency sweep, Cutting Lab      |
+| 13  | Cluster Profiling & Stability       | Median vs mean profiling, radar charts, bootstrap resampling (ARI)      |
+| 14  | Real-World Applications & Showdown  | 15-stage RFM pipeline, Algorithm Showdown (HAC vs K-Means vs DBSCAN)    |
+| 15  | Hands-on Capstone Projects          | 4 verified production blueprints, starter templates, verified solutions |
 
 ## Key Learning Features
 
-The platform is being developed around the following learning experiences:
+### 1. Structured Theoretical Learning & Zero-Placeholder Quality
 
-### 1. Structured Theoretical Learning
+- Beginner-friendly explanations of complex concepts with rigorous mathematical grounding.
+- Step-by-step algorithmic breakdowns and recurrence derivations.
+- Mathematical foundations: Lance–Williams recurrence, Huygens theorem, ultrametric spaces.
+- Comprehensive self-assessment quizzes across all core modules.
 
-- Beginner-friendly explanations of complex concepts.
-- Detailed algorithmic breakdowns.
-- Mathematical foundations and derivations.
-- Advantages, disadvantages, and practical considerations.
+### 2. Interactive SVG Visualizations & Simulators
 
-### 2. Mathematical Understanding
+Every interactive workspace is hand-crafted as pure inline SVG in React:
 
-- Step-by-step distance calculations.
-- Linkage calculations with numerical examples.
-- Distance matrix interpretation.
-- Understanding Ward's variance minimization approach.
+- **Agglomerative Merge Simulator**: Step-by-step bottom-up cluster coalescing with live matrix updates.
+- **DIANA Divisive Simulator**: Splinter group formation and diameter tracking.
+- **Lance–Williams Recurrence Explorer**: Dynamic parameter matrix updates.
+- **Interactive Dendrogram Workspace**: Live horizontal cutting threshold slider and cophenetic matrix inspection.
+- **Metric Space & Curse of Dimensionality Simulators**: Contrast ratio decay across dimensions.
+- **Algorithm Showdown Benchmark**: Real-time TypeScript clustering comparison (Single, Ward, K-Means, DBSCAN).
+- **Cluster Profiling & Stability Workspace**: Radar profiles, boxplots, and bootstrap stability curves.
 
-### 3. Interactive Visualizations
+### 3. Practical Python Implementations
 
-Planned interactive learning components include:
+Explore hierarchical clustering through three verified implementation approaches:
 
-- Agglomerative clustering simulation.
-- Step-by-step cluster merging.
-- Interactive dendrogram construction.
-- Dendrogram cut-threshold exploration.
-- Linkage method comparisons.
-- Distance matrix visualization.
+| Implementation     | Description                                                                  |
+| ------------------ | ---------------------------------------------------------------------------- |
+| NumPy from Scratch | Pure vectorized distance matrix and Lance–Williams $O(1)$ matrix update loop |
+| SciPy              | Fast linkage matrix generation, cophenetic correlation, and dendrograms      |
+| Scikit-learn       | Production pipelines, sparse k-NN connectivity graphs, and metric evaluation |
 
-### 4. Practical Python Implementations
+### 4. Capstone Projects (Module 15)
 
-Explore hierarchical clustering through three implementation approaches:
+Four production-grade capstone blueprints verified against Python 3.12, SciPy 1.14, and Scikit-learn 1.5:
 
-| Implementation     | Learning Objective                                                          |
-| ------------------ | --------------------------------------------------------------------------- |
-| NumPy from Scratch | Understand the underlying algorithm without relying on clustering libraries |
-| SciPy              | Learn hierarchical clustering and dendrogram generation using SciPy         |
-| Scikit-learn       | Apply hierarchical clustering using production-oriented ML APIs             |
-
-### 5. Hands-on Projects
-
-Practical projects will connect theoretical concepts with real-world applications.
-
-Planned projects include:
-
-- Customer Segmentation using Hierarchical Clustering.
-- Comparison of Different Linkage Methods.
-- Implementing Hierarchical Clustering from Scratch.
+1. **Customer Behavioral Hierarchy & RFM Segmentation**: End-to-end retail pipeline with log1p stabilization, Ward clustering, Silhouette validation ($S=0.4598$), and commercial persona profiling.
+2. **Linkage Method Shoot-Out on Geometric Manifolds**: Multi-manifold benchmark across Blobs, Moons, Concentric Circles, and Iris, evaluating ARI, Silhouette, and Cophenetic correlation (CCC).
+3. **Pure NumPy Agglomerative Engine**: Complete from-scratch clustering engine implementing the Lance–Williams recurrence, achieving machine-precision parity with SciPy ($\Delta < 10^{-12}$).
+4. **Document Topic Taxonomy via TF-IDF & Ward**: Natural language taxonomy extraction on $L_2$-normalized text vectors with centroid keyword salience ranking.
 
 ## Technology Stack
 
