@@ -879,10 +879,10 @@ for topic_id in range(1, k_topics + 1):
     )`,
     verifiedOutput: `Hierarchical Topic Clusters Formed: 4
 
-Topic 1 (Docs [0, 1]): rendering, raytracing, shaders, rasterization
-Topic 2 (Docs [2, 3]): learning, transformer, regression, networks
-Topic 3 (Docs [4, 5]): orbit, rover, satellite, telescope
-Topic 4 (Docs [6, 7]): therapeutic, sequencing, rna, protein`,
+Topic 1 (Docs [0, 1]): raytracing, rendering, realistic, reflections
+Topic 2 (Docs [2, 3]): learning, transformer, classification, clustering
+Topic 3 (Docs [4, 5]): orbit, satellite, planetary, telescope
+Topic 4 (Docs [6, 7]): therapeutic, sequencing, protein, rna`,
     rubric: [
       {
         criteria: "Text Preprocessing & Normalization",

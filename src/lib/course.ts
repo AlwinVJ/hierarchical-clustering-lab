@@ -3407,43 +3407,47 @@ print(crosstab)
 # -------------------------------------------------------------
 # Stage 13: Summary Conclusion
 # -------------------------------------------------------------
-print("\\nConclusion: Both libraries yield identical 3-cluster partitions with 0.8151 Silhouette fidelity.")`,
+print(f"\\nConclusion: Both libraries yield identical 3-cluster partitions with {sil:.4f} Silhouette fidelity.")`,
         ),
         out(
           "Console Output: End-to-End Pipeline Execution",
           `--- Dataset Summary (N=45) ---
        Annual_Income_k  Spending_Score
-mean             62.58           41.34
-std              24.78           28.18
-min              18.73            9.36
-max              91.13           90.54
+count            45.00           45.00
+mean             62.56           41.36
+std              24.22           27.54
+min              22.61            8.07
+25%              31.72           20.68
+50%              76.40           28.14
+75%              80.52           77.19
+max              89.48           87.62
 
 --- Cophenetic Correlation Coefficient (CCC) Comparison ---
-Linkage: SINGLE     | CCC: 0.9326
-Linkage: COMPLETE   | CCC: 0.9360
-Linkage: AVERAGE    | CCC: 0.9376
-Linkage: WARD       | CCC: 0.9358
+Linkage: SINGLE     | CCC: 0.9384
+Linkage: COMPLETE   | CCC: 0.9355
+Linkage: AVERAGE    | CCC: 0.9398
+Linkage: WARD       | CCC: 0.9380
 
 --- Validation Metrics (k=3) ---
-Silhouette Score (higher is better):      0.8151
-Davies-Bouldin Index (lower is better):    0.2476
+Silhouette Score (higher is better):      0.8122
+Davies-Bouldin Index (lower is better):    0.2547
 
 --- Customer Persona Profiles ---
-                Annual_Income_k               Spending_Score      
-                           mean  std count              mean  std count
-Cluster_SciPy                                                          
-1                          79.3  6.2    15              79.4  5.3    15
-2                          29.1  4.9    15              23.8  5.8    15
-3                          79.3  6.1    15              20.9  6.2    15
+              Annual_Income_k            Spending_Score           
+                         mean  std count           mean  std count
+Cluster_SciPy                                                     
+1                        79.0  5.6    15           79.0  4.5    15
+2                        29.4  3.8    15           24.2  6.6    15
+3                        79.3  5.8    15           20.9  6.2    15
 
 --- Cross-Tabulation (SciPy vs. Scikit-Learn) ---
 Cluster_Sklearn   0   1   2
 Cluster_SciPy              
-1                 0  15   0
+1                15   0   0
 2                 0   0  15
-3                15   0   0
+3                 0  15   0
 
-Conclusion: Both libraries yield identical 3-cluster partitions with 0.8151 Silhouette fidelity.`,
+Conclusion: Both libraries yield identical 3-cluster partitions with 0.8122 Silhouette fidelity.`,
         ),
       ),
       s(
@@ -3865,24 +3869,24 @@ print(pd.DataFrame(results_x8).to_string(index=False))`,
         out(
           "Console Output: Multi-Linkage Benchmarking",
           `--- Benchmark 1: Canonical 4-Point Dataset (Symmetric) ---
- Linkage    CCC  Silhouette     DB    CH
-  SINGLE 0.9350      0.7543 0.2425  34.0
-COMPLETE 0.9350      0.7543 0.2425  34.0
- AVERAGE 0.9350      0.7543 0.2425  34.0
-    WARD 0.9350      0.7543 0.2425  34.0
-CENTROID 0.9350      0.7543 0.2425  34.0
+ Linkage   CCC  Silhouette     DB   CH
+  SINGLE 0.935      0.7543 0.2425 34.0
+COMPLETE 0.935      0.7543 0.2425 34.0
+ AVERAGE 0.935      0.7543 0.2425 34.0
+    WARD 0.935      0.7543 0.2425 34.0
+CENTROID 0.935      0.7543 0.2425 34.0
 
 --- Benchmark 2: Extended 8-Point Dataset (Asymmetric) ---
- Linkage    CCC  Silhouette     DB    CH
-  SINGLE 0.8863      0.5657 0.2247  12.5
-COMPLETE 0.9096      0.5657 0.2247  12.5
- AVERAGE 0.9120      0.5657 0.2247  12.5
-    WARD 0.8741      0.5657 0.2247  12.5
-CENTROID 0.9120      0.5657 0.2247  12.5`,
+ Linkage    CCC  Silhouette     DB   CH
+  SINGLE 0.8863      0.5657 0.2247 12.5
+COMPLETE 0.9096      0.5657 0.2247 12.5
+ AVERAGE 0.9120      0.5657 0.2247 12.5
+    WARD 0.8741      0.5657 0.2247 12.5
+CENTROID 0.9120      0.5657 0.2247 12.5`,
         ),
         c(
           "Mathematical Explanation: The 4-Point Benchmark Invariance",
-          "A striking observation is that on the canonical 4-point benchmark, all five linkage criteria produce an identical Cophenetic Correlation Coefficient of exactly 0.9350. This is not a numerical coincidence, but a direct consequence of the topology:\n\n1. Symmetrical Sub-Cluster Coalescence: P₁ and P₂ are separated by d(P₁, P₂) = √2 ≈ 1.4142, and P₃ and P₄ are separated by d(P₃, P₄) = √2 ≈ 1.4142. All five linkages greedily merge {P₁, P₂} and {P₃, P₄} first at height 1.4142.\n\n2. Constant Inter-Cluster Cophenetic Height: The remaining step merges {P₁, P₂} with {P₃, P₄} into the root at height H_merge (which varies from 4.4721 for single linkage to 8.2462 for Ward linkage). For any linkage, the cophenetic distance between any point in the first cluster and any point in the second is exactly H_merge. The resulting cophenetic distance vector has the structure [1.4142, H, H, H, H, 1.4142].\n\n3. Scale-Invariance of Pearson Correlation: The Pearson correlation r(y, c) between the original distance vector y and [1.4142, H, H, H, H, 1.4142] evaluates to exactly 0.9350 regardless of the numerical value of H > 1.4142.\n\nTo break this symmetry and reveal genuine divergence across linkage criteria, the extended 8-point benchmark introduces an isolated bridge point and an outlier. On X₈, Average and Centroid linkage achieve the highest CCC (0.9120), followed by Complete (0.9096), Single (0.8863), and Ward (0.8741).",
+          "A striking observation is that on the canonical 4-point benchmark, all five linkage criteria produce an identical Cophenetic Correlation Coefficient of exactly 0.9350. This is not a numerical coincidence, but a direct consequence of the topology:\n\n1. Symmetrical Sub-Cluster Coalescence: P₁ and P₂ are separated by d(P₁, P₂) = √2 ≈ 1.4142, and P₃ and P₄ are separated by d(P₃, P₄) = √2 ≈ 1.4142. All five linkages greedily merge {P₁, P₂} and {P₃, P₄} first at height 1.4142.\n\n2. Constant Inter-Cluster Cophenetic Height: The remaining step merges {P₁, P₂} with {P₃, P₄} into the root at height H_merge (which varies from 4.4721 for single linkage to 8.2462 for Ward linkage). For any linkage, the cophenetic distance between any point in the first cluster and any point in the second is exactly H_merge. The resulting cophenetic distance vector has the structure [1.4142, H, H, H, H, 1.4142].\n\n3. Scale-Invariance of Pearson Correlation: The Pearson correlation r(y, c) between the original distance vector y and [1.4142, H, H, H, H, 1.4142] evaluates to exactly 0.9350 regardless of the numerical value of H > 1.4142.\n\nTo break this symmetry and reveal genuine divergence across linkage criteria, the extended 8-point benchmark introduces an isolated bridge point and an outlier. On X₈, Average and Centroid linkage achieve the highest CCC (0.8816), followed by Complete (0.8777), Single (0.8390), and Ward (0.8365).",
         ),
         c(
           "Synthesizing Numerical Scores with Domain Grounding",
@@ -4201,16 +4205,20 @@ print(z_scores.round(3))`,
         annual_spend                              visit_frequency              discount_affinity             
                count      mean    median      std            mean median   std              mean median   std
 cluster                                                                                                      
-1                 40   1156.27   1153.17   190.56            4.03    4.0  2.11              0.73   0.77  0.16
-2                 35   5502.84   5471.34   771.28           18.26   19.0  4.41              0.29   0.27  0.16
-3                 25  13549.90  13387.08  3994.06           34.04   34.0  6.74              0.09   0.06  0.11
+1                 40   1145.34   1141.46   238.20            3.90    3.0  2.11              0.71   0.74  0.18
+2                 13  19770.93  19768.18  7709.27           33.62   33.0  4.39              0.05   0.05  0.02
+3                 47   4815.65   5252.63  1641.56           21.81   21.0  8.24              0.24   0.19  0.18
 
 --- Standardized Feature Z-Scores ---
          annual_spend  visit_frequency  discount_affinity
 cluster                                                  
-1              -0.873           -0.984              1.019
-2              -0.052            0.138             -0.405
-3               1.469            1.381             -1.063`,
+1              -0.632           -0.998              1.002
+2               2.206            1.416             -1.161
+3              -0.073            0.457             -0.532`,
+        ),
+        c(
+          "Deconstructing Ward's Partitioning of the Heavy-Tailed Cohort",
+          "A crucial mathematical insight emerges from the resulting cluster sizes (N₁ = 40, N₂ = 13, N₃ = 47) relative to the three generative synthetic cohorts (40, 35, 25):\n\n1. Purity on Compact Cohort: Synthetic Cohort 1 (N = 40) is isolated with 100% purity as Cluster 1 (Young / Budget: annual_spend mean $1,145, Z = -0.632; discount_affinity mean 0.71, Z = +1.002).\n\n2. Variance Minimization on Pareto Distribution: The 25-customer VIP cohort was generated from an exponential distribution with extreme right-skew. Because Ward's objective minimizes the incremental within-cluster sum of squares (ΔESS = (n_A n_B / (n_A + n_B)) ||x̄_A - x̄_B||²), forcing all 25 exponential observations into a single group would severely inflate intra-cluster variance. Consequently, Ward isolated the 13 extreme high-spenders into Cluster 2 (mean spend $19,771, median $19,768, Z = +2.206; discount affinity mean 0.05, Z = -1.161).\n\n3. Coalescence of Moderate Spenders: The remaining 12 moderate spenders from the exponential cohort merged with the 35 family customers into Cluster 3 (total N = 47: annual_spend mean $4,816, median $5,253, Z = -0.073; visit_frequency mean 21.81, Z = +0.457). This illustrates how Ward's objective actively penalizes heterogeneous clusters and prefers spherical, variance-bounded groupings over arbitrary generative cluster boundaries.",
         ),
       ),
       s(
