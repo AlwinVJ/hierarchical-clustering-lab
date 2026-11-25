@@ -25,7 +25,11 @@ import { ImplementationExplorer, Module10Quiz } from "@/content/module10-impleme
 import { EvaluationPlayground, Module11Quiz } from "@/content/module11-evaluation";
 import { DendrogramCuttingLab, Module12Quiz } from "@/content/module12-selection";
 import { ClusterInterpretationLab, Module13Quiz } from "@/content/module13-interpretation";
-import { CaseStudyExplorer, Module14Quiz } from "@/content/module14-applications";
+import {
+  CaseStudyExplorer,
+  AlgorithmShowdown,
+  Module14Quiz,
+} from "@/content/module14-applications";
 import {
   Compass,
   BookOpen,
@@ -4446,11 +4450,130 @@ Clustering executed in sparse memory without computing dense pairwise matrix!`,
           "Systematic Cross-Paradigm Comparison",
           "Selecting the optimal clustering paradigm requires balancing algorithmic constraints against domain realities. The table below benchmarks Hierarchical Clustering against K-Means, Divisive (DIANA), DBSCAN, and Gaussian Mixture Models across six foundational dimensions:",
         ),
-        cmp("Comparative Paradigm Matrix"),
+        tbl(
+          [
+            "Dimension",
+            "Agglomerative (HAC)",
+            "Divisive (DIANA)",
+            "K-Means",
+            "DBSCAN",
+            "Gaussian Mixture (GMM)",
+          ],
+          [
+            "Cluster Geometry & Morphology",
+            "Computational Complexity",
+            "Scalability Limit",
+            "Parameter Sensitivity",
+            "Noise & Outlier Handling",
+            "Hierarchy & Interpretability",
+          ],
+          {
+            "Cluster Geometry & Morphology": [
+              "Arbitrary manifolds (Single) or convex spherical (Ward/Complete)",
+              "Convex / spherical clusters (diameter-based splitting)",
+              "Strictly convex hyper-spherical Voronoi cells",
+              "Arbitrary non-convex density-connected manifolds",
+              "Ellipsoidal clusters with arbitrary covariance orientations",
+            ],
+            "Computational Complexity": [
+              "Time: O(n²) to O(n³), Space: O(n²)",
+              "Time: O(2ⁿ) naive, O(n²) Macnaughton-Smith, Space: O(n²)",
+              "Time: O(n · k · d · i), Space: O(n · d)",
+              "Time: O(n log n) with index, O(n²) worst, Space: O(n)",
+              "Time: O(n · k · d² · i), Space: O(n · k + k · d²)",
+            ],
+            "Scalability Limit": [
+              "n < 30,000 without graph; n ~ 100,000+ with sparse graph",
+              "n < 10,000 (splinter group search scales poorly on large N)",
+              "Massive scale: n > 10,000,000+ (Mini-Batch K-Means)",
+              "Medium-large: n ~ 100,000+ with KD-tree / Ball-tree",
+              "Moderate: n ~ 50,000+ (d×d covariance inversion bottleneck)",
+            ],
+            "Parameter Sensitivity": [
+              "Linkage & metric; k chosen post-hoc by tree slice",
+              "Distance metric; k chosen post-hoc by tree slice",
+              "k must be fixed a priori; initialization seed (k-means++)",
+              "Extremely sensitive to ε and minPts; no k required",
+              "k components, covariance type, random restart seed",
+            ],
+            "Noise & Outlier Handling": [
+              "Single isolates outliers; Ward/Complete absorb into clusters",
+              "Outliers often form early splinter seeds",
+              "Highly sensitive; outliers pull centroids away from true means",
+              "Native noise rejection (outliers labeled as noise: -1)",
+              "Sensitive; extreme outliers distort covariance matrices",
+            ],
+            "Hierarchy & Interpretability": [
+              "Full multi-scale tree (dendrogram); nested taxonomies",
+              "Full top-down hierarchical tree with root-to-leaf paths",
+              "Flat, single-level partition; no nested hierarchy",
+              "Flat partition + noise pool (HDBSCAN adds hierarchy)",
+              "Flat soft probabilistic cluster memberships",
+            ],
+          },
+        ),
         c(
           "Synthesized Decision Framework",
           "When should you choose Hierarchical Clustering over alternative paradigms?\n\n- Choose Hierarchical Clustering when:\n  1. The dataset size is modest (n ≤ 30,000) or a sparse connectivity graph can be constructed.\n  2. You do not know the target cluster count k in advance and require an interpretable visual dendrogram to explore multi-scale structures.\n  3. The problem domain naturally features nested hierarchical taxonomy (e.g., biological phylogeny, document topic trees, product catalogs).\n  4. You require non-Euclidean dissimilarity metrics (e.g. Manhattan, Cosine, Jaccard, Mahalanobis) that K-Means cannot support.\n\n- Choose Alternative Paradigms when:\n  1. Dataset is massive (n > 100,000): Use Mini-Batch K-Means or HDBSCAN.\n  2. Clusters have complex non-globular shapes with heavy noise/outliers: Use DBSCAN or HDBSCAN.\n  3. Clusters exhibit soft overlapping boundaries and require posterior probability assignments: Use Gaussian Mixture Models (EM).",
         ),
+      ),
+      s(
+        "K-Means and DBSCAN vs. Hierarchical Clustering in Practice",
+        c(
+          "Algorithmic Trade-offs and Manifold Geometry",
+          "While the comparison matrix summarizes complexity, practical selection hinges on fundamental geometric and operational differences:\n\n1. Geometric Assumptions: K-Means and Ward Linkage optimize within-cluster variance around an arithmetic centroid. Consequently, they are mathematically constrained to convex, spherical or ellipsoidal geometries. If data lies on curved, non-convex manifolds (such as concentric circles or crescent moons), centroid-based algorithms fail by bisecting the shapes. By contrast, Single Linkage and DBSCAN evaluate local point-to-point density paths, tracing arbitrary continuous manifolds.\n\n2. Scalability & Streaming: K-Means processes each observation in linear time O(n · k · d) and supports stochastic mini-batch updates, making it the uncontested standard for multi-million-row pipelines. Hierarchical clustering requires at least quadratic distance calculations O(n²), restricting standard implementations to tens of thousands of rows.\n\n3. Parameterization vs. Exploratory Slicing: K-Means requires committing to cluster count k before execution. DBSCAN avoids choosing k but is notoriously sensitive to radius ε and minPts (especially across varying cluster densities). Agglomerative clustering computes the entire hierarchy once, allowing practitioners to inspect dendrogram merge heights and extract flat partitions for any k or distance cutoff post-hoc.\n\n4. Determinism: Standard K-Means and GMM are non-deterministic, converging to local optima depending on initial seeds. Agglomerative clustering is deterministic: for a given distance metric and linkage criterion, it yields the exact same tree hierarchy every single execution.",
+        ),
+        cd(
+          "Cross-Paradigm Benchmark on Non-Convex Manifolds (make_moons)",
+          `from sklearn.datasets import make_moons
+from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN
+from sklearn.metrics import adjusted_rand_score, silhouette_score
+import pandas as pd
+
+# Generate synthetic two-moons non-convex manifold (N=200)
+X, y = make_moons(n_samples=200, noise=0.05, random_state=0)
+
+models = {
+    "Single Linkage (HAC)": AgglomerativeClustering(
+        n_clusters=2, linkage="single"
+    ),
+    "Ward Linkage (HAC)": AgglomerativeClustering(
+        n_clusters=2, linkage="ward"
+    ),
+    "K-Means": KMeans(n_clusters=2, random_state=0, n_init=10),
+    "DBSCAN": DBSCAN(eps=0.25, min_samples=5),
+}
+
+benchmark = []
+for name, model in models.items():
+    labels = model.fit_predict(X)
+    ari = adjusted_rand_score(y, labels)
+    sil = silhouette_score(X, labels)
+    benchmark.append({
+        "Algorithm": name,
+        "Adjusted Rand Index (ARI)": round(ari, 4),
+        "Silhouette Score": round(sil, 4),
+        "Clusters": len(set(labels) - {-1}),
+    })
+
+df_res = pd.DataFrame(benchmark)
+print("--- Cross-Paradigm Benchmark on make_moons (N=200) ---")
+print(df_res.to_string(index=False))`,
+        ),
+        out(
+          "Console Output: make_moons Benchmark",
+          `--- Cross-Paradigm Benchmark on make_moons (N=200) ---
+           Algorithm  Adjusted Rand Index (ARI)  Silhouette Score  Clusters
+Single Linkage (HAC)                     1.0000            0.3259         2
+  Ward Linkage (HAC)                     0.4331            0.4448         2
+             K-Means                     0.2564            0.4922         2
+              DBSCAN                     1.0000            0.3259         2`,
+        ),
+        c(
+          "The Silhouette Paradox on Non-Convex Manifolds",
+          "Notice the critical revelation in the benchmark results: K-Means achieves the highest Silhouette score (0.4922) and Ward achieves 0.4448, yet both fail completely at uncovering the true cluster structures (ARI = 0.2564 and 0.4331). Single Linkage and DBSCAN achieve perfect ground-truth recovery (ARI = 1.0000), but register lower Silhouette scores (0.3259). This illustrates why internal metric maximization without geometric awareness leads to disastrous modeling decisions.",
+        ),
+        cust(createElement(AlgorithmShowdown)),
       ),
       s(
         "End-to-End Production Case Study",

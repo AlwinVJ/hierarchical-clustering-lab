@@ -228,7 +228,7 @@ describe("App routing and Course Structure", () => {
 
     // Page 15: Applications, Limitations & Scalability (slug: "applications")
     const appPage = pages.find((p) => p.slug === "applications")!;
-    expect(appPage.sections.length).toBe(6);
+    expect(appPage.sections.length).toBe(7);
     expect(appPage.sections.map((s) => s.title)).toContain(
       "Real-World Industrial & Scientific Applications",
     );
@@ -240,6 +240,9 @@ describe("App routing and Course Structure", () => {
     );
     expect(appPage.sections.map((s) => s.title)).toContain(
       "Comparative Paradigm Matrix: Choosing the Right Clustering Algorithm",
+    );
+    expect(appPage.sections.map((s) => s.title)).toContain(
+      "K-Means and DBSCAN vs. Hierarchical Clustering in Practice",
     );
     expect(appPage.sections.map((s) => s.title)).toContain("End-to-End Production Case Study");
     expect(appPage.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
