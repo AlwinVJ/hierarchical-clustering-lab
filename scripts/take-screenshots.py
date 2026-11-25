@@ -1,7 +1,7 @@
 from playwright.sync_api import sync_playwright
 import os
 
-ARTIFACT_DIR = r"C:\Users\alwin\.gemini\antigravity\brain\6a977f64-1fc6-4558-af7b-686ecacc070c"
+ARTIFACT_DIR = os.environ.get("ARTIFACT_DIR", "./screenshots")
 os.makedirs(ARTIFACT_DIR, exist_ok=True)
 
 with sync_playwright() as p:
