@@ -32,6 +32,7 @@ import {
   AlgorithmShowdown,
   Module14Quiz,
 } from "@/content/module14-applications";
+import { ProjectsCatalog } from "@/content/module15-projects";
 import {
   Compass,
   BookOpen,
@@ -4633,7 +4634,69 @@ Single Linkage (HAC)                     1.0000            0.3259         2
     icon: FolderKanban,
     subtitle:
       "Applied capstone project blueprints with datasets, problem statements, and implementation guidelines.",
-    sections: [],
+    sections: [
+      s(
+        "Curriculum & Engineering Standards",
+        c(
+          "Capstone Architectural Overview",
+          "The capstone module provides four comprehensive, industry-grade project specifications that bridge theoretical hierarchical clustering mechanics with real-world engineering constraints. Each project blueprint delivers complete dataset specifications, concrete learning milestones, copyable Python 3.12 starter code with TODO blocks, collapsible verified reference implementations, and an explicit grading rubric.",
+        ),
+        n(
+          "Rigorous Verification Guarantee",
+          "All reference implementations and numerical results presented in these projects have been empirically executed and verified against Python 3.12, NumPy 2.0+, SciPy 1.14+, and Scikit-learn 1.5+. Parity assertions confirm numerical convergence and algorithmic correctness.",
+        ),
+        c(
+          "Prerequisite Mastery Check",
+          "Before embarking on these capstone projects, learners should have mastered: agglomerative bottom-up merge loops (Module 04), Lance–Williams recurrence updates (Module 06), distance metric geometries (Module 07), dendrogram cutting heuristics (Module 12), and cluster stability and profiling (Module 13).",
+        ),
+      ),
+      s(
+        "Interactive Project Catalog & Blueprints",
+        c(
+          "Interactive Blueprint Workspace",
+          "Select any project blueprint below to inspect its domain parameters, visualize its data pipeline, copy starter templates, or review verified reference solutions:",
+        ),
+        cust(createElement(ProjectsCatalog)),
+      ),
+      s(
+        "Submission Guidelines & Best Practices",
+        tbl(
+          ["Project Phase", "Engineering Focus", "Verification Criteria"],
+          [
+            "1. Preprocessing",
+            "2. Hierarchical Clustering",
+            "3. Cut & Validation",
+            "4. Profiling & Synthesis",
+          ],
+          {
+            "1. Preprocessing": [
+              "Data cleaning, log1p transform for positive skewness, and z-score standard scaling.",
+              "Feature matrices must be zero-mean, unit-variance with no NaN or infinite values.",
+            ],
+            "2. Hierarchical Clustering": [
+              "Linkage selection (Ward for spherical variance, Single for continuous manifolds).",
+              "Execution via SciPy or custom Lance–Williams recurrence with verified merge heights.",
+            ],
+            "3. Cut & Validation": [
+              "Cutting tree at optimal K via maxclust or height criteria; computing Silhouette & DB.",
+              "Validation scores must exceed baseline thresholds; cophenetic CCC > 0.70 when applicable.",
+            ],
+            "4. Profiling & Synthesis": [
+              "Transforming cluster medians back to unscaled units for commercial or domain naming.",
+              "Deriving actionable personas, topic labels, or empirical failure mode analyses.",
+            ],
+          },
+        ),
+        n(
+          "Academic & Engineering Integrity",
+          "When implementing custom algorithms or analyzing customer data, always prioritize numerical stability, avoid post-hoc metric hacking, and verify that tree structures do not exhibit mathematically undefined inversions.",
+        ),
+        c(
+          "Module & Series Bibliography",
+          "All four projects draw directly from foundational literature: Ward (1963), Lance & Williams (1967), Kaufman & Rousseeuw (1990), and modern scikit-learn/scipy open-source standards. See docs/references.md for complete bibliographical citations.",
+        ),
+      ),
+    ],
   },
 ];
 
