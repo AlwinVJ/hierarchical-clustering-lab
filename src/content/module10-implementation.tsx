@@ -416,7 +416,9 @@ print("Scikit-Learn children_:\\n", model.children_)`;
           <strong className="text-foreground">Client-Side Interactive Simulator:</strong> This
           component runs in your browser to interactively demonstrate the identical mathematics
           executed by Python&apos;s SciPy (<code>scipy.cluster.hierarchy</code>) and Scikit-learn
-          (<code className="break-all">sklearn.cluster.AgglomerativeClustering</code>).
+          <span>
+            (<code className="break-all">sklearn.cluster.AgglomerativeClustering</code>).
+          </span>
         </div>
       </div>
 

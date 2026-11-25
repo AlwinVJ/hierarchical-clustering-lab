@@ -1211,14 +1211,8 @@ export function PipelineDiagram({ title, ariaLabel, stages }: PipelineDiagramPro
 
   return (
     <div className="rounded-sm border border-border bg-card p-4">
-      <div className="text-xs font-mono font-semibold text-teal mb-3 uppercase">
-        {title}
-      </div>
-      <svg
-        viewBox="0 0 760 140"
-        className="w-full h-auto text-foreground"
-        aria-label={ariaLabel}
-      >
+      <div className="text-xs font-mono font-semibold text-teal mb-3 uppercase">{title}</div>
+      <svg viewBox="0 0 760 140" className="w-full h-auto text-foreground" aria-label={ariaLabel}>
         <defs>
           <marker
             id={markerId}
