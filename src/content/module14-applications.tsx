@@ -929,7 +929,7 @@ export function AlgorithmShowdown() {
   const scalePoint = (x: number, y: number, width = 300, height = 190, pad = 20) => {
     const sx = pad + ((x - bounds.minX) / bounds.spanX) * (width - 2 * pad);
     const sy = height - pad - ((y - bounds.minY) / bounds.spanY) * (height - 2 * pad);
-    return [sx, sy];
+    return [Math.round(sx * 100) / 100, Math.round(sy * 100) / 100];
   };
 
   const renderBadge = (ari: number) => {
