@@ -454,18 +454,18 @@ print("Pipeline completed successfully.")
   }, []);
 
   return (
-    <div className="my-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="my-8 rounded-sm border border-border bg-card p-6 shadow-xs dark:border-border dark:bg-card">
       {/* Header */}
-      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between border-b border-border pb-4 dark:border-border">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">
+          <div className="inline-flex items-center gap-2 rounded-full bg-teal/10 px-3 py-1 text-xs font-semibold text-teal dark:bg-teal/10 dark:text-teal">
             <Briefcase className="h-3.5 w-3.5" />
             End-to-End Production Case Study
           </div>
-          <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="mt-1 text-xl font-bold text-muted-foreground dark:text-muted-foreground">
             Enterprise Customer Behavioral Segmentation & Taxonomy
           </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground">
             A comprehensive, 15-stage reproducible industrial deployment from raw transaction data
             to strategic marketing personas.
           </p>
@@ -473,7 +473,7 @@ print("Pipeline completed successfully.")
 
         <button
           onClick={() => setCurrentStep(1)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+          className="inline-flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary/30 dark:border-border dark:text-muted-foreground dark:hover:bg-secondary/30"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           Reset to Stage 1
@@ -481,13 +481,13 @@ print("Pipeline completed successfully.")
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 mb-6 gap-2 overflow-x-auto">
+      <div className="flex border-b border-border dark:border-border mb-6 gap-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab("pipeline")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "pipeline"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-teal dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-muted-foreground dark:text-muted-foreground dark:hover:text-muted-foreground"
           }`}
         >
           <Layers className="h-3.5 w-3.5" />
@@ -497,8 +497,8 @@ print("Pipeline completed successfully.")
           onClick={() => setActiveTab("personas")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "personas"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-teal dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-muted-foreground dark:text-muted-foreground dark:hover:text-muted-foreground"
           }`}
         >
           <Users className="h-3.5 w-3.5" />
@@ -508,8 +508,8 @@ print("Pipeline completed successfully.")
           onClick={() => setActiveTab("metrics")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "metrics"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-teal dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-muted-foreground dark:text-muted-foreground dark:hover:text-muted-foreground"
           }`}
         >
           <Gauge className="h-3.5 w-3.5" />
@@ -519,8 +519,8 @@ print("Pipeline completed successfully.")
           onClick={() => setActiveTab("script")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "script"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-teal dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-muted-foreground dark:text-muted-foreground dark:hover:text-muted-foreground"
           }`}
         >
           <Code2 className="h-3.5 w-3.5" />
@@ -537,12 +537,12 @@ print("Pipeline completed successfully.")
               <button
                 key={s.step}
                 onClick={() => setCurrentStep(s.step)}
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold transition-all ${
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-sm text-xs font-bold transition-all ${
                   s.step === currentStep
-                    ? "bg-violet-600 text-white shadow-xs"
+                    ? "bg-navy hover:bg-deep text-primary-foreground text-white shadow-xs"
                     : s.step < currentStep
-                      ? "bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300"
-                      : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                      ? "bg-teal/10 text-teal dark:bg-teal/10 dark:text-teal"
+                      : "bg-secondary/30 text-muted-foreground dark:bg-card dark:text-muted-foreground"
                 }`}
               >
                 {s.step}
@@ -551,13 +551,13 @@ print("Pipeline completed successfully.")
           </div>
 
           {/* Active Stage Card */}
-          <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-6 dark:border-slate-800 dark:bg-slate-800/20">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3 dark:border-slate-800">
+          <div className="rounded-sm border border-border bg-secondary/30 p-6 dark:border-border dark:bg-card">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3 dark:border-border">
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-violet-600 dark:text-violet-400">
+                <span className="text-xs font-semibold uppercase tracking-wider text-teal dark:text-teal">
                   {activeStage.phase}
                 </span>
-                <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-0.5">
+                <h4 className="text-lg font-bold text-muted-foreground dark:text-muted-foreground mt-0.5">
                   {activeStage.title}
                 </h4>
               </div>
@@ -566,7 +566,7 @@ print("Pipeline completed successfully.")
                 <button
                   disabled={currentStep === 1}
                   onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                  className="rounded-sm border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground disabled:opacity-40 dark:border-border dark:bg-card dark:text-muted-foreground"
                 >
                   Previous
                 </button>
@@ -575,7 +575,7 @@ print("Pipeline completed successfully.")
                   onClick={() =>
                     setCurrentStep((prev) => Math.min(PIPELINE_STAGES.length, prev + 1))
                   }
-                  className="inline-flex items-center gap-1 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40 hover:bg-violet-700 shadow-xs"
+                  className="inline-flex items-center gap-1 rounded-sm bg-navy hover:bg-deep text-primary-foreground px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40 hover:bg-navy hover:bg-deep text-primary-foreground shadow-xs"
                 >
                   Next Stage
                   <ArrowRight className="h-3 w-3" />
@@ -583,13 +583,13 @@ print("Pipeline completed successfully.")
               </div>
             </div>
 
-            <p className="mt-4 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+            <p className="mt-4 text-sm text-muted-foreground dark:text-muted-foreground leading-relaxed">
               {activeStage.summary}
             </p>
 
             {activeStage.mathFormula && (
-              <div className="mt-3 rounded-lg bg-white p-3 font-mono text-xs text-violet-800 border border-slate-200 dark:bg-slate-900 dark:text-violet-300 dark:border-slate-700">
-                <span className="font-semibold text-slate-400 mr-2">Formula:</span>
+              <div className="mt-3 rounded-sm bg-card p-3 font-mono text-xs text-teal border border-border dark:bg-card dark:text-teal dark:border-border">
+                <span className="font-semibold text-muted-foreground mr-2">Formula:</span>
                 {activeStage.mathFormula}
               </div>
             )}
@@ -597,20 +597,20 @@ print("Pipeline completed successfully.")
             {/* Code and Output Split */}
             <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Python Implementation
                 </span>
-                <pre className="mt-1.5 overflow-x-auto rounded-lg bg-slate-950 p-3.5 font-mono text-xs text-slate-200 max-h-56">
+                <pre className="mt-1.5 overflow-x-auto rounded-sm bg-secondary/30 p-3.5 font-mono text-xs text-muted-foreground max-h-56">
                   {activeStage.pythonSnippet}
                 </pre>
               </div>
 
               <div>
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Execution Output Summary
                 </span>
-                <div className="mt-1.5 rounded-lg border border-emerald-200 bg-emerald-50/60 p-3.5 text-xs text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-200 font-mono">
-                  <div className="flex items-center gap-1.5 font-bold mb-1.5 text-emerald-700 dark:text-emerald-400">
+                <div className="mt-1.5 rounded-sm border border-teal bg-teal/10 p-3.5 text-xs text-teal dark:border-teal/40 dark:bg-teal/10 dark:text-teal font-mono">
+                  <div className="flex items-center gap-1.5 font-bold mb-1.5 text-teal dark:text-teal">
                     <CheckCircle2 className="h-4 w-4" /> Output Diagnostic
                   </div>
                   {activeStage.outputSummary}
@@ -624,11 +624,11 @@ print("Pipeline completed successfully.")
       {/* Personas Tab */}
       {activeTab === "personas" && (
         <div className="space-y-6">
-          <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
+          <div className="rounded-sm bg-secondary/30 p-4 dark:bg-card border border-border dark:border-border">
+            <h4 className="text-sm font-bold text-muted-foreground dark:text-muted-foreground mb-1">
               Downstream Production Marketing Personas (k = 3)
             </h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-muted-foreground dark:text-muted-foreground">
               Transforming abstract mathematical clusters into actionable commercial strategies with
               automated campaign workflows.
             </p>
@@ -638,7 +638,7 @@ print("Pipeline completed successfully.")
             {CUSTOMER_PERSONAS.map((p) => (
               <div
                 key={p.id}
-                className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between"
+                className="rounded-sm border border-border bg-card p-5 shadow-xs dark:border-border dark:bg-card flex flex-col justify-between"
                 style={{ borderTopWidth: "4px", borderTopColor: p.color }}
               >
                 <div>
@@ -646,42 +646,42 @@ print("Pipeline completed successfully.")
                     <h4 className="font-bold text-base" style={{ color: p.color }}>
                       {p.name}
                     </h4>
-                    <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300 font-semibold">
+                    <span className="rounded bg-secondary/30 px-2 py-0.5 text-xs text-muted-foreground dark:bg-card dark:text-muted-foreground font-semibold">
                       {p.size}
                     </span>
                   </div>
 
-                  <div className="mt-4 space-y-2 rounded-lg bg-slate-50 p-3 dark:bg-slate-800/60 text-xs font-mono">
+                  <div className="mt-4 space-y-2 rounded-sm bg-secondary/30 p-3 dark:bg-card text-xs font-mono">
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Median Spend:</span>
-                      <span className="font-bold text-slate-900 dark:text-slate-100">
+                      <span className="text-muted-foreground">Median Spend:</span>
+                      <span className="font-bold text-muted-foreground dark:text-muted-foreground">
                         {p.avgSpend}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Median Frequency:</span>
-                      <span className="font-bold text-slate-900 dark:text-slate-100">
+                      <span className="text-muted-foreground">Median Frequency:</span>
+                      <span className="font-bold text-muted-foreground dark:text-muted-foreground">
                         {p.avgFreq}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Last Engagement:</span>
-                      <span className="font-bold text-slate-900 dark:text-slate-100">
+                      <span className="text-muted-foreground">Last Engagement:</span>
+                      <span className="font-bold text-muted-foreground dark:text-muted-foreground">
                         {p.recency}
                       </span>
                     </div>
                   </div>
 
-                  <p className="mt-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <p className="mt-3 text-xs text-muted-foreground dark:text-muted-foreground leading-relaxed">
                     {p.traits}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <div className="mt-4 pt-3 border-t border-border dark:border-border">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Recommended Automation:
                   </span>
-                  <p className="mt-1 text-xs text-violet-700 dark:text-violet-300 font-medium">
+                  <p className="mt-1 text-xs text-teal dark:text-teal font-medium">
                     {p.action}
                   </p>
                 </div>
@@ -695,58 +695,58 @@ print("Pipeline completed successfully.")
       {activeTab === "metrics" && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-              <span className="text-xs font-semibold uppercase text-slate-500">Cophenetic CCC</span>
-              <div className="mt-2 text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+            <div className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">Cophenetic CCC</span>
+              <div className="mt-2 text-2xl font-bold font-mono text-muted-foreground dark:text-muted-foreground">
                 0.8568
               </div>
-              <div className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+              <div className="mt-1 text-xs text-teal dark:text-teal font-semibold">
                 High Tree Metric Fidelity
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-              <span className="text-xs font-semibold uppercase text-slate-500">
+            <div className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">
                 Peak Silhouette
               </span>
-              <div className="mt-2 text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+              <div className="mt-2 text-2xl font-bold font-mono text-muted-foreground dark:text-muted-foreground">
                 0.7214
               </div>
-              <div className="mt-1 text-xs text-violet-600 dark:text-violet-400 font-semibold">
+              <div className="mt-1 text-xs text-teal dark:text-teal font-semibold">
                 Optimal at k = 3
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-              <span className="text-xs font-semibold uppercase text-slate-500">Davies–Bouldin</span>
-              <div className="mt-2 text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+            <div className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">Davies–Bouldin</span>
+              <div className="mt-2 text-2xl font-bold font-mono text-muted-foreground dark:text-muted-foreground">
                 0.3742
               </div>
-              <div className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+              <div className="mt-1 text-xs text-teal dark:text-teal font-semibold">
                 Tight Compact Separation
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-              <span className="text-xs font-semibold uppercase text-slate-500">
+            <div className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">
                 Bootstrap Stability
               </span>
-              <div className="mt-2 text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+              <div className="mt-2 text-2xl font-bold font-mono text-muted-foreground dark:text-muted-foreground">
                 ARI = 1.0000
               </div>
-              <div className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+              <div className="mt-1 text-xs text-teal dark:text-teal font-semibold">
                 100% Subsample Reproducible
               </div>
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/40">
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">
+          <div className="rounded-sm border border-border bg-secondary/30 p-4 dark:border-border dark:bg-card">
+            <h4 className="text-sm font-bold text-muted-foreground dark:text-muted-foreground mb-2">
               Multi-Metric Sweep Diagnostic Curve (k = 2 to 5)
             </h4>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
-                <thead className="bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-semibold">
+              <table className="w-full text-left text-xs border border-border dark:border-border rounded-sm overflow-hidden">
+                <thead className="bg-secondary/30 text-muted-foreground dark:bg-card dark:text-muted-foreground font-semibold">
                   <tr>
                     <th className="p-3">Clusters (k)</th>
                     <th className="p-3">Silhouette Score (s̄)</th>
@@ -755,44 +755,44 @@ print("Pipeline completed successfully.")
                     <th className="p-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                <tbody className="divide-y divide-border dark:divide-border">
+                  <tr className="hover:bg-secondary/30 dark:hover:bg-secondary/30">
                     <td className="p-3 font-bold">k = 2</td>
                     <td className="p-3 font-mono">0.5842</td>
                     <td className="p-3 font-mono">0.5410</td>
                     <td className="p-3 font-mono">214.5</td>
-                    <td className="p-3 text-slate-400">Coarse macro split</td>
+                    <td className="p-3 text-muted-foreground">Coarse macro split</td>
                   </tr>
-                  <tr className="bg-violet-50/70 font-semibold dark:bg-violet-950/30">
-                    <td className="p-3 font-bold text-violet-700 dark:text-violet-300">
+                  <tr className="bg-teal/10 font-semibold dark:bg-teal/10">
+                    <td className="p-3 font-bold text-teal dark:text-teal">
                       k = 3 (SELECTED)
                     </td>
-                    <td className="p-3 font-mono text-violet-700 dark:text-violet-300">
+                    <td className="p-3 font-mono text-teal dark:text-teal">
                       0.7214 (PEAK)
                     </td>
-                    <td className="p-3 font-mono text-violet-700 dark:text-violet-300">
+                    <td className="p-3 font-mono text-teal dark:text-teal">
                       0.3742 (MINIMUM)
                     </td>
-                    <td className="p-3 font-mono text-violet-700 dark:text-violet-300">
+                    <td className="p-3 font-mono text-teal dark:text-teal">
                       419.3 (PEAK)
                     </td>
-                    <td className="p-3 text-violet-700 dark:text-violet-300">
+                    <td className="p-3 text-teal dark:text-teal">
                       Optimal multi-metric consensus
                     </td>
                   </tr>
-                  <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <tr className="hover:bg-secondary/30 dark:hover:bg-secondary/30">
                     <td className="p-3 font-bold">k = 4</td>
                     <td className="p-3 font-mono">0.5980</td>
                     <td className="p-3 font-mono">0.6841</td>
                     <td className="p-3 font-mono">312.4</td>
-                    <td className="p-3 text-slate-400">Over-segmentation</td>
+                    <td className="p-3 text-muted-foreground">Over-segmentation</td>
                   </tr>
-                  <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <tr className="hover:bg-secondary/30 dark:hover:bg-secondary/30">
                     <td className="p-3 font-bold">k = 5</td>
                     <td className="p-3 font-mono">0.4812</td>
                     <td className="p-3 font-mono">0.8920</td>
                     <td className="p-3 font-mono">245.1</td>
-                    <td className="p-3 text-slate-400">Degraded boundaries</td>
+                    <td className="p-3 text-muted-foreground">Degraded boundaries</td>
                   </tr>
                 </tbody>
               </table>
@@ -805,16 +805,16 @@ print("Pipeline completed successfully.")
       {activeTab === "script" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+            <span className="text-xs font-semibold text-muted-foreground dark:text-muted-foreground">
               Complete Self-Contained Production Python Script
             </span>
             <button
               onClick={() => copyCode(fullPipelinePython)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground shadow-xs hover:bg-secondary/30 dark:border-border dark:bg-card dark:text-muted-foreground"
             >
               {copied ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-emerald-600" />
+                  <Check className="h-3.5 w-3.5 text-teal" />
                   Copied Script!
                 </>
               ) : (
@@ -825,7 +825,7 @@ print("Pipeline completed successfully.")
               )}
             </button>
           </div>
-          <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 font-mono text-xs text-slate-200 max-h-96">
+          <pre className="overflow-x-auto rounded-sm bg-secondary/30 p-4 font-mono text-xs text-muted-foreground max-h-96">
             {fullPipelinePython}
           </pre>
         </div>
@@ -909,19 +909,19 @@ export function Module14Quiz() {
   }, 0);
 
   return (
-    <div className="my-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+    <div className="my-8 rounded-sm border border-border bg-card p-6 shadow-xs dark:border-border dark:bg-card">
+      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4 dark:border-border">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-violet-700 dark:text-violet-400">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-teal dark:text-teal">
             <HelpCircle className="h-4 w-4" />
             Knowledge Check
           </div>
-          <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="mt-1 text-lg font-bold text-muted-foreground dark:text-muted-foreground">
             Module 14: Applications, Scalability & Paradigm Assessment
           </h3>
         </div>
         {showResults && (
-          <div className="inline-flex items-center gap-2 rounded-lg bg-violet-50 px-3 py-1.5 text-xs font-bold text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">
+          <div className="inline-flex items-center gap-2 rounded-sm bg-teal/10 px-3 py-1.5 text-xs font-bold text-teal dark:bg-teal/10 dark:text-teal">
             Score: {score} / {questions.length} ({Math.round((score / questions.length) * 100)}%)
           </div>
         )}
@@ -936,28 +936,28 @@ export function Module14Quiz() {
           return (
             <div
               key={q.id}
-              className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30"
+              className="rounded-sm border border-border bg-secondary/30 p-4 dark:border-border dark:bg-card"
             >
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+              <p className="text-sm font-semibold text-muted-foreground dark:text-muted-foreground">
                 {idx + 1}. {q.prompt}
               </p>
 
               <div className="mt-3 space-y-2">
                 {q.options.map((opt, optIdx) => {
                   let btnStyle =
-                    "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300";
+                    "border-border bg-card text-muted-foreground hover:bg-secondary/30 dark:border-border dark:bg-card dark:text-muted-foreground";
 
                   if (showResults) {
                     if (optIdx === q.correct) {
                       btnStyle =
-                        "border-emerald-500 bg-emerald-50 text-emerald-800 font-medium dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-700";
+                        "border-teal bg-teal/10 text-teal font-medium dark:bg-teal/10 dark:text-teal dark:border-teal";
                     } else if (userAns === optIdx) {
                       btnStyle =
-                        "border-rose-500 bg-rose-50 text-rose-800 font-medium dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-700";
+                        "border-destructive bg-destructive/10 text-destructive font-medium dark:bg-destructive/10 dark:text-destructive dark:border-destructive";
                     }
                   } else if (userAns === optIdx) {
                     btnStyle =
-                      "border-violet-600 bg-violet-50 text-violet-800 font-medium dark:bg-violet-950/40 dark:text-violet-200 dark:border-violet-500";
+                      "border-navy bg-teal/10 text-teal font-medium dark:bg-teal/10 dark:text-teal dark:border-teal";
                   }
 
                   return (
@@ -965,11 +965,11 @@ export function Module14Quiz() {
                       key={optIdx}
                       onClick={() => handleSelect(q.id, optIdx)}
                       disabled={showResults}
-                      className={`flex w-full items-center justify-between rounded-lg border p-3 text-left text-xs transition-all ${btnStyle}`}
+                      className={`flex w-full items-center justify-between rounded-sm border p-3 text-left text-xs transition-all ${btnStyle}`}
                     >
                       <span>{opt}</span>
                       {showResults && optIdx === q.correct && (
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-teal dark:text-teal" />
                       )}
                     </button>
                   );
@@ -978,10 +978,10 @@ export function Module14Quiz() {
 
               {showResults && (
                 <div
-                  className={`mt-3 rounded-md p-3 text-xs ${
+                  className={`mt-3 rounded-sm p-3 text-xs ${
                     isCorrect
-                      ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-200"
-                      : "bg-rose-50 text-rose-900 dark:bg-rose-950/30 dark:text-rose-200"
+                      ? "bg-teal/10 text-teal dark:bg-teal/10 dark:text-teal"
+                      : "bg-destructive/10 text-destructive dark:bg-destructive/10 dark:text-destructive"
                   }`}
                 >
                   <span className="font-bold">{isCorrect ? "Correct: " : "Incorrect: "}</span>
@@ -1000,7 +1000,7 @@ export function Module14Quiz() {
               setSelectedAnswers({});
               setShowResults(false);
             }}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="rounded-sm border border-border px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-secondary/30 dark:border-border dark:text-muted-foreground dark:hover:bg-secondary/30"
           >
             Retake Quiz
           </button>
@@ -1008,7 +1008,7 @@ export function Module14Quiz() {
           <button
             onClick={() => setShowResults(true)}
             disabled={Object.keys(selectedAnswers).length < questions.length}
-            className="rounded-lg bg-violet-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-violet-700 disabled:opacity-50"
+            className="rounded-sm bg-navy hover:bg-deep text-primary-foreground px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-navy hover:bg-deep text-primary-foreground disabled:opacity-50"
           >
             Submit Answers
           </button>
