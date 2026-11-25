@@ -601,18 +601,18 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
   }, [dataset.name, points, linkageMethod, inconsistencyDepth, cutMode, thresholdHeight, activeK]);
 
   return (
-    <div className="my-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="my-8 rounded-sm border border-border bg-card p-6 shadow-xs dark:border-border dark:bg-card">
       {/* Header */}
-      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between border-b border-border pb-4 dark:border-border">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">
+          <div className="inline-flex items-center gap-2 rounded-sm bg-teal/10 border border-teal/20 text-teal px-3 py-1 text-xs font-semibold text-teal dark:bg-teal/10 dark:text-teal">
             <Scissors className="h-3.5 w-3.5" />
             Interactive Dendrogram Cutting & Selection Lab
           </div>
-          <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="mt-1 text-xl font-bold text-foreground">
             Hierarchical Cluster Extraction & Inconsistency Studio
           </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             Slice dendrograms dynamically, analyze merge-height gaps, and inspect SciPy
             inconsistency coefficients.
           </p>
@@ -626,7 +626,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
             setThresholdHeight(3.0);
             setTargetK(2);
           }}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+          className="inline-flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary/30 dark:border-border dark:text-muted-foreground dark:hover:bg-secondary/30"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           Reset Defaults
@@ -636,13 +636,13 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
       {/* Control Bar */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
         <div>
-          <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Dataset Preset
           </label>
           <select
             value={datasetKey}
             onChange={(e) => setDatasetKey(e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            className="mt-1.5 w-full rounded-sm border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-teal/40 focus:outline-none dark:border-border dark:bg-card dark:text-ink-foreground"
           >
             {Object.entries(DATASETS).map(([key, d]) => (
               <option key={key} value={key}>
@@ -653,7 +653,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
         </div>
 
         <div>
-          <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Linkage Criterion
           </label>
           <select
@@ -661,7 +661,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
             onChange={(e) =>
               setLinkageMethod(e.target.value as "single" | "complete" | "average" | "ward")
             }
-            className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            className="mt-1.5 w-full rounded-sm border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-teal/40 focus:outline-none dark:border-border dark:bg-card dark:text-ink-foreground"
           >
             <option value="ward">Ward's Minimum Variance</option>
             <option value="average">Average Linkage (UPGMA)</option>
@@ -671,26 +671,26 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
         </div>
 
         <div>
-          <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Slicing Paradigm
           </label>
-          <div className="mt-1.5 flex rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-slate-700 dark:bg-slate-800/80">
+          <div className="mt-1.5 flex rounded-sm border border-border bg-secondary/30 p-1 dark:border-border dark:bg-card">
             <button
               onClick={() => setCutMode("distance")}
-              className={`flex-1 rounded-md py-1 text-xs font-semibold transition-all ${
+              className={`flex-1 rounded-sm py-1 text-xs font-semibold transition-all ${
                 cutMode === "distance"
-                  ? "bg-white text-violet-700 shadow-xs dark:bg-slate-900 dark:text-violet-300"
-                  : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
+                  ? "bg-card text-teal shadow-xs dark:bg-card dark:text-teal"
+                  : "text-muted-foreground hover:text-foreground dark:text-muted-foreground"
               }`}
             >
               Height (t)
             </button>
             <button
               onClick={() => setCutMode("maxclust")}
-              className={`flex-1 rounded-md py-1 text-xs font-semibold transition-all ${
+              className={`flex-1 rounded-sm py-1 text-xs font-semibold transition-all ${
                 cutMode === "maxclust"
-                  ? "bg-white text-violet-700 shadow-xs dark:bg-slate-900 dark:text-violet-300"
-                  : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
+                  ? "bg-card text-teal shadow-xs dark:bg-card dark:text-teal"
+                  : "text-muted-foreground hover:text-foreground dark:text-muted-foreground"
               }`}
             >
               Count (k)
@@ -701,9 +701,9 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
         <div>
           {cutMode === "distance" ? (
             <div>
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
                 <span>Cut Height (t)</span>
-                <span className="font-mono text-violet-600 dark:text-violet-400">
+                <span className="font-mono text-teal">
                   {thresholdHeight.toFixed(2)}
                 </span>
               </div>
@@ -714,14 +714,14 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                 step="0.05"
                 value={thresholdHeight}
                 onChange={(e) => setThresholdHeight(parseFloat(e.target.value))}
-                className="mt-2 w-full accent-violet-600"
+                className="mt-2 w-full accent-teal"
               />
             </div>
           ) : (
             <div>
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
                 <span>Target Clusters (k)</span>
-                <span className="font-mono text-violet-600 dark:text-violet-400">
+                <span className="font-mono text-teal">
                   k = {targetK}
                 </span>
               </div>
@@ -732,7 +732,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                 step="1"
                 value={targetK}
                 onChange={(e) => setTargetK(parseInt(e.target.value, 10))}
-                className="mt-2 w-full accent-violet-600"
+                className="mt-2 w-full accent-teal"
               />
             </div>
           )}
@@ -740,13 +740,13 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 mb-6 gap-2 overflow-x-auto">
+      <div className="flex border-b border-border mb-6 gap-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab("dendrogram")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "dendrogram"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-navy font-semibold dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-ink-foreground"
           }`}
         >
           <Scissors className="h-3.5 w-3.5" />
@@ -756,8 +756,8 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
           onClick={() => setActiveTab("gaps")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "gaps"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-navy font-semibold dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-ink-foreground"
           }`}
         >
           <TrendingUp className="h-3.5 w-3.5" />
@@ -767,8 +767,8 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
           onClick={() => setActiveTab("inconsistent")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "inconsistent"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-navy font-semibold dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-ink-foreground"
           }`}
         >
           <Activity className="h-3.5 w-3.5" />
@@ -778,8 +778,8 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
           onClick={() => setActiveTab("sweep")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "sweep"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-navy font-semibold dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-ink-foreground"
           }`}
         >
           <BarChart3 className="h-3.5 w-3.5" />
@@ -789,8 +789,8 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
           onClick={() => setActiveTab("code")}
           className={`flex items-center gap-1.5 border-b-2 px-3.5 py-2 text-xs font-medium transition-all ${
             activeTab === "code"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-semibold"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              ? "border-navy text-navy font-semibold dark:border-teal dark:text-teal font-semibold"
+              : "border-transparent text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-ink-foreground"
           }`}
         >
           <Code2 className="h-3.5 w-3.5" />
@@ -803,12 +803,12 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* SVG Dendrogram */}
-            <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
+            <div className="lg:col-span-2 rounded-sm border border-border bg-secondary/30 p-4 dark:border-border dark:bg-card/50">
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                <span className="text-xs font-semibold text-muted-foreground">
                   Dendrogram Tree with Dynamic Cutting Line
                 </span>
-                <span className="inline-flex items-center gap-1 rounded bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
+                <span className="inline-flex items-center gap-1 rounded bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive dark:bg-destructive/10 dark:text-destructive">
                   Cut Height: {activeCutHeight.toFixed(2)} → {activeK} Clusters
                 </span>
               </div>
@@ -833,13 +833,13 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                           stroke="#cbd5e1"
                           strokeDasharray="2,3"
                           strokeWidth="1"
-                          className="dark:stroke-slate-800"
+                          className="stroke-border"
                         />
                         <text
                           x="30"
                           y={y + 3}
                           textAnchor="end"
-                          className="fill-slate-400 text-[9px] font-mono"
+                          className="fill-muted-foreground text-[9px] font-mono"
                         >
                           {h.toFixed(1)}
                         </text>
@@ -982,7 +982,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                           x={leaf.x}
                           y="278"
                           textAnchor="middle"
-                          className="font-bold fill-slate-700 dark:fill-slate-200 text-[10px]"
+                          className="font-bold fill-foreground text-[10px]"
                         >
                           {p.label}
                         </text>
@@ -990,7 +990,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                           x={leaf.x}
                           y="292"
                           textAnchor="middle"
-                          className="fill-slate-400 text-[8px] font-mono"
+                          className="fill-muted-foreground text-[8px] font-mono"
                         >
                           ({p.x}, {p.y})
                         </text>
@@ -1003,10 +1003,10 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
 
             {/* Extracted Clusters Summary Card */}
             <div className="space-y-4">
-              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between">
+              <div className="rounded-sm border border-border bg-card p-4 shadow-xs dark:border-border dark:bg-card">
+                <h4 className="text-sm font-bold text-foreground dark:text-ink-foreground flex items-center justify-between">
                   <span>Extracted Clusters</span>
-                  <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs text-violet-700 font-semibold dark:bg-violet-950 dark:text-violet-300">
+                  <span className="rounded-sm bg-teal/10 border border-teal/20 text-teal px-2 py-0.5 text-xs text-teal font-semibold dark:bg-teal/10 dark:text-teal">
                     k = {activeK}
                   </span>
                 </h4>
@@ -1020,19 +1020,19 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                     return (
                       <div
                         key={c.id}
-                        className="rounded-lg border border-slate-100 p-2.5 text-xs dark:border-slate-800"
+                        className="rounded-sm border border-border p-2.5 text-xs dark:border-border"
                         style={{ borderLeftWidth: "4px", borderLeftColor: c.color }}
                       >
                         <div className="flex items-center justify-between font-semibold">
                           <span style={{ color: c.color }}>Cluster {c.id}</span>
-                          <span className="text-slate-400 text-[11px]">
+                          <span className="text-muted-foreground text-[11px]">
                             {cPts.length} point{cPts.length > 1 ? "s" : ""}
                           </span>
                         </div>
-                        <div className="mt-1 text-slate-600 dark:text-slate-300">
+                        <div className="mt-1 text-muted-foreground">
                           Members: {cPts.map((p) => p.label).join(", ")}
                         </div>
-                        <div className="mt-0.5 font-mono text-[10px] text-slate-400">
+                        <div className="mt-0.5 font-mono text-[10px] text-muted-foreground">
                           Centroid: ({avgX.toFixed(2)}, {avgY.toFixed(2)})
                         </div>
                       </div>
@@ -1042,7 +1042,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
               </div>
 
               {/* Selection Rule Advice */}
-              <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3.5 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-200">
+              <div className="rounded-sm border border-amber-200 bg-amber-50/60 p-3.5 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-200">
                 <div className="flex items-center gap-1.5 font-bold mb-1">
                   <Zap className="h-4 w-4 text-amber-600" />
                   Slicing Insight
@@ -1074,11 +1074,11 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
       {/* Merge-Height Gaps Tab */}
       {activeTab === "gaps" && (
         <div className="space-y-6">
-          <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
+          <div className="rounded-sm bg-secondary/30 p-4 dark:bg-card border border-border dark:border-border">
+            <h4 className="text-sm font-bold text-foreground dark:text-ink-foreground mb-1">
               Merge-Distance Gap Analysis (Heuristic Jump Detection)
             </h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-muted-foreground">
               An abrupt leap in merge distance (Δh_k = h_k - h_{`{k-1}`}) indicates that compact
               sub-clusters have coalesced and the algorithm is now forced to bridge separated
               cohorts.
@@ -1086,8 +1086,8 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
-              <thead className="bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-semibold">
+            <table className="w-full text-left text-xs border border-border rounded-sm overflow-hidden">
+              <thead className="bg-secondary/50 text-foreground font-semibold">
                 <tr>
                   <th className="p-3">Merge Step</th>
                   <th className="p-3">Merged Components</th>
@@ -1097,7 +1097,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                   <th className="p-3">Heuristic Diagnostic</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-border">
                 {mergeGaps.map((g) => {
                   const isMaxGap = maxGapStep && g.step === maxGapStep.step;
                   const m = mergeSteps[g.step];
@@ -1112,7 +1112,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                       className={
                         isMaxGap
                           ? "bg-amber-50/70 font-medium dark:bg-amber-950/30"
-                          : "hover:bg-slate-50/50 dark:hover:bg-slate-800/40"
+                          : "hover:bg-secondary/30 dark:hover:bg-secondary/30"
                       }
                     >
                       <td className="p-3 font-mono">Step {g.step + 1}</td>
@@ -1120,7 +1120,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                         {cALabel} + {cBLabel}
                       </td>
                       <td className="p-3 font-mono">{g.height.toFixed(4)}</td>
-                      <td className="p-3 font-mono font-bold text-violet-700 dark:text-violet-300">
+                      <td className="p-3 font-mono font-bold text-teal font-semibold">
                         +{g.gap.toFixed(4)}
                       </td>
                       <td className="p-3 font-bold">k = {g.clustersRemaining}</td>
@@ -1131,7 +1131,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                             Largest Gap Jump! Cut here for k = {g.clustersRemaining}
                           </span>
                         ) : (
-                          <span className="text-slate-400">Normal progression</span>
+                          <span className="text-muted-foreground">Normal progression</span>
                         )}
                       </td>
                     </tr>
@@ -1146,25 +1146,25 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
       {/* Inconsistency Matrix Tab */}
       {activeTab === "inconsistent" && (
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-sm bg-secondary/30 p-4 dark:bg-card border border-border dark:border-border">
             <div>
-              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+              <h4 className="text-sm font-bold text-foreground dark:text-ink-foreground">
                 SciPy Inconsistency Matrix (
-                <code className="text-violet-600">sch.inconsistent(Z, d)</code>)
+                <code className="text-teal">sch.inconsistent(Z, d)</code>)
               </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Measures whether a merge height significantly deviates from the average height of
                 predecessor links in its subtree.
               </p>
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <span className="font-semibold text-slate-600 dark:text-slate-300">
+              <span className="font-semibold text-muted-foreground">
                 Subtree Depth (d):
               </span>
               <select
                 value={inconsistencyDepth}
                 onChange={(e) => setInconsistencyDepth(parseInt(e.target.value, 10))}
-                className="rounded border border-slate-300 bg-white px-2 py-1 dark:border-slate-600 dark:bg-slate-700"
+                className="rounded border border-border bg-card px-2 py-1 dark:border-border dark:bg-card"
               >
                 <option value="1">d = 1 (Immediate merge)</option>
                 <option value="2">d = 2 (Standard default)</option>
@@ -1174,8 +1174,8 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
-              <thead className="bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-semibold">
+            <table className="w-full text-left text-xs border border-border rounded-sm overflow-hidden">
+              <thead className="bg-secondary/50 text-foreground font-semibold">
                 <tr>
                   <th className="p-3">Merge Step</th>
                   <th className="p-3">Height (h)</th>
@@ -1186,7 +1186,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                   <th className="p-3">Anomaly Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-border">
                 {inconsistencyMatrix.map((row) => {
                   const isHigh = row.inconsistencyCoeff >= 1.0;
                   return (
@@ -1194,8 +1194,8 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                       key={row.step}
                       className={
                         isHigh
-                          ? "bg-rose-50/70 font-medium dark:bg-rose-950/30"
-                          : "hover:bg-slate-50/50 dark:hover:bg-slate-800/40"
+                          ? "bg-destructive/10 font-medium"
+                          : "hover:bg-secondary/30 dark:hover:bg-secondary/30"
                       }
                     >
                       <td className="p-3 font-mono">Row {row.step}</td>
@@ -1203,16 +1203,16 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
                       <td className="p-3 font-mono">{row.meanHeight.toFixed(4)}</td>
                       <td className="p-3 font-mono">{row.stdDev.toFixed(4)}</td>
                       <td className="p-3">{row.linkCount}</td>
-                      <td className="p-3 font-mono font-bold text-violet-700 dark:text-violet-300">
+                      <td className="p-3 font-mono font-bold text-teal font-semibold">
                         {row.inconsistencyCoeff.toFixed(4)}
                       </td>
                       <td className="p-3">
                         {isHigh ? (
-                          <span className="inline-flex items-center gap-1 text-rose-600 dark:text-rose-400 font-semibold">
+                          <span className="inline-flex items-center gap-1 text-destructive font-semibold">
                             <AlertTriangle className="h-3 w-3" /> Inconsistent (I ≥ 1.0)
                           </span>
                         ) : (
-                          <span className="text-slate-400">Homogeneous (I &lt; 1.0)</span>
+                          <span className="text-muted-foreground">Homogeneous (I &lt; 1.0)</span>
                         )}
                       </td>
                     </tr>
@@ -1227,11 +1227,11 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
       {/* Silhouette Sweep Tab */}
       {activeTab === "sweep" && (
         <div className="space-y-6">
-          <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+          <div className="rounded-sm bg-secondary/30 p-4 dark:bg-card border border-border dark:border-border">
+            <h4 className="text-sm font-bold text-foreground dark:text-ink-foreground">
               Multi-Cluster Silhouette Optimization Sweep
             </h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Automated sweep across candidate cluster counts k ∈ [2, {Math.min(n - 1, 6)}] to
               identify the peak mean silhouette score.
             </p>
@@ -1244,29 +1244,29 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
               return (
                 <div
                   key={d.k}
-                  className={`rounded-xl border p-4 transition-all ${
+                  className={`rounded-sm border p-4 transition-all ${
                     isBest
-                      ? "border-violet-500 bg-violet-50/50 shadow-xs dark:border-violet-600 dark:bg-violet-950/20"
-                      : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+                      ? "border-teal/40 bg-secondary/30 shadow-xs dark:border-navy dark:bg-teal/10"
+                      : "border-border bg-card dark:border-border dark:bg-card"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold uppercase text-slate-500">
+                    <span className="text-xs font-semibold uppercase text-muted-foreground">
                       k = {d.k} Clusters
                     </span>
                     {isBest && (
-                      <span className="rounded bg-violet-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                      <span className="rounded bg-navy hover:bg-deep text-primary-foreground px-1.5 py-0.5 text-[10px] font-bold text-white">
                         PEAK
                       </span>
                     )}
                   </div>
-                  <div className="mt-2 text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+                  <div className="mt-2 text-2xl font-bold font-mono text-foreground">
                     {d.silhouette.toFixed(4)}
                   </div>
-                  <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
+                  <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
                     <span>Mean Silhouette (s̄)</span>
                     {isCurrent && (
-                      <span className="text-violet-600 dark:text-violet-400 font-semibold">
+                      <span className="text-teal font-semibold">
                         (Active Cut)
                       </span>
                     )}
@@ -1282,16 +1282,16 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
       {activeTab === "code" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+            <span className="text-xs font-semibold text-muted-foreground">
               Production Python Implementation (SciPy & Scikit-learn)
             </span>
             <button
               onClick={() => copyCode(generatedPython)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground shadow-xs hover:bg-secondary/30 dark:border-border dark:bg-card dark:text-ink-foreground"
             >
               {copied ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-emerald-600" />
+                  <Check className="h-3.5 w-3.5 text-teal" />
                   Copied!
                 </>
               ) : (
@@ -1302,7 +1302,7 @@ print(f"Total extracted clusters: {len(np.unique(cluster_labels))}")
               )}
             </button>
           </div>
-          <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 font-mono text-xs text-slate-200">
+          <pre className="overflow-x-auto rounded-sm bg-ink p-4 font-mono text-xs text-ink-foreground">
             {generatedPython}
           </pre>
         </div>
@@ -1386,19 +1386,19 @@ export function Module12Quiz() {
   }, 0);
 
   return (
-    <div className="my-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+    <div className="my-8 rounded-sm border border-border bg-card p-6 shadow-xs dark:border-border dark:bg-card">
+      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4 dark:border-border">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-violet-700 dark:text-violet-400">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-teal dark:text-teal">
             <HelpCircle className="h-4 w-4" />
             Knowledge Check
           </div>
-          <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="mt-1 text-lg font-bold text-foreground">
             Module 12: Cluster Selection & Inconsistency Assessment
           </h3>
         </div>
         {showResults && (
-          <div className="inline-flex items-center gap-2 rounded-lg bg-violet-50 px-3 py-1.5 text-xs font-bold text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">
+          <div className="inline-flex items-center gap-2 rounded-sm bg-secondary/40 px-3 py-1.5 text-xs font-bold text-teal dark:bg-teal/10 dark:text-teal">
             Score: {score} / {questions.length} ({Math.round((score / questions.length) * 100)}%)
           </div>
         )}
@@ -1413,28 +1413,28 @@ export function Module12Quiz() {
           return (
             <div
               key={q.id}
-              className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30"
+              className="rounded-sm border border-border bg-secondary/30 p-4 dark:border-border dark:bg-card"
             >
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+              <p className="text-sm font-semibold text-foreground dark:text-ink-foreground">
                 {idx + 1}. {q.prompt}
               </p>
 
               <div className="mt-3 space-y-2">
                 {q.options.map((opt, optIdx) => {
                   let btnStyle =
-                    "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300";
+                    "border-border bg-card text-foreground hover:bg-secondary/30 dark:border-border dark:bg-card dark:text-muted-foreground";
 
                   if (showResults) {
                     if (optIdx === q.correct) {
                       btnStyle =
-                        "border-emerald-500 bg-emerald-50 text-emerald-800 font-medium dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-700";
+                        "border-teal bg-teal/10 text-teal font-medium dark:bg-teal/10 dark:text-teal dark:border-teal";
                     } else if (userAns === optIdx) {
                       btnStyle =
-                        "border-rose-500 bg-rose-50 text-rose-800 font-medium dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-700";
+                        "border-destructive bg-destructive/10 text-destructive font-medium dark:bg-destructive/10 dark:text-destructive dark:border-destructive";
                     }
                   } else if (userAns === optIdx) {
                     btnStyle =
-                      "border-violet-600 bg-violet-50 text-violet-800 font-medium dark:bg-violet-950/40 dark:text-violet-200 dark:border-violet-500";
+                      "border-navy bg-secondary/40 text-navy font-medium dark:bg-navy/20 dark:text-teal dark:border-teal/40";
                   }
 
                   return (
@@ -1442,11 +1442,11 @@ export function Module12Quiz() {
                       key={optIdx}
                       onClick={() => handleSelect(q.id, optIdx)}
                       disabled={showResults}
-                      className={`flex w-full items-center justify-between rounded-lg border p-3 text-left text-xs transition-all ${btnStyle}`}
+                      className={`flex w-full items-center justify-between rounded-sm border p-3 text-left text-xs transition-all ${btnStyle}`}
                     >
                       <span>{opt}</span>
                       {showResults && optIdx === q.correct && (
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-teal" />
                       )}
                     </button>
                   );
@@ -1455,10 +1455,10 @@ export function Module12Quiz() {
 
               {showResults && (
                 <div
-                  className={`mt-3 rounded-md p-3 text-xs ${
+                  className={`mt-3 rounded-sm p-3 text-xs ${
                     isCorrect
-                      ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-200"
-                      : "bg-rose-50 text-rose-900 dark:bg-rose-950/30 dark:text-rose-200"
+                      ? "bg-teal/10 text-teal dark:text-teal"
+                      : "bg-destructive/10 text-destructive dark:text-destructive"
                   }`}
                 >
                   <span className="font-bold">{isCorrect ? "Correct: " : "Incorrect: "}</span>
@@ -1477,7 +1477,7 @@ export function Module12Quiz() {
               setSelectedAnswers({});
               setShowResults(false);
             }}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="rounded-sm border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary/30 dark:border-border dark:text-muted-foreground dark:hover:bg-secondary/30"
           >
             Retake Quiz
           </button>
@@ -1485,7 +1485,7 @@ export function Module12Quiz() {
           <button
             onClick={() => setShowResults(true)}
             disabled={Object.keys(selectedAnswers).length < questions.length}
-            className="rounded-lg bg-violet-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-violet-700 disabled:opacity-50"
+            className="rounded-sm bg-navy hover:bg-deep text-primary-foreground px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-navy disabled:opacity-50"
           >
             Submit Answers
           </button>
