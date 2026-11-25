@@ -35,6 +35,7 @@ import { ImplementationExplorer, Module10Quiz } from "@/content/module10-impleme
 import { EvaluationPlayground, Module11Quiz } from "@/content/module11-evaluation";
 import { DendrogramCuttingLab, Module12Quiz } from "@/content/module12-selection";
 import { ClusterInterpretationLab, Module13Quiz } from "@/content/module13-interpretation";
+import { CaseStudyExplorer, Module14Quiz } from "@/content/module14-applications";
 
 describe("Reusable Lab Components", () => {
   it("renders SectionHeader with section index and title", () => {
@@ -236,6 +237,19 @@ describe("Reusable Lab Components", () => {
 
     const quizHtml = renderToString(<Module13Quiz />);
     expect(quizHtml).toContain("Module 13: Cluster Profiling");
+    expect(quizHtml).toContain("Submit Answers");
+  });
+
+  it("renders CaseStudyExplorer and Module14Quiz", () => {
+    const explorerHtml = renderToString(<CaseStudyExplorer />);
+    expect(explorerHtml).toContain("End-to-End Production Case Study");
+    expect(explorerHtml).toContain("Enterprise Customer Behavioral Segmentation");
+    expect(explorerHtml).toContain("15-Stage Pipeline Walkthrough");
+    expect(explorerHtml).toContain("Operational Customer Personas");
+    expect(explorerHtml).toContain("Production Diagnostic Dashboard");
+
+    const quizHtml = renderToString(<Module14Quiz />);
+    expect(quizHtml).toContain("Module 14: Applications");
     expect(quizHtml).toContain("Submit Answers");
   });
 });

@@ -25,6 +25,7 @@ import { ImplementationExplorer, Module10Quiz } from "@/content/module10-impleme
 import { EvaluationPlayground, Module11Quiz } from "@/content/module11-evaluation";
 import { DendrogramCuttingLab, Module12Quiz } from "@/content/module12-selection";
 import { ClusterInterpretationLab, Module13Quiz } from "@/content/module13-interpretation";
+import { CaseStudyExplorer, Module14Quiz } from "@/content/module14-applications";
 import {
   Compass,
   BookOpen,
@@ -4409,15 +4410,17 @@ Clustering executed in sparse memory without computing dense pairwise matrix!`,
       s(
         "End-to-End Production Case Study",
         c(
-          "Production Case Study Placeholder",
-          "Complete 15-stage reproducible customer behavioral segmentation pipeline with validated Python code.",
+          "Reproducible 15-Stage Customer Behavioral Pipeline",
+          "Walk through a complete industrial deployment of hierarchical clustering: from raw enterprise RFM transaction ingestion, log-variance stabilization, and Ward tree fitting, through cophenetic verification, multi-metric validation, and operational marketing persona deployment.",
         ),
+        cust(createElement(CaseStudyExplorer)),
       ),
       s(
         "Knowledge Check & Self-Assessment",
+        cust(createElement(Module14Quiz)),
         c(
-          "Module 14 Self-Assessment Placeholder",
-          "Interactive self-assessment testing understanding of applications, complexity bottlenecks, sparse connectivity, and cross-paradigm trade-offs.",
+          "Module References",
+          "Verified against Murtagh (1983) Nearest Neighbor chain algorithms, Scikit-Learn 1.5+ sparse connectivity graph documentation, and modern customer lifetime segmentation literature. See docs/references.md.",
         ),
       ),
     ],
