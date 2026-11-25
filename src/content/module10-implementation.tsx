@@ -412,11 +412,11 @@ print("Scikit-Learn children_:\\n", model.children_)`;
       {/* Educational Notice Banner */}
       <div className="rounded-xs border border-teal/30 bg-teal/5 p-3 flex items-start gap-2.5">
         <Sparkles className="h-4 w-4 text-teal shrink-0 mt-0.5" />
-        <div className="text-xs text-muted-foreground leading-relaxed">
+        <div className="min-w-0 break-words [overflow-wrap:anywhere] text-xs text-muted-foreground leading-relaxed">
           <strong className="text-foreground">Client-Side Interactive Simulator:</strong> This
           component runs in your browser to interactively demonstrate the identical mathematics
-          executed by Python&apos;s SciPy (<code>scipy.cluster.hierarchy</code>) and Scikit-learn (
-          <code>sklearn.cluster.AgglomerativeClustering</code>).
+          executed by Python&apos;s SciPy (<code>scipy.cluster.hierarchy</code>) and Scikit-learn
+          (<code className="break-all">sklearn.cluster.AgglomerativeClustering</code>).
         </div>
       </div>
 
