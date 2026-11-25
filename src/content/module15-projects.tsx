@@ -51,6 +51,11 @@ export interface ProjectBlueprint {
   solutionCode: string;
   verifiedOutput: string;
   rubric: ProjectRubricItem[];
+  stretchGoal?: {
+    title: string;
+    description: string;
+    instructions: string[];
+  };
 }
 
 export const CAPSTONE_PROJECTS: ProjectBlueprint[] = [
@@ -290,6 +295,18 @@ Cluster
           "Omits segment profiling or provides generic interpretations without data grounding.",
       },
     ],
+    stretchGoal: {
+      title: "Stretch Goal: Scale-Up on the UCI Online Retail Dataset",
+      description:
+        "Scale the customer segmentation pipeline to the real-world UCI Machine Learning Repository Online Retail Dataset (541,909 transactions across 4,372 customers).",
+      instructions: [
+        "Ingest the Online Retail dataset, clean cancelled invoices (InvoiceNo starting with 'C'), drop records missing CustomerID, and filter UnitPrice > 0.",
+        "Compute observation-level Recency (relative to snapshot date), Frequency (unique Invoices), and Monetary (sum of Quantity × UnitPrice).",
+        "Apply np.log1p and StandardScaler to normalize the heavy-tailed financial distributions.",
+        "Since N = 4,372 customers produces an ~19M pair distance matrix, compare scipy.cluster.hierarchy.linkage execution time and memory against MiniBatchKMeans pre-clustering (M = 200 micro-clusters) as studied in Module 14.",
+        "Cut the dendrogram into 4 actionable personas: Champions, At-Risk Wholesalers, Steady Retailers, and Hibernating Buyers.",
+      ],
+    },
   },
   {
     id: 2,
@@ -753,7 +770,7 @@ PARITY TEST PASSED: Linkage matrix matches SciPy down to machine precision.`,
     ],
     dataset: {
       name: "Multidisciplinary Scientific Corpus",
-      size: "N = 8 technical document abstracts across 4 distinct thematic domains",
+      size: "N = 32 technical document abstracts across 4 distinct thematic domains (8 Graphics, 8 AI/ML, 8 Astronomy/Space, 8 Genomics)",
       features: "High-dimensional sparse TF-IDF vocabulary feature space with L2 unit norm",
       description:
         "Text abstracts spanning Computer Graphics, Artificial Intelligence, Space Science, and Molecular Genetics.",
@@ -803,16 +820,47 @@ import numpy as np
 from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# 1. Benchmark Text Corpus (8 documents across 4 domains)
+# 1. Benchmark Text Corpus (32 documents across 4 domains)
 corpus = [
-    "computer 3d graphics rendering pipeline rasterization raytracing",
-    "rendering realistic lighting raytracing reflections shaders opengl",
-    "neural networks deep learning artificial intelligence backprop",
-    "machine learning classification clustering regression transformer",
-    "orbit planetary motion satellite telescope astronomy galaxy",
-    "rocket propulsion payload orbit lunar mission mars rover",
-    "dna rna genome sequencing nucleotide mutation chromosome crispr",
-    "protein folding amino acid cellular biology clinical therapeutic"
+    # Topic 1: Computer Graphics & Rendering (8 docs)
+    "computer graphics real time raytracing acceleration data structures gpu shaders",
+    "rendering graphics raytracing illumination path tracing monte carlo shaders",
+    "graphics rendering rasterization pipeline vertex fragment shaders buffer",
+    "computer graphics rendering engine directx vulkan compute shaders texture mapping",
+    "rendering raytracing bidirectional reflectance distribution function shaders",
+    "volumetric rendering graphics atmospheric scattering simulation voxels shaders",
+    "computer graphics geometry processing polygon mesh subdivision shaders modeling",
+    "rendering graphics real time shadow mapping ambient occlusion screen shaders",
+
+    # Topic 2: Machine Learning & Artificial Intelligence (8 docs)
+    "deep learning neural networks gradient descent backpropagation optimization",
+    "machine learning transformer architecture self attention neural networks modeling",
+    "convolutional neural networks deep learning image classification feature learning",
+    "reinforcement learning policy gradient actor critic markov decision optimization",
+    "generative adversarial networks deep learning diffusion latent representation",
+    "supervised machine learning classification regression decision trees optimization",
+    "unsupervised representation learning contrastive deep learning neural embeddings",
+    "machine learning deep learning regularization dropout optimization validation",
+
+    # Topic 3: Astronomy & Space Science (8 docs)
+    "astrophysics telescope gravitational wave detection black hole orbital space",
+    "planetary astronomy exoplanet transit habitable zone orbital space telescope",
+    "cosmological telescope cosmic microwave background radiation astrophysics space",
+    "astrophysics active galactic nuclei supermassive black holes radiation space",
+    "stellar astrophysics supernovae remnants planetary nebulae telescope space",
+    "spacecraft orbital mechanics hohmann transfer delta gravity assist space",
+    "planetary astronomy lunar regolith mars surface exploration space rover",
+    "radio astronomy telescope interferometry very long baseline pulsar astrophysics",
+
+    # Topic 4: Genomics & Molecular Biology (8 docs)
+    "genomics dna sequencing crispr targeted genome editing cellular biology",
+    "whole genome dna sequencing read alignment variant calling molecular genetics",
+    "single cell rna sequencing transcriptomics gene expression cellular biology",
+    "molecular biology protein structure prediction alphafold residue genetics dna",
+    "epigenetic regulation dna methylation histone chromatin cellular biology",
+    "ribosome translation mrna transfer rna codon peptide synthesis cellular biology",
+    "metagenomics microbial community sequencing 16s taxonomic cellular genetics",
+    "genome wide association studies gwas nucleotide polymorphisms dna genetics"
 ]
 
 # ---------------------------------------------------------------------
@@ -846,14 +894,45 @@ from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 corpus = [
-    "computer 3d graphics rendering pipeline rasterization raytracing",
-    "rendering realistic lighting raytracing reflections shaders opengl",
-    "neural networks deep learning artificial intelligence backprop",
-    "machine learning classification clustering regression transformer",
-    "orbit planetary motion satellite telescope astronomy galaxy",
-    "rocket propulsion payload orbit lunar mission mars rover",
-    "dna rna genome sequencing nucleotide mutation chromosome crispr",
-    "protein folding amino acid cellular biology clinical therapeutic"
+    # Topic 1: Computer Graphics & Rendering (8 docs)
+    "computer graphics real time raytracing acceleration data structures gpu shaders",
+    "rendering graphics raytracing illumination path tracing monte carlo shaders",
+    "graphics rendering rasterization pipeline vertex fragment shaders buffer",
+    "computer graphics rendering engine directx vulkan compute shaders texture mapping",
+    "rendering raytracing bidirectional reflectance distribution function shaders",
+    "volumetric rendering graphics atmospheric scattering simulation voxels shaders",
+    "computer graphics geometry processing polygon mesh subdivision shaders modeling",
+    "rendering graphics real time shadow mapping ambient occlusion screen shaders",
+
+    # Topic 2: Machine Learning & Artificial Intelligence (8 docs)
+    "deep learning neural networks gradient descent backpropagation optimization",
+    "machine learning transformer architecture self attention neural networks modeling",
+    "convolutional neural networks deep learning image classification feature learning",
+    "reinforcement learning policy gradient actor critic markov decision optimization",
+    "generative adversarial networks deep learning diffusion latent representation",
+    "supervised machine learning classification regression decision trees optimization",
+    "unsupervised representation learning contrastive deep learning neural embeddings",
+    "machine learning deep learning regularization dropout optimization validation",
+
+    # Topic 3: Astronomy & Space Science (8 docs)
+    "astrophysics telescope gravitational wave detection black hole orbital space",
+    "planetary astronomy exoplanet transit habitable zone orbital space telescope",
+    "cosmological telescope cosmic microwave background radiation astrophysics space",
+    "astrophysics active galactic nuclei supermassive black holes radiation space",
+    "stellar astrophysics supernovae remnants planetary nebulae telescope space",
+    "spacecraft orbital mechanics hohmann transfer delta gravity assist space",
+    "planetary astronomy lunar regolith mars surface exploration space rover",
+    "radio astronomy telescope interferometry very long baseline pulsar astrophysics",
+
+    # Topic 4: Genomics & Molecular Biology (8 docs)
+    "genomics dna sequencing crispr targeted genome editing cellular biology",
+    "whole genome dna sequencing read alignment variant calling molecular genetics",
+    "single cell rna sequencing transcriptomics gene expression cellular biology",
+    "molecular biology protein structure prediction alphafold residue genetics dna",
+    "epigenetic regulation dna methylation histone chromatin cellular biology",
+    "ribosome translation mrna transfer rna codon peptide synthesis cellular biology",
+    "metagenomics microbial community sequencing 16s taxonomic cellular genetics",
+    "genome wide association studies gwas nucleotide polymorphisms dna genetics"
 ]
 
 # 1. Ingestion & L2 unit normalization
@@ -879,10 +958,10 @@ for topic_id in range(1, k_topics + 1):
     )`,
     verifiedOutput: `Hierarchical Topic Clusters Formed: 4
 
-Topic 1 (Docs [0, 1]): raytracing, rendering, realistic, reflections
-Topic 2 (Docs [2, 3]): learning, transformer, classification, clustering
-Topic 3 (Docs [4, 5]): orbit, satellite, planetary, telescope
-Topic 4 (Docs [6, 7]): therapeutic, sequencing, protein, rna`,
+Topic 1 (Docs [8, 9, 10, 11, 12, 13, 14, 15]): learning, deep, optimization, networks
+Topic 2 (Docs [0, 1, 2, 3, 4, 5, 6, 7]): shaders, graphics, rendering, raytracing
+Topic 3 (Docs [16, 17, 18, 19, 20, 21, 22, 23]): space, telescope, astrophysics, planetary
+Topic 4 (Docs [24, 25, 26, 27, 28, 29, 30, 31]): cellular, dna, biology, sequencing`,
     rubric: [
       {
         criteria: "Text Preprocessing & Normalization",
@@ -920,6 +999,18 @@ Topic 4 (Docs [6, 7]): therapeutic, sequencing, protein, rna`,
         developing: "Omits keyword extraction or manually guesses topic identities.",
       },
     ],
+    stretchGoal: {
+      title: "Stretch Goal: 20 Newsgroups Multi-Topic Classification & Taxonomy",
+      description:
+        "Scale document taxonomy discovery to the canonical Scikit-learn 20 Newsgroups corpus across 4 major comp / rec / sci / talk newsgroups.",
+      instructions: [
+        "Fetch sklearn.datasets.fetch_20newsgroups(subset='train', categories=['comp.graphics', 'sci.space', 'rec.sport.baseball', 'talk.politics.guns']).",
+        "Preprocess with TfidfVectorizer(max_features=1000, stop_words='english', norm='l2', sublinear_tf=True).",
+        "Fit Ward linkage on the L2-normalized sparse/dense text representations.",
+        "Evaluate Adjusted Rand Index (ARI) against ground-truth newsgroup labels across K=2, 3, 4, 5, 6 cuts.",
+        "Extract the top 10 distinctive keywords per cluster from the centroid TF-IDF weights to automatically label the 4 newsgroup categories.",
+      ],
+    },
   },
 ];
 
@@ -1948,6 +2039,27 @@ export function ProjectsCatalog() {
             </table>
           </div>
         </div>
+
+        {/* Optional Stretch Goal Card */}
+        {activeProject.stretchGoal && (
+          <div className="rounded-sm border border-border bg-card p-4 space-y-3">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-navy">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span>{activeProject.stretchGoal.title}</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {activeProject.stretchGoal.description}
+            </p>
+            <div className="space-y-1.5 pt-1">
+              {activeProject.stretchGoal.instructions.map((inst, i) => (
+                <div key={i} className="flex items-start gap-2 text-xs text-foreground/90">
+                  <span className="font-mono text-teal font-semibold">•</span>
+                  <span>{inst}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

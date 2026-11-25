@@ -1322,6 +1322,34 @@ export function Module07Quiz() {
       explanation:
         "Beyer et al. proved that as dimensionality d → ∞ under mild conditions, (D_max - D_min) / D_min → 0. Because all pairwise distances converge to the same value, nearest-neighbor concepts become meaningless, causing Single Linkage to chain indiscriminately and Complete Linkage to form arbitrary, unstable clusters.",
     },
+    {
+      id: 5,
+      question:
+        "Why is Ward's minimum variance linkage mathematically invalid when applied to a precomputed non-Euclidean dissimilarity matrix (such as Gower or Jaccard dissimilarity)?",
+      options: [
+        "Ward's criterion relies on Huygens' theorem of variance decomposition (SS_total = SS_between + SS_within), which holds only in Euclidean metric space.",
+        "SciPy raises a syntax error whenever a non-Euclidean matrix is passed to linkage.",
+        "Non-Euclidean dissimilarity matrices cannot be converted to condensed 1D vectors with squareform.",
+        "Non-Euclidean metrics prevent dendrograms from displaying branch labels.",
+      ],
+      correct: 0,
+      explanation:
+        "Ward's objective function explicitly minimizes the increase in within-cluster sum of squares (ESS). This formulation depends directly on the Huygens decomposition of variance, which is strictly valid only when distance is Euclidean. Applying Ward's Lance–Williams recurrence to non-Euclidean dissimilarity can cause negative branch lengths (inversions) and produces meaningless variance estimates. For non-Euclidean metrics, Average Linkage (UPGMA) or Complete Linkage should be used.",
+    },
+    {
+      id: 6,
+      question:
+        "How does Gower's general dissimilarity coefficient (1971) handle datasets containing both continuous numeric variables and nominal categorical variables?",
+      options: [
+        "It forces all categorical variables to be converted to continuous values using PCA.",
+        "It computes partial dissimilarities feature-by-feature—scaling continuous features by range and scoring nominal matches as 0 and mismatches as 1—then takes a weighted average.",
+        "It computes Euclidean distance on the continuous columns and ignores all categorical columns.",
+        "It transforms the distance matrix into an ultrametric before applying single linkage.",
+      ],
+      correct: 1,
+      explanation:
+        "Gower's dissimilarity computes a per-feature score: for continuous attributes, the absolute difference normalized by the feature's range (|x_ik - x_jk| / R_k); for nominal/binary attributes, 0 if values match and 1 if they differ. The overall dissimilarity is the weighted mean of these attribute dissimilarities, neatly handling mixed tabular schemas without arbitrary numeric encoding.",
+    },
   ];
 
   const handleSelect = (qId: number, oIdx: number) => {

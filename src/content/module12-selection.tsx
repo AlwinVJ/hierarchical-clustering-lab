@@ -1363,6 +1363,34 @@ export function Module12Quiz() {
       explanation:
         "When slicing via criterion='maxclust' for target count k, SciPy traverses the linkage matrix from the root downward and severs the k - 1 highest merges in the tree, leaving exactly k disjoint connected subtrees.",
     },
+    {
+      id: 5,
+      prompt:
+        "What is the core theoretical advantage of the Gap Statistic (Tibshirani et al., 2001) over heuristic methods like the Elbow curve or Silhouette score?",
+      options: [
+        "It compares the observed within-cluster dispersion to an explicit null distribution generated from a structureless reference dataset (uniform over the PCA-aligned bounding box).",
+        "It does not require calculating pairwise distances between data points.",
+        "It always identifies exactly k=2 clusters for any dataset.",
+        "It runs in O(1) constant time regardless of sample size N.",
+      ],
+      correct: 0,
+      explanation:
+        "Unlike heuristic elbow bends or silhouette peaks, the Gap Statistic formalizes clustering as hypothesis testing against a null model of no clustering (a uniform distribution over the principal components of the data). This enables it to reject clustering altogether (k=1) and provides a rigorous statistical decision rule.",
+    },
+    {
+      id: 6,
+      prompt:
+        "In the Gap Statistic methodology, how does the 1-Standard-Error (1-SE) stopping rule select the optimal cluster count k?",
+      options: [
+        "It selects the k where the Gap value reaches its absolute minimum.",
+        "It selects the smallest k such that Gap(k) ≥ Gap(k+1) - s_{k+1}, favoring parsimony when a larger k provides statistically insignificant improvement.",
+        "It averages the gap values across all k and rounds to the nearest integer.",
+        "It stops clustering as soon as the standard error s_k exceeds 1.0.",
+      ],
+      correct: 1,
+      explanation:
+        "The 1-SE rule (Gap(k) ≥ Gap(k+1) - s_{k+1}) formalizes Occam's razor: choose the most parsimonious model (smallest k) whose gap score is within one standard error of the next candidate's gap score. This prevents over-partitioning caused by minor sampling noise.",
+    },
   ];
 
   const handleSelect = (qId: number, optIdx: number) => {

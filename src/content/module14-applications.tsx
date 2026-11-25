@@ -1353,6 +1353,34 @@ export function Module14Quiz() {
       explanation:
         "Mini-Batch K-Means uses stochastic gradient descent with small random subsets, processing millions of observations in linear time O(N · k · d) with fixed memory O(k · d). Agglomerative and divisive hierarchical algorithms require at least quadratic O(N²) distance evaluation or graph construction, making unconstrained massive streaming intractable.",
     },
+    {
+      id: 7,
+      prompt:
+        "How does the two-stage hybrid clustering architecture (MiniBatchKMeans + AgglomerativeClustering) scale hierarchical clustering to massive datasets (N > 100,000)?",
+      options: [
+        "It first partitions N points into M micro-clusters using fast O(N) MiniBatchKMeans, then builds the hierarchical tree over the M micro-cluster centroids.",
+        "It converts the dataset into a random forest before computing distances.",
+        "It discards 99% of the dataset and clusters only the 1% sample.",
+        "It runs hierarchical clustering on a GPU using deep neural networks.",
+      ],
+      correct: 0,
+      explanation:
+        "Standard agglomerative clustering requires O(N²) memory and O(N²) to O(N³) time, failing for large N. Two-stage hybrid clustering solves this by using MiniBatchKMeans (linear in N) to compress N = 100,000 points into M = 500 micro-cluster centroids, then running AgglomerativeClustering on the M centroids (O(M²)) and mapping the resulting labels back to the original points.",
+    },
+    {
+      id: 8,
+      prompt:
+        "What performance advantage does Daniel Müllner's fastcluster C++ library provide over standard SciPy hierarchical clustering?",
+      options: [
+        "It removes the requirement for metric distance functions.",
+        "It implements optimal O(N²) algorithms (such as the nearest-neighbor chain algorithm and Prim's MST for single linkage) with low constant factors and minimal memory footprint.",
+        "It allows dendrograms to have negative height merges.",
+        "It computes clusters without computing any pairwise dissimilarities.",
+      ],
+      correct: 1,
+      explanation:
+        "The fastcluster library provides highly optimized C++ routines that implement the nearest-neighbor chain algorithm (reducing time complexity to O(N²) for Ward, Complete, and Average linkage) and Prim's algorithm for Single Linkage (O(N²) time with O(N) memory), yielding dramatic speedups (often 10x to 100x) over naive agglomeration without requiring full distance matrix allocation.",
+    },
   ];
 
   const handleSelect = (qId: number, optIdx: number) => {

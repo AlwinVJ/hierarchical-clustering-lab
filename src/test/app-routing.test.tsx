@@ -100,7 +100,7 @@ describe("App routing and Course Structure", () => {
 
     // Page 8: Distance metrics
     const metrics = pages.find((p) => p.slug === "distance-metrics")!;
-    expect(metrics.sections.length).toBe(8);
+    expect(metrics.sections.length).toBe(9);
     expect(metrics.sections.map((s) => s.title)).toContain(
       "Metric Space Axioms & Mathematical Foundations",
     );
@@ -116,11 +116,14 @@ describe("App routing and Course Structure", () => {
     expect(metrics.sections.map((s) => s.title)).toContain(
       "Curse of Dimensionality & Distance Concentration",
     );
+    expect(metrics.sections.map((s) => s.title)).toContain(
+      "Distances for Binary, Categorical and Mixed Data",
+    );
     expect(metrics.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
 
     // Page 9: Dendrograms
     const dendrograms = pages.find((p) => p.slug === "dendrograms")!;
-    expect(dendrograms.sections.length).toBe(7);
+    expect(dendrograms.sections.length).toBe(8);
     expect(dendrograms.sections.map((s) => s.title)).toContain("Dendrogram Structure");
     expect(dendrograms.sections.map((s) => s.title)).toContain("How Dendrograms are Constructed");
     expect(dendrograms.sections.map((s) => s.title)).toContain(
@@ -133,6 +136,7 @@ describe("App routing and Course Structure", () => {
       "Cutting a Dendrogram & Cluster Extraction",
     );
     expect(dendrograms.sections.map((s) => s.title)).toContain("Interactive Dendrogram Workspace");
+    expect(dendrograms.sections.map((s) => s.title)).toContain("Comparing Two Dendrograms");
     expect(dendrograms.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
 
     // Page 10: Mathematics
@@ -189,7 +193,7 @@ describe("App routing and Course Structure", () => {
 
     // Page 13: Optimal Cluster Selection (slug: "comparison")
     const selectionPage = pages.find((p) => p.slug === "comparison")!;
-    expect(selectionPage.sections.length).toBe(6);
+    expect(selectionPage.sections.length).toBe(7);
     expect(selectionPage.sections.map((s) => s.title)).toContain("The Cluster Selection Problem");
     expect(selectionPage.sections.map((s) => s.title)).toContain(
       "Dendrogram-Based Selection & Merge-Height Gaps",
@@ -203,6 +207,7 @@ describe("App routing and Course Structure", () => {
     expect(selectionPage.sections.map((s) => s.title)).toContain(
       "Interactive Dendrogram Cutting Laboratory",
     );
+    expect(selectionPage.sections.map((s) => s.title)).toContain("The Gap Statistic Protocol");
     expect(selectionPage.sections.map((s) => s.title)).toContain(
       "Knowledge Check & Self-Assessment",
     );
@@ -230,7 +235,7 @@ describe("App routing and Course Structure", () => {
 
     // Page 15: Applications, Limitations & Scalability (slug: "applications")
     const appPage = pages.find((p) => p.slug === "applications")!;
-    expect(appPage.sections.length).toBe(7);
+    expect(appPage.sections.length).toBe(8);
     expect(appPage.sections.map((s) => s.title)).toContain(
       "Real-World Industrial & Scientific Applications",
     );
@@ -247,6 +252,9 @@ describe("App routing and Course Structure", () => {
       "K-Means and DBSCAN vs. Hierarchical Clustering in Practice",
     );
     expect(appPage.sections.map((s) => s.title)).toContain("End-to-End Production Case Study");
+    expect(appPage.sections.map((s) => s.title)).toContain(
+      "Scaling Hierarchical Clustering to Large Datasets",
+    );
     expect(appPage.sections.map((s) => s.title)).toContain("Knowledge Check & Self-Assessment");
   });
 });

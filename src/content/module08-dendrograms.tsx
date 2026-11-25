@@ -759,6 +759,34 @@ export function Module08Quiz() {
       explanation:
         "A dendrogram represents a mobile tree: any internal node can be rotated (swapping left and right child subtrees) without altering the merge heights or cluster hierarchy. Proximity in hierarchical clustering is determined exclusively by the vertical merge height of the lowest common ancestor, not by horizontal leaf adjacency.",
     },
+    {
+      id: 5,
+      question:
+        "In a Tanglegram comparing two hierarchical trees (e.g. Single vs Ward Linkage), what does a large number of crossing connector lines between the two dendrograms indicate?",
+      options: [
+        "Topological discordance and differing cluster arrangements between the two linkage criteria.",
+        "Identical clustering results with zero variance.",
+        "That the dataset contains no clusters.",
+        "That the algorithm encountered an inversion.",
+      ],
+      correct: 0,
+      explanation:
+        "In a Tanglegram, observations are aligned between two face-to-face dendrograms. When the two trees agree on clustering order and subtree groupings, connecting lines run parallel with few crossings. Entangled, intersecting lines visually diagnose topological disagreement, highlighting observations that get grouped into different subtrees depending on the linkage criterion.",
+    },
+    {
+      id: 6,
+      question:
+        "What does Baker's Gamma correlation coefficient (γ) measure when comparing two dendrogram trees?",
+      options: [
+        "The difference in Euclidean distance between the tree roots.",
+        "The rank correlation (Spearman's rank correlation) between the pairwise cophenetic distance vectors of the two trees.",
+        "The proportion of singleton clusters discarded during agglomeration.",
+        "The exact computation time ratio between Single and Ward linkage.",
+      ],
+      correct: 1,
+      explanation:
+        "Baker's Gamma index (1974) calculates the Spearman rank-order correlation between the cophenetic distance matrices of two dendrograms (N(N-1)/2 pairs). Because it operates on ranks rather than raw heights, Baker's Gamma evaluates whether two trees agree on relative hierarchy and merge sequences, regardless of non-linear scale expansions.",
+    },
   ];
 
   const handleSelect = (qId: number, oIdx: number) => {

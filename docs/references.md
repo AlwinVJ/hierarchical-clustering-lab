@@ -133,6 +133,35 @@ This documentation catalogs the foundational academic papers, peer-reviewed mono
   - **DOI/URL**: https://doi.org/10.1007/3-540-44503-X_27
   - **Verified Information**: Analysis of $L_p$ norms in high-dimensional spaces showing that lower values of $p$ ($p=1$ or fractional $p < 1$) preserve relative contrast significantly better than $L_2$ Euclidean distance.
 
+### Gower's General Dissimilarity Coefficient (Mixed Data)
+
+- **Title**: _A General Coefficient of Similarity and Some of Its Properties_
+  - **Author**: J. C. Gower
+  - **Journal**: _Biometrics_, Vol. 27, No. 4 (1971), pp. 857–871.
+  - **DOI/URL**: https://doi.org/10.2307/2528823
+  - **Verified Information**: Definition of general dissimilarity coefficient $S_{ij} = \sum w_k s_{ijk} / \sum w_k$, range normalization for continuous variables ($s_{ijk} = 1 - |x_{ik} - x_{jk}| / R_k$), nominal binary matching ($s_{ijk} = 1$ if match else $0$), and properties for mixed tabular data schemas.
+
+### Gap Statistic for Optimal Cluster Selection
+
+- **Title**: _Estimating the Number of Clusters in a Data Set Via the Gap Statistic_
+  - **Authors**: Robert Tibshirani, Guenther Walther, and Trevor Hastie
+  - **Journal**: _Journal of the Royal Statistical Society: Series B (Statistical Methodology)_, Vol. 63, No. 2 (2001), pp. 411–423.
+  - **DOI/URL**: https://doi.org/10.1111/1467-9868.00293
+  - **Verified Information**: Formalization of cluster count selection as hypothesis testing against a null reference, pooled within-cluster dispersion $W_k$, uniform sampling over PCA-aligned bounding box, $\text{Gap}(k) = \mathbb{E}^*[\log(W_k)] - \log(W_k)$, simulation standard error $s_k$, and the 1-SE stopping rule $\text{Gap}(k) \ge \text{Gap}(k+1) - s_{k+1}$.
+
+### Comparing Hierarchical Clusterings (Baker's Gamma & Fowlkes–Mallows)
+
+- **Title**: _Stability of Two Hierarchical Grouping Techniques Case 1: Sensitivity to Data Errors_
+  - **Author**: Frank B. Baker
+  - **Journal**: _Journal of the American Statistical Association_, Vol. 69, No. 346 (1974), pp. 440–445.
+  - **DOI/URL**: https://doi.org/10.1080/01621459.1974.10482971
+  - **Verified Information**: Definition of Baker's Gamma rank correlation coefficient ($\gamma$) as the Spearman rank-order correlation between pairwise cophenetic distance vectors, evaluating monotonic agreement in hierarchical tree topologies.
+- **Title**: _A Method for Comparing Two Hierarchical Clusterings_
+  - **Authors**: E. B. Fowlkes and C. L. Mallows
+  - **Journal**: _Journal of the American Statistical Association_, Vol. 78, No. 383 (1983), pp. 553–569.
+  - **DOI/URL**: https://doi.org/10.1080/01621459.1983.10478008
+  - **Verified Information**: Fowlkes–Mallows index $B_k = m_k / \sqrt{m_{1k} m_{2k}}$ for comparing dendrogram cuts, plotting $B_k$ as a function of $k$, and calculating expected values and bounds under the null hypothesis of independence.
+
 ### Optimal Leaf Ordering for Dendrograms
 
 - **Title**: _Fast Optimal Leaf Ordering for Hierarchical Clustering_
@@ -209,12 +238,12 @@ This documentation catalogs the foundational academic papers, peer-reviewed mono
 | **04. Agglomerative**                                      | Merge sequence, Proximity matrix updates, Tie-breaking, Termination                                                                    | Murtagh & Contreras (2012), SciPy Hierarchy docs                                                         |
 | **05. Divisive**                                           | DIANA algorithm, Splinter group, Max diameter heuristic, Partition cost                                                                | Kaufman & Rousseeuw (1990), Murtagh & Contreras (2012)                                                   |
 | **06. Linkage Methods**                                    | Single, Complete, Average (UPGMA), Centroid (UPGMC), Ward's Min Variance                                                               | Ward (1963), Lance & Williams (1967), SciPy `linkage`                                                    |
-| **07. Distance Metrics**                                   | Euclidean, Manhattan, Minkowski, Cosine, Metric Axioms, Normalization                                                                  | SciPy `pdist`, Scikit-learn Preprocessing Guide                                                          |
-| **08. Dendrograms**                                        | Topology, Cophenetic heights, Inversion anomalies, Cutting thresholds                                                                  | Sokal & Rohlf (1962), SciPy `dendrogram`, Bar-Joseph et al. (2001)                                       |
+| **07. Distance Metrics**                                   | Euclidean, Manhattan, Minkowski, Cosine, Gower (1971), Mixed Data, Metric Axioms, Normalization                                         | SciPy `pdist`, Scikit-learn Preprocessing Guide, Gower (1971), Beyer et al. (1999)                       |
+| **08. Dendrograms**                                        | Topology, Cophenetic heights, Inversion anomalies, Cutting thresholds, Tanglegrams, Baker's Gamma, Fowlkes–Mallows                      | Sokal & Rohlf (1962), SciPy `dendrogram`, Bar-Joseph et al. (2001), Baker (1974), Fowlkes & Mallows (1983) |
 | **09. Mathematics**                                        | Matrix data $\mathbf{X} \in \mathbb{R}^{n \times d}$, Metric axioms, WSS variance expansion, Huygens theorem, Ward harmonic factor     | Ward (1963), Lance & Williams (1967), Batagelj (1981), Murtagh & Contreras (2012)                        |
 | **10. Practical Implementation**                           | NumPy scratch broadcasting, SciPy `pdist`/`linkage`/`fcluster`, Scikit-Learn `AgglomerativeClustering`, k-NN connectivity graphs       | NumPy Reference, SciPy Docs, Scikit-learn API, Müllner (2013), Anderberg (1973)                          |
 | **11. Cluster Evaluation & Validation**                    | Internal metrics (Silhouette, Davies–Bouldin, Calinski–Harabasz), External metrics (ARI, NMI, V-Measure), Multi-linkage benchmarking   | Rousseeuw (1987), Davies & Bouldin (1979), Caliński & Harabasz (1974), Hubert & Arabie (1985)            |
-| **12. Optimal Cluster Selection & Dendrogram Slicing**     | Horizontal height cuts ($t$), maxclust ($k$), SciPy inconsistency matrix (`inconsistent`, $d=2$), merge-height gap jumps ($\\Delta h$) | SciPy `fcluster`/`inconsistent`, Murtagh & Contreras (2012)                                              |
+| **12. Optimal Cluster Selection & Dendrogram Slicing**     | Horizontal height cuts ($t$), maxclust ($k$), SciPy inconsistency (`inconsistent`), Gap Statistic, 1-SE stopping rule                  | SciPy `fcluster`/`inconsistent`, Murtagh & Contreras (2012), Tibshirani et al. (2001)                    |
 | **13. Cluster Profiling, Stability & Interpretation**      | Distribution summary statistics (medians vs. means), standardized centroid $z$-scores, bootstrap resampling stability (ARI), outliers  | Ben-Hur et al. (2002), Hennig (2007), Kaufman & Rousseeuw (1990)                                         |
-| **14. Real-World Applications, Limitations & Scalability** | RFM segmentation, genomics, $O(n^2)$ space & $O(n^2)$ time bottlenecks, sparse k-NN connectivity graphs, multi-paradigm comparison     | Murtagh (1983), Scikit-Learn connectivity documentation, Beyer et al. (1999), Kaufman & Rousseeuw (1990) |
-| **15. Hands-on Projects**                                  | Applied capstone projects, reproducible customer segmentation pipeline, real-world deployment benchmarks                               | SciPy, Scikit-learn, NumPy official guides                                                               |
+| **14. Real-World Applications, Limitations & Scalability** | Two-stage hybrid clustering, $O(n^2)$ space & time bottlenecks, fastcluster C++, sparse k-NN graphs, multi-paradigm comparison          | Murtagh (1983), Scikit-Learn connectivity docs, Müllner (2013), Beyer et al. (1999)                      |
+| **15. Hands-on Projects**                                  | Applied capstone projects, 32-abstract NLP taxonomy, RFM UCI Retail stretch goal, reproducible benchmarks                       | SciPy, Scikit-learn, NumPy official guides, 20 Newsgroups benchmark                                      |

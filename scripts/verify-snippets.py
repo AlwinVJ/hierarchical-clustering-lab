@@ -13,6 +13,10 @@ import os
 import contextlib
 import traceback
 import difflib
+import warnings
+
+os.environ["LOKY_MAX_CPU_COUNT"] = "4"
+warnings.filterwarnings("ignore")
 
 # Configure headless matplotlib
 import matplotlib
@@ -67,6 +71,9 @@ def run_course_snippets() -> tuple[int, int]:
             or "Analyzing Merge Height" in title
             or "Grouped Feature Aggregation" in title
             or "Sparse Connectivity" in title
+            or "Computing Gower's Dissimilarity" in title
+            or "Seeded Implementation of the Gap" in title
+            or "Large-Scale Two-Stage" in title
         ):
             module_env = {"__name__": "__main__", "plt": plt}
 

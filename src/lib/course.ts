@@ -39,6 +39,7 @@ import {
   LinkageDistanceGeometryDiagram,
   AgglomerativeMergeSequenceDiagram,
   DivisiveSplinterSequenceDiagram,
+  TanglegramDiagram,
 } from "@/components/lab/diagrams";
 import {
   Compass,
@@ -2140,6 +2141,85 @@ Output:
         },
       ),
       s(
+        "Distances for Binary, Categorical and Mixed Data",
+        c(
+          "Dissimilarity Measures Beyond Continuous Coordinates",
+          "Real-world data science datasets rarely consist exclusively of continuous Euclidean coordinates in ℝᵈ. Enterprise databases combine numerical quantities (age, income) with binary flags (churn status, subscribed) and nominal multi-class categories (customer tier, region). Standard Euclidean distance cannot be directly evaluated across heterogeneous data types without introducing artificial numerical distortions.",
+        ),
+        c(
+          "Binary Dissimilarity: Hamming and Jaccard Distances",
+          "For binary attribute vectors u, v ∈ {0, 1}ᵈ, four contingency values summarize pairwise alignment:\n\n• a: number of attributes where u_k = 1 and v_k = 1 (positive matches)\n• b: number of attributes where u_k = 0 and v_k = 1\n• c: number of attributes where u_k = 1 and v_k = 0\n• d: number of attributes where u_k = 0 and v_k = 0 (negative matches)\n\nHamming Distance treats positive and negative matches symmetrically, measuring the fraction of mismatched coordinate positions:\n\nd_H(u, v) = (b + c) / (a + b + c + d) = (b + c) / d\n\nJaccard Distance measures dissimilarity between asymmetric binary sets, ignoring shared negative absent features (d) which often dominate sparse indicator spaces (e.g. market basket items or genetic mutations):\n\nd_J(u, v) = 1 - J(u, v) = (b + c) / (a + b + c)",
+        ),
+        c(
+          "Gower's General Dissimilarity Coefficient (1971)",
+          "J. C. Gower (1971) introduced a unified dissimilarity coefficient capable of seamlessly mixing continuous, ordinal, and nominal variables without artificial one-hot coordinate scaling. For observations x_i and x_j across d features, the overall dissimilarity D_G(x_i, x_j) is defined as:\n\nS_G(x_i, x_j) = (∑_{k=1}^d w_k · s_ijk) / (∑_{k=1}^d w_k),    D_G(x_i, x_j) = 1 - S_G(x_i, x_j)\n\nwhere w_k is a feature validity weight (typically w_k = 1 if both records have feature k observed) and the partial similarity score s_ijk is computed according to feature type:\n\n1. Continuous Features: s_ijk = 1 - |x_ik - x_jk| / R_k, where R_k = max(X_k) - min(X_k) is the empirical span of feature k.\n2. Nominal & Binary Features: s_ijk = 1 if x_ik = x_jk, and s_ijk = 0 if x_ik ≠ x_jk.",
+        ),
+        cd(
+          "Computing Gower's Dissimilarity Matrix with NumPy",
+          `import numpy as np
+import pandas as pd
+
+# 5-row mixed dataset: Age (cont), Income_k (cont), Subscribed (binary)
+records = [
+    [25.0, 35.0, 1], # Obs 0
+    [26.0, 38.0, 1], # Obs 1 (similar to 0)
+    [58.0, 95.0, 0], # Obs 2
+    [62.0, 110.0, 0],# Obs 3 (similar to 2)
+    [40.0, 70.0, 1], # Obs 4 (intermediate)
+]
+data = np.array(records)
+n, d = data.shape
+
+# Feature ranges for continuous columns (Age, Income)
+ranges = [
+    data[:, 0].max() - data[:, 0].min(),
+    data[:, 1].max() - data[:, 1].min(),
+    1.0
+]
+
+D_gower = np.zeros((n, n))
+
+for i in range(n):
+    for j in range(n):
+        s_k = [
+            1.0 - abs(data[i, 0] - data[j, 0]) / ranges[0],
+            1.0 - abs(data[i, 1] - data[j, 1]) / ranges[1],
+            1.0 if data[i, 2] == data[j, 2] else 0.0
+        ]
+        D_gower[i, j] = 1.0 - np.mean(s_k)
+
+print("--- 5-Row Mixed Feature Dataset ---")
+cols = ["Age", "Income_k", "Subscribed"]
+df_mixed = pd.DataFrame(data, columns=cols)
+df_mixed["Subscribed"] = df_mixed["Subscribed"].astype(int)
+print(df_mixed.to_string())
+
+print("\\n--- Gower Pairwise Dissimilarity Matrix ---")
+print(np.round(D_gower, 4))`,
+        ),
+        out(
+          "Console Output: Gower Pairwise Matrix",
+          `--- 5-Row Mixed Feature Dataset ---
+    Age  Income_k  Subscribed
+0  25.0      35.0           1
+1  26.0      38.0           1
+2  58.0      95.0           0
+3  62.0     110.0           0
+4  40.0      70.0           1
+
+--- Gower Pairwise Dissimilarity Matrix ---
+[[0.     0.0223 0.8973 1.     0.2907]
+ [0.0223 0.     0.875  0.9777 0.2683]
+ [0.8973 0.875  0.     0.1027 0.6066]
+ [1.     0.9777 0.1027 0.     0.7093]
+ [0.2907 0.2683 0.6066 0.7093 0.    ]]`,
+        ),
+        n(
+          "Mathematical Incompatibility of Ward's Linkage with Non-Euclidean Metrics",
+          "Ward's minimum variance criterion explicitly minimizes the within-cluster sum of squares (ESS). This objective relies directly on Huygens' theorem of variance decomposition: SS_total = SS_between + SS_within. This algebraic identity is valid ONLY when distances represent squared Euclidean distances in a true inner-product Hilbert space! When applied to non-Euclidean dissimilarity matrices (e.g. Gower, Jaccard, Manhattan, Cosine), the Lance–Williams recurrence parameters for Ward linkage can yield negative branch lengths (inversions) and mathematically undefined variance centroids. For non-Euclidean precomputed dissimilarity matrices, you must use Average Linkage (UPGMA) or Complete Linkage in scipy.cluster.hierarchy.linkage via squareform(D).",
+        ),
+      ),
+      s(
         "Knowledge Check & Self-Assessment",
         c(
           "Interactive Conceptual Evaluation",
@@ -2151,7 +2231,7 @@ Output:
         },
         c(
           "Module 07 References & Further Reading",
-          "• Fréchet, M. (1906). Sur quelques points du calcul fonctionnel. Rendiconti del Circolo Matematico di Palermo, 22(1), 1–72.\n\n• Minkowski, H. (1910). Geometrie der Zahlen. Teubner.\n\n• Mahalanobis, P. C. (1936). On the generalized distance in statistics. Proceedings of the National Institute of Sciences of India, 2(1), 49–55.\n\n• Beyer, K., Goldstein, J., Ramakrishnan, R., & Shaft, U. (1999). When Is 'Nearest Neighbor' Meaningful? ICDT 1999, LNCS 1540, 217–235.\n\n• Aggarwal, C. C., Hinneburg, A., & Keim, D. A. (2001). On the Surprising Behavior of Distance Metrics in High Dimensional Space. ICDT 2001, 420–434.",
+          "• Fréchet, M. (1906). Sur quelques points du calcul fonctionnel. Rendiconti del Circolo Matematico di Palermo, 22(1), 1–72.\n\n• Minkowski, H. (1910). Geometrie der Zahlen. Teubner.\n\n• Mahalanobis, P. C. (1936). On the generalized distance in statistics. Proceedings of the National Institute of Sciences of India, 2(1), 49–55.\n\n• Beyer, K., Goldstein, J., Ramakrishnan, R., & Shaft, U. (1999). When Is 'Nearest Neighbor' Meaningful? ICDT 1999, LNCS 1540, 217–235.\n\n• Gower, J. C. (1971). A general coefficient of similarity and some of its properties. Biometrics, 27(4), 857–871.\n\n• Aggarwal, C. C., Hinneburg, A., & Keim, D. A. (2001). On the Surprising Behavior of Distance Metrics in High Dimensional Space. ICDT 2001, 420–434.",
         ),
       ),
     ],
@@ -2363,6 +2443,22 @@ c_{N-2,1} & c_{N-2,2} & h_{N-2} & N
         },
       ),
       s(
+        "Comparing Two Dendrograms",
+        c(
+          "Quantifying Structural Congruence Between Hierarchies",
+          "In comparative genomics, multi-sensor clustering, and algorithm benchmarking, researchers frequently compare two distinct hierarchical clustering dendrograms constructed over the exact same set of N leaf observations. Dendrogram comparison answers critical questions: Do Single and Ward linkage produce congruent cluster topologies? Does a perturbation or resample of the input data alter the hierarchical tree?",
+        ),
+        c(
+          "Statistical Metrics for Tree Comparison",
+          "Three mathematical indices quantify tree similarity:\n\n• Cophenetic Tree Correlation r(C₁, C₂): The Pearson correlation coefficient evaluated between the two condensed cophenetic distance vectors c₁ and c₂ across all N(N-1)/2 pairs. It quantifies the linear agreement of merge heights between the two trees.\n\n• Baker's Gamma Correlation (γ, 1974): The Spearman rank-order correlation coefficient between the cophenetic distance vectors. Because γ evaluates ranks rather than raw heights, it measures monotonic agreement in merge sequences, completely invariant to non-linear branch stretching.\n\n• Fowlkes–Mallows Index (B_k, 1983): Evaluates the overlap of flat clusters when both trees are cut at k clusters: B_k = m_k / √(m_{1k} · m_{2k}), where m_{1k} and m_{2k} count co-clustered pairs in tree 1 and tree 2, and m_k is the number of pairs co-clustered in both trees.",
+        ),
+        c(
+          "Visualizing Congruence with Tanglegrams",
+          "A Tanglegram aligns two dendrogram trees face-to-face with matching leaf observations connected across the center. Conserved subtrees appear as parallel horizontal connectors, while crossing dashed lines pinpoint observations whose placement diverges between the two algorithms.",
+        ),
+        cust(createElement(TanglegramDiagram)),
+      ),
+      s(
         "Knowledge Check & Self-Assessment",
         c(
           "Interactive Conceptual Evaluation",
@@ -2374,7 +2470,7 @@ c_{N-2,1} & c_{N-2,2} & h_{N-2} & N
         },
         c(
           "Module 08 References & Further Reading",
-          "• Sokal, R. R., & Rohlf, F. J. (1962). The comparison of dendrograms by objective methods. Taxon, 11(2), 33–40.\n\n• Bar-Joseph, Z., Gifford, D. K., & Jaakkola, T. S. (2001). Fast optimal leaf ordering for hierarchical clustering. Bioinformatics, 17(suppl_1), S22–S29.\n\n• Farris, J. S. (1969). On the cophenetic correlation coefficient. Systematic Biology, 18(3), 279–285.\n\n• Murtagh, F. (1983). A survey of recent advances in hierarchical clustering algorithms. The Computer Journal, 26(4), 354–359.",
+          "• Sokal, R. R., & Rohlf, F. J. (1962). The comparison of dendrograms by objective methods. Taxon, 11(2), 33–40.\n\n• Baker, F. B. (1974). Stability of two hierarchical grouping techniques Case 1: Sensitivity to data errors. Journal of the American Statistical Association, 69(346), 440–445.\n\n• Fowlkes, E. B., & Mallows, C. L. (1983). A method for comparing two hierarchical clusterings. Journal of the American Statistical Association, 78(383), 553–569.\n\n• Bar-Joseph, Z., Gifford, D. K., & Jaakkola, T. S. (2001). Fast optimal leaf ordering for hierarchical clustering. Bioinformatics, 17(suppl_1), S22–S29.\n\n• Farris, J. S. (1969). On the cophenetic correlation coefficient. Systematic Biology, 18(3), 279–285.\n\n• Murtagh, F. (1983). A survey of recent advances in hierarchical clustering algorithms. The Computer Journal, 26(4), 354–359.",
         ),
       ),
     ],
@@ -2872,7 +2968,11 @@ def agglomerative_from_scratch(X: np.ndarray, linkage: str = "single") -> np.nda
     
     allowed_linkages = {"single", "complete", "average"}
     if linkage not in allowed_linkages:
-        raise ValueError(f"Unsupported linkage '{linkage}'. Choose from {allowed_linkages}.")
+        err = (
+            f"Unsupported linkage '{linkage}'. "
+            f"Choose from {allowed_linkages}."
+        )
+        raise ValueError(err)
     
     # Stage 2: Vectorized pairwise Euclidean distance matrix
     # X[:, None, :] has shape (n, 1, d)
@@ -2914,7 +3014,10 @@ def agglomerative_from_scratch(X: np.ndarray, linkage: str = "single") -> np.nda
         c_first, c_second = (min(id_a, id_b), max(id_a, id_b))
         
         # Append row to linkage matrix Z: [c1, c2, distance, sample_count]
-        Z.append([float(c_first), float(c_second), float(min_dist), float(len(merged_members))])
+        Z.append([
+            float(c_first), float(c_second),
+            float(min_dist), float(len(merged_members))
+        ])
         
         # Expand distance matrix to accommodate the new composite cluster
         new_size = n + step + 1
@@ -3086,7 +3189,11 @@ print("--- SciPy Ward Linkage Matrix Z (shape 3 x 4) ---")
 for k, row in enumerate(Z_ward):
     c1, c2, dist, count = row
     new_id = len(X) + k
-    print(f"Row {k}: Cluster {int(c1)} + Cluster {int(c2)} -> Node {new_id} | Dist: {dist:.4f} | Size: {int(count)}")`,
+    msg = (
+        f"Row {k}: Cluster {int(c1)} + Cluster {int(c2)} -> "
+        f"Node {new_id} | Dist: {dist:.4f} | Size: {int(count)}"
+    )
+    print(msg)`,
         ),
         out(
           "Console Output: SciPy Ward Linkage Matrix",
@@ -3154,7 +3261,10 @@ print(f"Flat Labels (maxclust = 2):    {labels_k}")
 # Quantifies how faithfully Z preserves the original pairwise distances
 ccc, coph_dists = cophenet(Z_ward, y)
 print(f"\\nCophenetic Correlation Coefficient (CCC): {ccc:.4f}")
-print("Faithfulness Interpretation: High correlation (> 0.8) indicates strong preservation of metric structure.")`,
+print(
+    "Faithfulness Interpretation: High correlation (> 0.8) indicates "
+    "strong preservation of metric structure."
+)`,
         ),
         out(
           "Console Output: fcluster and Cophenetic Correlation",
@@ -3452,7 +3562,10 @@ print(crosstab)
 # -------------------------------------------------------------
 # Stage 13: Summary Conclusion
 # -------------------------------------------------------------
-print(f"\\nConclusion: Both libraries yield identical 3-cluster partitions with {sil:.4f} Silhouette fidelity.")`,
+print(
+    f"\\nConclusion: Both libraries yield identical 3-cluster "
+    f"partitions with {sil:.4f} Silhouette fidelity."
+)`,
         ),
         out(
           "Console Output: End-to-End Pipeline Execution",
@@ -4183,11 +4296,121 @@ Recommended k by Lowest Davies-Bouldin: k = 3`,
         cust(createElement(DendrogramCuttingLab)),
       ),
       s(
+        "The Gap Statistic Protocol",
+        c(
+          "Statistical Hypothesis Testing Against a Null Reference (Tibshirani et al., 2001)",
+          "Heuristic methods such as the Elbow method and Silhouette sweep suffer from a foundational weakness: they cannot test whether a dataset contains ANY genuine cluster structure at all (k = 1 vs. k > 1). Robert Tibshirani, Guenther Walther, and Trevor Hastie (2001) solved this by introducing the Gap Statistic, which formalizes cluster selection as hypothesis testing against an explicit null distribution.",
+        ),
+        c(
+          "Mathematical Derivation of the Gap Function",
+          "Let W_k be the pooled within-cluster sum of squares for a k-cluster partition of N observations:\n\nW_k = ∑_{r=1}^k (1 / (2 n_r)) ∑_{i ∈ C_r} ∑_{j ∈ C_r} d(x_i, x_j)² = ∑_{r=1}^k ∑_{i ∈ C_r} ||x_i - μ_r||²\n\nTo standardize log(W_k), we generate B reference datasets drawn from a null reference distribution that possesses no clusters. To account for feature correlations and geometry, the null reference is drawn uniformly over the hyper-rectangle aligned with the principal components (PCA) of the original data: X* ~ Uniform(PCA box). The Gap Statistic is defined as:\n\nGap(k) = (1/B) ∑_{b=1}^B log(W_{k, b}^*) - log(W_k) = E*[log(W_k)] - log(W_k)\n\nThe standard error s_k accounts for simulation uncertainty:\n\ns_k = sd_k · √(1 + 1/B),   where sd_k is the sample standard deviation of {log(W_{k, b}^*)}.",
+        ),
+        c(
+          "The 1-Standard-Error (1-SE) Stopping Rule",
+          "Because Gap(k) often continues to climb slightly as k increases due to overfitting, Tibshirani et al. defined the 1-SE selection rule: choose the smallest k such that:\n\nGap(k) ≥ Gap(k+1) - s_{k+1}\n\nThis rule operationalizes Occam's razor: it selects the most parsimonious cluster count k whose score is statistically indistinguishable from the k+1 solution.",
+        ),
+        cd(
+          "Seeded Implementation of the Gap Statistic in Python",
+          `import numpy as np
+import pandas as pd
+from scipy.spatial.distance import pdist
+from scipy.cluster.hierarchy import linkage, fcluster
+
+# Customer segmentation benchmark dataset (N=45)
+np.random.seed(42)
+c1 = np.random.normal(loc=[30, 25], scale=[5, 5], size=(15, 2))
+c2 = np.random.normal(loc=[80, 80], scale=[5, 5], size=(15, 2))
+c3 = np.random.normal(loc=[80, 20], scale=[5, 5], size=(15, 2))
+X = np.vstack([c1, c2, c3])
+n, d = X.shape
+
+# PCA alignment for reference null bounding box
+X_centered = X - X.mean(axis=0)
+_, _, Vh = np.linalg.svd(X_centered)
+X_prime = np.dot(X_centered, Vh.T)
+mins = X_prime.min(axis=0)
+maxs = X_prime.max(axis=0)
+
+def compute_wk(X_data, k):
+    Z = linkage(pdist(X_data), method="ward")
+    labels = fcluster(Z, t=k, criterion="maxclust")
+    wk = 0.0
+    for c_id in np.unique(labels):
+        pts = X_data[labels == c_id]
+        if len(pts) > 1:
+            wk += np.sum((pts - pts.mean(axis=0)) ** 2)
+    return wk
+
+B = 15
+K_max = 6
+np.random.seed(42)
+
+results = []
+for k in range(1, K_max + 1):
+    wk_orig = compute_wk(X, k)
+    log_wk = np.log(wk_orig)
+    
+    null_log_wks = []
+    for _ in range(B):
+        U = np.random.uniform(mins, maxs, size=(n, d))
+        X_null = np.dot(U, Vh) + X.mean(axis=0)
+        wk_null = compute_wk(X_null, k)
+        null_log_wks.append(np.log(wk_null))
+        
+    mean_null = np.mean(null_log_wks)
+    std_null = np.std(null_log_wks)
+    sk = std_null * np.sqrt(1.0 + 1.0 / B)
+    gap = mean_null - log_wk
+    
+    results.append({
+        "k": k,
+        "log_Wk": log_wk,
+        "E_log_Wk": mean_null,
+        "Gap": gap,
+        "sk": sk
+    })
+
+df_gap = pd.DataFrame(results)
+
+# 1-SE rule: smallest k where Gap(k) >= Gap(k+1) - s_{k+1}
+optimal_k = None
+for i in range(len(results) - 1):
+    if results[i]["Gap"] >= results[i+1]["Gap"] - results[i+1]["sk"]:
+        optimal_k = results[i]["k"]
+        break
+if optimal_k is None:
+    optimal_k = K_max
+
+print("--- Gap Statistic Evaluation (Tibshirani et al., 2001) ---")
+print(f"Number of Reference Null Datasets: B = {B}")
+print(df_gap.round(4).to_string(index=False))
+print(f"\\nOptimal Cluster Count (1-SE Rule): k = {optimal_k}")`,
+        ),
+        out(
+          "Console Output: Gap Statistic Table",
+          `--- Gap Statistic Evaluation (Tibshirani et al., 2001) ---
+Number of Reference Null Datasets: B = 15
+ k  log_Wk  E_log_Wk     Gap     sk
+ 1 10.9985   10.6557 -0.3428 0.1151
+ 2  9.9503    9.8581 -0.0922 0.1234
+ 3  7.5581    9.4574  1.8993 0.1244
+ 4  7.3946    9.1282  1.7336 0.1261
+ 5  7.2152    8.7639  1.5487 0.1185
+ 6  7.0215    8.5810  1.5595 0.1228
+
+Optimal Cluster Count (1-SE Rule): k = 3`,
+        ),
+        n(
+          "Computational Complexity Consideration",
+          "Evaluating the Gap Statistic requires fitting hierarchical clustering B times for every candidate k ∈ {1, ..., K_max}. With time complexity O(B · K_max · N²), the procedure is computationally demanding on large datasets (N > 5,000). In production pipelines, practitioners typically set B between 10 and 25 and evaluate on stratified subsamples or micro-cluster centroids.",
+        ),
+      ),
+      s(
         "Knowledge Check & Self-Assessment",
         cust(createElement(Module12Quiz)),
         c(
           "Module References",
-          "Verified against SciPy 1.14+ hierarchical clustering documentation (scipy.cluster.hierarchy.fcluster, inconsistent, dendrogram), Murtagh & Contreras (2012), and established cluster validation literature. See docs/references.md.",
+          "• Tibshirani, R., Walther, G., & Hastie, T. (2001). Estimating the number of clusters in a data set via the gap statistic. Journal of the Royal Statistical Society: Series B, 63(2), 411–423.\n\n• Verified against SciPy 1.14+ hierarchical clustering documentation (scipy.cluster.hierarchy.fcluster, inconsistent, dendrogram), Murtagh & Contreras (2012), and established cluster validation literature. See docs/references.md.",
         ),
       ),
     ],
@@ -4651,11 +4874,83 @@ Single Linkage (HAC)                     1.0000            0.3259         2
         cust(createElement(CaseStudyExplorer)),
       ),
       s(
+        "Scaling Hierarchical Clustering to Large Datasets",
+        c(
+          "The O(N²) Quadratic Memory Bottleneck",
+          "Standard agglomerative clustering requires storing an N × N distance matrix (or an N(N-1)/2 condensed pairwise vector). For enterprise datasets with N = 100,000 observations, storing this matrix in float32 requires (100,000 × 99,999)/2 × 4 bytes ≈ 20 GB of contiguous RAM. Beyond N = 50,000, naive dense agglomeration triggers out-of-memory crashes on standard developer and cloud hardware.",
+        ),
+        c(
+          "Two-Stage Hybrid Architecture (MiniBatchKMeans + Agglomerative)",
+          "To scale hierarchical clustering to hundreds of thousands of observations without losing the interpretability of a hierarchical tree, industrial pipelines deploy a two-stage hybrid architecture:\n\n1. Stage 1 (Micro-Clustering): Use linear-time MiniBatchKMeans (O(N · M · d)) to compress N raw points into M micro-clusters (e.g., M = 300 to 1,000 centroids), where M ≪ N.\n2. Stage 2 (Macro-Agglomeration): Run AgglomerativeClustering (Ward or Average linkage) on the M micro-cluster centroids (O(M²)), optionally weighting distances by micro-cluster sample sizes.\n3. Stage 3 (Observation Mapping): Each of the N original observations inherits the final cluster label of its assigned micro-cluster centroid: y_i = macro_labels[micro_labels[i]].",
+        ),
+        cd(
+          "Large-Scale Two-Stage Hybrid Clustering with Scikit-learn",
+          `import os
+import warnings
+import numpy as np
+from sklearn.datasets import make_blobs
+from sklearn.cluster import MiniBatchKMeans, AgglomerativeClustering
+from sklearn.metrics import adjusted_rand_score
+
+os.environ["LOKY_MAX_CPU_COUNT"] = "4"
+warnings.filterwarnings("ignore")
+
+# 1. Generate N = 50,000 2D synthetic dataset with 3 components
+np.random.seed(42)
+X, y_true = make_blobs(
+    n_samples=50000,
+    n_features=2,
+    centers=[[-5.0, -5.0], [0.0, 5.0], [5.0, -5.0]],
+    cluster_std=1.2,
+    random_state=42
+)
+
+# 2. Stage 1: MiniBatchKMeans compression to M = 300 micro-clusters
+mbk = MiniBatchKMeans(
+    n_clusters=300,
+    batch_size=2048,
+    random_state=42,
+    n_init=3
+)
+mbk_labels = mbk.fit_predict(X)
+micro_centers = mbk.cluster_centers_
+
+# 3. Stage 2: Agglomerative Clustering on micro-cluster centroids
+agg = AgglomerativeClustering(n_clusters=3, linkage="ward")
+macro_labels = agg.fit_predict(micro_centers)
+
+# 4. Map final macro-labels back to all 50,000 observations
+y_pred = macro_labels[mbk_labels]
+counts = np.bincount(y_pred)
+ari = adjusted_rand_score(y_true, y_pred)
+
+print("--- Two-Stage Large-Scale Hierarchical Clustering ---")
+print(f"Total Observations: N = {len(X):,}")
+print(f"Stage 1 Micro-Clusters: M = {len(micro_centers)}")
+print(f"Stage 2 Macro-Clusters: k = {len(np.unique(macro_labels))}")
+print(f"Partition Counts: {counts.tolist()}")
+print(f"Adjusted Rand Index (vs Truth): {ari:.4f}")`,
+        ),
+        out(
+          "Console Output: Large-Scale Hybrid Clustering",
+          `--- Two-Stage Large-Scale Hierarchical Clustering ---
+Total Observations: N = 50,000
+Stage 1 Micro-Clusters: M = 300
+Stage 2 Macro-Clusters: k = 3
+Partition Counts: [16667, 16665, 16668]
+Adjusted Rand Index (vs Truth): 0.9999`,
+        ),
+        c(
+          "High-Performance C++ Clustering with fastcluster (Müllner, 2013)",
+          "For problems where micro-clustering is inappropriate (such as when exact ultrametric preservation is legally mandated), Daniel Müllner's fastcluster library provides drop-in C++ replacements for scipy.cluster.hierarchy.linkage. By implementing the nearest-neighbor chain algorithm, fastcluster achieves true O(N²) time complexity and minimal memory overhead for Ward, Complete, and Average linkage, and O(N) memory with Prim's MST algorithm for Single Linkage—running up to 100× faster than naive implementations on large N.",
+        ),
+      ),
+      s(
         "Knowledge Check & Self-Assessment",
         cust(createElement(Module14Quiz)),
         c(
           "Module References",
-          "Verified against Murtagh (1983) Nearest Neighbor chain algorithms, Scikit-Learn 1.5+ sparse connectivity graph documentation, and modern customer lifetime segmentation literature. See docs/references.md.",
+          "• Müllner, D. (2013). fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9), 1–18.\n\n• Verified against Murtagh (1983) Nearest Neighbor chain algorithms, Scikit-Learn 1.5+ sparse connectivity graph documentation, and modern customer lifetime segmentation literature. See docs/references.md.",
         ),
       ),
     ],

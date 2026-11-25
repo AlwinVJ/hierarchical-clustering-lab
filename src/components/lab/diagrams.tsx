@@ -1444,3 +1444,292 @@ export const DivisiveSplinterSequenceDiagram: FC<{ label?: string }> = ({ label 
     </div>
   );
 };
+
+/**
+ * 6. M08 Diagram: Tanglegram Tree Comparison (Single vs. Ward Linkage)
+ */
+export const TanglegramDiagram: FC<{ label?: string }> = ({ label }) => {
+  // Leaf layout vertical positions (8 leaves, y=40 to y=250)
+  const singleLeaves = [
+    { label: "P₁", y: 45, id: 0 },
+    { label: "P₂", y: 75, id: 1 },
+    { label: "P₃", y: 105, id: 2 },
+    { label: "P₇", y: 135, id: 6 }, // Bridge observation
+    { label: "P₄", y: 165, id: 3 },
+    { label: "P₅", y: 195, id: 4 },
+    { label: "P₆", y: 225, id: 5 },
+    { label: "P₈", y: 260, id: 7 }, // Outlier
+  ];
+
+  const wardLeaves = [
+    { label: "P₁", y: 45, id: 0 },
+    { label: "P₂", y: 75, id: 1 },
+    { label: "P₃", y: 105, id: 2 },
+    { label: "P₄", y: 145, id: 3 },
+    { label: "P₅", y: 175, id: 4 },
+    { label: "P₆", y: 205, id: 5 },
+    { label: "P₇", y: 235, id: 6 }, // Chaining shift in Ward
+    { label: "P₈", y: 265, id: 7 }, // Outlier
+  ];
+
+  return (
+    <div className="my-6 rounded-sm border border-border bg-card p-4 space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground border-b border-border pb-2 font-mono">
+        <span className="font-semibold text-foreground">
+          Tanglegram Analysis: Single Linkage vs. Ward Linkage
+        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-teal font-semibold">r(C₁, C₂) = 0.8643</span>
+          <span className="text-primary font-semibold">Baker&apos;s γ = 0.9964</span>
+        </div>
+      </div>
+
+      <svg
+        viewBox="0 0 740 300"
+        className="w-full h-auto bg-background rounded-sm border border-border"
+        aria-label="Tanglegram comparing Single and Ward linkage trees"
+      >
+        {/* Left Side: Single Linkage Tree (Roots left at x=30, Leaves at x=230) */}
+        <g>
+          {/* Subtree C1 (P1, P2, P3) */}
+          <path
+            d="M 230 45 L 180 45 L 180 60 L 150 60 L 150 75 L 120 75 L 120 90 L 90 90"
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="2"
+          />
+          <path
+            d="M 230 75 L 180 75 L 180 60"
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="2"
+          />
+          <path
+            d="M 230 105 L 150 105 L 150 75"
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="2"
+          />
+          {/* P7 bridge link */}
+          <path
+            d="M 230 135 L 120 135 L 120 90"
+            fill="none"
+            stroke="#f59e0b"
+            strokeWidth="2"
+            strokeDasharray="3 3"
+          />
+
+          {/* Subtree C2 (P4, P5, P6) */}
+          <path
+            d="M 230 165 L 180 165 L 180 180 L 150 180 L 150 200 L 90 200"
+            fill="none"
+            stroke="#0d9488"
+            strokeWidth="2"
+          />
+          <path
+            d="M 230 195 L 180 195 L 180 180"
+            fill="none"
+            stroke="#0d9488"
+            strokeWidth="2"
+          />
+          <path
+            d="M 230 225 L 150 225 L 150 200"
+            fill="none"
+            stroke="#0d9488"
+            strokeWidth="2"
+          />
+
+          {/* Root merge and Outlier P8 */}
+          <path
+            d="M 90 90 L 90 145 L 60 145 L 60 205 L 30 205"
+            fill="none"
+            stroke="#64748b"
+            strokeWidth="2"
+          />
+          <path
+            d="M 90 200 L 90 145"
+            fill="none"
+            stroke="#64748b"
+            strokeWidth="2"
+          />
+          <path
+            d="M 230 260 L 60 260 L 60 205"
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth="2"
+          />
+
+          {/* Left Title */}
+          <text
+            x="130"
+            y="25"
+            textAnchor="middle"
+            className="text-xs font-bold fill-foreground font-sans"
+          >
+            Single Linkage (Left)
+          </text>
+          <text
+            x="130"
+            y="37"
+            textAnchor="middle"
+            className="text-[9px] font-mono fill-muted-foreground"
+          >
+            Chaining Sensitivity (h_max = 7.81)
+          </text>
+        </g>
+
+        {/* Center Connectors: Inter-tree observation matching */}
+        <g>
+          {singleLeaves.map((sLeaf) => {
+            const wLeaf = wardLeaves.find((w) => w.id === sLeaf.id)!;
+            const isCrossing = sLeaf.id === 6; // P7 crosses due to different grouping
+            return (
+              <g key={sLeaf.id}>
+                <line
+                  x1="250"
+                  y1={sLeaf.y}
+                  x2="490"
+                  y2={wLeaf.y}
+                  stroke={isCrossing ? "#f59e0b" : "#94a3b8"}
+                  strokeWidth={isCrossing ? "2.5" : "1.2"}
+                  strokeDasharray={isCrossing ? "4 3" : undefined}
+                  opacity={isCrossing ? 1 : 0.65}
+                />
+                {/* Left Leaf Label */}
+                <circle cx="230" cy={sLeaf.y} r="4" fill="#3b82f6" />
+                <text
+                  x="242"
+                  y={sLeaf.y + 3.5}
+                  textAnchor="start"
+                  className="text-[10px] font-mono font-bold fill-foreground"
+                >
+                  {sLeaf.label}
+                </text>
+
+                {/* Right Leaf Label */}
+                <circle cx="510" cy={wLeaf.y} r="4" fill="#8b5cf6" />
+                <text
+                  x="498"
+                  y={wLeaf.y + 3.5}
+                  textAnchor="end"
+                  className="text-[10px] font-mono font-bold fill-foreground"
+                >
+                  {wLeaf.label}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Crossing Diagnostic Flag */}
+          <rect
+            x="320"
+            y="170"
+            width="100"
+            height="22"
+            rx="3"
+            fill="#fef3c7"
+            stroke="#f59e0b"
+            strokeWidth="1"
+          />
+          <text
+            x="370"
+            y="184"
+            textAnchor="middle"
+            className="text-[9px] font-mono font-bold fill-amber-900"
+          >
+            P₇ Topological Shift
+          </text>
+        </g>
+
+        {/* Right Side: Ward Linkage Tree (Leaves at x=510, Roots right at x=710) */}
+        <g>
+          {/* Subtree Ward C1 (P1, P2, P3) */}
+          <path
+            d="M 510 45 L 560 45 L 560 60 L 590 60 L 590 75 L 620 75 L 620 120 L 660 120"
+            fill="none"
+            stroke="#8b5cf6"
+            strokeWidth="2"
+          />
+          <path
+            d="M 510 75 L 560 75 L 560 60"
+            fill="none"
+            stroke="#8b5cf6"
+            strokeWidth="2"
+          />
+          <path
+            d="M 510 105 L 590 105 L 590 75"
+            fill="none"
+            stroke="#8b5cf6"
+            strokeWidth="2"
+          />
+
+          {/* Subtree Ward C2 (P4, P5, P6, P7) */}
+          <path
+            d="M 510 145 L 560 145 L 560 160 L 590 160 L 590 185 L 620 185 L 620 120"
+            fill="none"
+            stroke="#a855f7"
+            strokeWidth="2"
+          />
+          <path
+            d="M 510 175 L 560 175 L 560 160"
+            fill="none"
+            stroke="#a855f7"
+            strokeWidth="2"
+          />
+          <path
+            d="M 510 205 L 590 205 L 590 185"
+            fill="none"
+            stroke="#a855f7"
+            strokeWidth="2"
+          />
+          {/* P7 joins cluster C2 under Ward */}
+          <path
+            d="M 510 235 L 620 235 L 620 185"
+            fill="none"
+            stroke="#f59e0b"
+            strokeWidth="2"
+            strokeDasharray="3 3"
+          />
+
+          {/* Ward Root Merge and Outlier P8 */}
+          <path
+            d="M 660 120 L 660 190 L 710 190"
+            fill="none"
+            stroke="#64748b"
+            strokeWidth="2"
+          />
+          <path
+            d="M 510 265 L 660 265 L 660 190"
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth="2"
+          />
+
+          {/* Right Title */}
+          <text
+            x="610"
+            y="25"
+            textAnchor="middle"
+            className="text-xs font-bold fill-foreground font-sans"
+          >
+            Ward&apos;s Linkage (Right)
+          </text>
+          <text
+            x="610"
+            y="37"
+            textAnchor="middle"
+            className="text-[9px] font-mono fill-muted-foreground"
+          >
+            Variance Minimization (h_max = 15.31)
+          </text>
+        </g>
+      </svg>
+
+      <p className="text-xs text-muted-foreground leading-relaxed">
+        {label ??
+          "Tanglegram comparing Single Linkage (left) and Ward Linkage (right) on the 8-point benchmark. Parallel connecting lines represent conserved subtrees ({P₁, P₂} and {P₄, P₅, P₆}). The crossing dashed amber line reveals how observation P₇ acts as a chaining bridge under Single Linkage but is grouped into the compact cluster under Ward to minimize total within-cluster variance."}
+      </p>
+    </div>
+  );
+};
+
