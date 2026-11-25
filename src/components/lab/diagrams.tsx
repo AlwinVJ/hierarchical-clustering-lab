@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useId } from "react";
 
 /**
  * 1. M01 Diagram: Flat Partition vs. Nested Hierarchical Partition
@@ -380,7 +380,7 @@ export const ContinuousCloudCutDiagram: FC<{ label?: string }> = ({ label }) => 
           />
           <text
             x="155"
-            y="215"
+            y="195"
             textAnchor="middle"
             className="text-[10px] font-mono font-bold fill-emerald-600"
           >
@@ -495,13 +495,13 @@ export const ContinuousCloudCutDiagram: FC<{ label?: string }> = ({ label }) => 
           <line
             x1="45"
             y1="60"
-            x2="300"
+            x2="275"
             y2="60"
             stroke="#ef4444"
             strokeWidth="1.5"
             strokeDasharray="3 3"
           />
-          <text x="305" y="64" className="text-[9px] font-mono font-bold fill-red-500">
+          <text x="280" y="64" className="text-[9px] font-mono font-bold fill-red-500">
             t = h₃
           </text>
 
@@ -509,13 +509,13 @@ export const ContinuousCloudCutDiagram: FC<{ label?: string }> = ({ label }) => 
           <line
             x1="45"
             y1="120"
-            x2="300"
+            x2="275"
             y2="120"
             stroke="#f59e0b"
             strokeWidth="1.5"
             strokeDasharray="3 3"
           />
-          <text x="305" y="124" className="text-[9px] font-mono font-bold fill-amber-500">
+          <text x="280" y="124" className="text-[9px] font-mono font-bold fill-amber-500">
             t = h₂
           </text>
 
@@ -523,13 +523,13 @@ export const ContinuousCloudCutDiagram: FC<{ label?: string }> = ({ label }) => 
           <line
             x1="45"
             y1="180"
-            x2="300"
+            x2="275"
             y2="180"
             stroke="#10b981"
             strokeWidth="1.5"
             strokeDasharray="3 3"
           />
-          <text x="305" y="184" className="text-[9px] font-mono font-bold fill-emerald-600">
+          <text x="280" y="184" className="text-[9px] font-mono font-bold fill-emerald-600">
             t = h₁
           </text>
         </g>
@@ -546,6 +546,7 @@ export const ContinuousCloudCutDiagram: FC<{ label?: string }> = ({ label }) => 
  * 3. M02 Diagram: Inter-Cluster Distance Definitions
  */
 export const LinkageDistanceGeometryDiagram: FC<{ label?: string }> = ({ label }) => {
+  const arrowId = useId().replace(/[^a-zA-Z0-9_-]/g, "_");
   return (
     <div className="my-6 rounded-sm border border-border bg-card p-4 space-y-3">
       <div className="flex items-center justify-between text-xs text-muted-foreground border-b border-border pb-2 font-mono">
@@ -556,6 +557,19 @@ export const LinkageDistanceGeometryDiagram: FC<{ label?: string }> = ({ label }
         viewBox="0 0 680 260"
         className="w-full h-auto bg-background rounded-sm border border-border"
       >
+        <defs>
+          <marker
+            id={arrowId}
+            viewBox="0 0 10 10"
+            refX="6"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ef4444" />
+          </marker>
+        </defs>
         {/* Sub-panel 1: Single Linkage */}
         <g transform="translate(10, 10)">
           <rect
@@ -618,11 +632,11 @@ export const LinkageDistanceGeometryDiagram: FC<{ label?: string }> = ({ label }
             y2="115"
             stroke="#ef4444"
             strokeWidth="2"
-            markerEnd="url(#arrow)"
+            markerEnd={`url(#${arrowId})`}
           />
           <text
             x="77"
-            y="110"
+            y="102"
             textAnchor="middle"
             className="text-[9px] font-bold fill-red-500 font-mono"
           >
@@ -694,7 +708,7 @@ export const LinkageDistanceGeometryDiagram: FC<{ label?: string }> = ({ label }
           <line x1="20" y1="95" x2="135" y2="145" stroke="#ef4444" strokeWidth="2" />
           <text
             x="77"
-            y="112"
+            y="102"
             textAnchor="middle"
             className="text-[9px] font-bold fill-red-500 font-mono"
           >
@@ -800,7 +814,7 @@ export const LinkageDistanceGeometryDiagram: FC<{ label?: string }> = ({ label }
 
           <text
             x="77"
-            y="112"
+            y="102"
             textAnchor="middle"
             className="text-[9px] font-bold fill-amber-600 font-mono"
           >
@@ -854,9 +868,9 @@ export const LinkageDistanceGeometryDiagram: FC<{ label?: string }> = ({ label }
           {/* Centroid A */}
           <circle cx="38" cy="120" r="5" fill="#ffffff" stroke="#1e3a8a" strokeWidth="2" />
           <text
-            x="38"
-            y="138"
-            textAnchor="middle"
+            x="24"
+            y="123"
+            textAnchor="end"
             className="text-[8px] font-bold fill-navy font-mono"
           >
             c_A
@@ -878,9 +892,9 @@ export const LinkageDistanceGeometryDiagram: FC<{ label?: string }> = ({ label }
           {/* Centroid B */}
           <circle cx="120" cy="120" r="5" fill="#ffffff" stroke="#0d9488" strokeWidth="2" />
           <text
-            x="120"
-            y="138"
-            textAnchor="middle"
+            x="134"
+            y="123"
+            textAnchor="start"
             className="text-[8px] font-bold fill-teal font-mono"
           >
             c_B
@@ -890,7 +904,7 @@ export const LinkageDistanceGeometryDiagram: FC<{ label?: string }> = ({ label }
           <line x1="38" y1="120" x2="120" y2="120" stroke="#ef4444" strokeWidth="2" />
           <text
             x="79"
-            y="112"
+            y="104"
             textAnchor="middle"
             className="text-[9px] font-bold fill-red-500 font-mono"
           >
@@ -1255,8 +1269,8 @@ export const DivisiveSplinterSequenceDiagram: FC<{ label?: string }> = ({ label 
           >
             Step 1: Splinter Seed
           </text>
-          <text x="77" y="40" textAnchor="middle" className="text-[10px] font-mono fill-red-500">
-            Find max avg dissimilarity
+          <text x="77" y="38" textAnchor="middle" className="text-[9px] font-mono fill-red-500">
+            Max avg dissimilarity
           </text>
 
           {/* Main group remains */}
@@ -1277,17 +1291,17 @@ export const DivisiveSplinterSequenceDiagram: FC<{ label?: string }> = ({ label 
           {/* Splinter Seed P4 */}
           <circle
             cx="130"
-            cy="60"
+            cy="62"
             r="8"
             fill="#ef4444"
             fillOpacity="0.2"
             stroke="#ef4444"
             strokeWidth="1.5"
           />
-          <circle cx="130" cy="60" r="5" fill="#ef4444" />
+          <circle cx="130" cy="62" r="5" fill="#ef4444" />
           <text
             x="130"
-            y="45"
+            y="50"
             textAnchor="middle"
             className="text-[9px] font-bold fill-red-600 font-mono"
           >
@@ -1360,7 +1374,7 @@ export const DivisiveSplinterSequenceDiagram: FC<{ label?: string }> = ({ label 
             textAnchor="middle"
             className="text-[9px] font-mono fill-teal font-bold"
           >
-            Split into &#123;P₁,P₂&#125; &amp; &#123;P₃,P₄&#125;
+            &#123;P₁,P₂&#125; + &#123;P₃,P₄&#125;
           </text>
         </g>
 
@@ -1433,7 +1447,7 @@ export const DivisiveSplinterSequenceDiagram: FC<{ label?: string }> = ({ label 
             textAnchor="middle"
             className="text-[9px] font-mono fill-muted-foreground font-bold"
           >
-            Recursion terminates at singletons
+            Stops at singletons
           </text>
         </g>
       </svg>
@@ -1592,9 +1606,9 @@ export const TanglegramDiagram: FC<{ label?: string }> = ({ label }) => {
 
           {/* Crossing Diagnostic Flag */}
           <rect
-            x="320"
+            x="298"
             y="170"
-            width="100"
+            width="144"
             height="22"
             rx="3"
             fill="#fef3c7"
