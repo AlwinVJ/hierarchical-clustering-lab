@@ -1430,12 +1430,12 @@ export function ProjectsCatalog({
                 <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{proj.subtitle}</p>
               </div>
 
-              <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-2 text-[11px] text-muted-foreground font-mono">
-                <span className="flex items-center gap-1 whitespace-nowrap">
+              <div className="mt-4 flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-[10.5px] text-muted-foreground font-mono">
+                <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
                   <Clock className="h-3 w-3 text-teal shrink-0" />
                   {proj.estimatedTime}
                 </span>
-                <span className="text-teal font-medium whitespace-nowrap">
+                <span className="text-teal font-medium shrink-0 whitespace-nowrap">
                   Select Blueprint &rarr;
                 </span>
               </div>

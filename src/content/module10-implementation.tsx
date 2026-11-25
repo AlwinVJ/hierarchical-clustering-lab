@@ -415,10 +415,8 @@ print("Scikit-Learn children_:\\n", model.children_)`;
         <div className="min-w-0 break-words [overflow-wrap:anywhere] text-xs text-muted-foreground leading-relaxed">
           <strong className="text-foreground">Client-Side Interactive Simulator:</strong> This
           component runs in your browser to interactively demonstrate the identical mathematics
-          executed by Python&apos;s SciPy (<code>scipy.cluster.hierarchy</code>) and Scikit-learn
-          <span>
-            (<code className="break-all">sklearn.cluster.AgglomerativeClustering</code>).
-          </span>
+          executed by Python&apos;s SciPy (<code>scipy.cluster.hierarchy</code>) and Scikit-learn (
+          <code className="break-all">sklearn.cluster.AgglomerativeClustering</code>).
         </div>
       </div>
 
