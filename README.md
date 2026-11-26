@@ -11,7 +11,7 @@ Explore the mathematics, algorithms, visualizations, and practical implementatio
 ![Status](https://img.shields.io/badge/Status-Complete-22c55e?style=for-the-badge)
 ![Machine Learning](https://img.shields.io/badge/Domain-Machine%20Learning-5125D2?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-8D85FF?style=for-the-badge)
-![Tests](https://img.shields.io/badge/Tests-64%20Passing-14b8a6?style=for-the-badge)
+![Tests](https://img.shields.io/badge/Tests-66%20Passing-14b8a6?style=for-the-badge)
 
 <br/>
 
@@ -99,7 +99,7 @@ Every algorithm, derivation, and code snippet in this platform is continuously t
 # 1. Verify all 24 Python code snippets against Python 3.12, SciPy, and Scikit-learn
 npm run verify:python
 
-# 2. Run the Vitest unit test suite (64 assertions across routing, components, and math)
+# 2. Run the Vitest unit test suite (66 assertions across routing, components, and math)
 npm test
 
 # 3. Perform TypeScript strict typecheck (zero unchecked index or property access errors)
@@ -115,20 +115,22 @@ Additionally, automated headless Chrome audits verify that:
 
 ## Technology Stack
 
-The project uses the following technologies:
+The project uses modern frontend and machine learning engineering tooling:
 
-| Technology   | Purpose                                                |
-| ------------ | ------------------------------------------------------ |
-| React        | Frontend development                                   |
-| TypeScript   | Type safety                                            |
-| Vite         | Development and build tooling                          |
-| Tailwind CSS | Styling and responsive layouts                         |
-| Lucide       | Interface icons                                        |
-| NumPy        | Numerical computations and from-scratch implementation |
-| SciPy        | Hierarchical clustering and dendrograms                |
-| Scikit-learn | Machine learning implementation and evaluation         |
+| Technology     | Purpose                                                    |
+| -------------- | ---------------------------------------------------------- |
+| React 19       | Modern UI framework with concurrent rendering              |
+| TanStack Start | Routing architecture, pre-rendering, and client SPA shell  |
+| TypeScript     | Strict static typing with zero unchecked property access   |
+| Tailwind CSS v4| Modern utility-first CSS design and themes                 |
+| KaTeX          | Fast mathematical typography and formula rendering         |
+| Lucide React   | Accessible interface iconography                           |
+| Vitest         | Fast unit and integration test suite                       |
+| NumPy          | Vectorized computation and scratch matrix recurrence       |
+| SciPy          | Hierarchical linkage, dendrograms, and cophenetic analysis |
+| Scikit-learn   | Cluster validation metrics, pipelines, and manifolds       |
 
-_The Python libraries are used in the educational implementation examples; the website itself is designed as a static frontend application._
+_The Python libraries are used in the educational implementation examples and verification suites; the website itself is built and deployed as a 100% static frontend application._
 
 ## Getting Started
 
@@ -138,20 +140,20 @@ Follow these instructions to run the project locally.
 
 Make sure you have the following installed:
 
-- Node.js (LTS recommended)
+- Node.js (v18 or v20+ recommended)
 - npm
 - Git
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/AlwinVJ/Hierarchical-Clustering-Lab.git
+git clone https://github.com/AlwinVJ/hierarchical-clustering-lab.git
 ```
 
 ### 2. Navigate to the Project Directory
 
 ```bash
-cd Hierarchical-Clustering-Lab
+cd hierarchical-clustering-lab
 ```
 
 ### 3. Install Dependencies
@@ -166,7 +168,7 @@ npm install
 npm run dev
 ```
 
-The application will be available at the local development URL displayed in your terminal.
+The application will be available at `http://localhost:5173` (or the local development port displayed in your terminal).
 
 ### 5. Build for Production
 
@@ -174,17 +176,29 @@ The application will be available at the local development URL displayed in your
 npm run build
 ```
 
-The production-ready files will be generated in the `dist` directory.
+The production-ready static website is generated in `dist/client/`. It includes:
+- `index.html`: Fully pre-rendered overview page and application shell.
+- `404.html`: Single-page app routing fallback for deep link navigation.
+- `.nojekyll`: Disables Jekyll processing on GitHub Pages to ensure all asset paths and underscores are preserved.
+- Pre-generated route subdirectories (`dist/client/<slug>/index.html`) for direct deep link access.
 
-> Note: Replace the repository URL and directory name above if the actual GitHub repository uses a different name.
+## Deployment to GitHub Pages
 
-## Deployment
+The project is configured for continuous, automated deployment to **GitHub Pages** using **GitHub Actions**.
 
-The project is intended to be hosted using **GitHub Pages**.
+### Live Deployment URL
+**`https://alwinvj.github.io/hierarchical-clustering-lab/`**
 
-Deployment is configured through GitHub Actions, allowing the application to be built and published as a static website.
+### Repository Base Path
+The production build automatically prefixes all static assets, stylesheets, scripts, and internal router links with `/hierarchical-clustering-lab/` via the configured Vite base path.
 
-The deployment configuration must account for the repository-specific base path so that assets and internal navigation work correctly.
+### Enabling GitHub Pages Deployment
+To deploy automatically via GitHub Actions:
+1. Open the repository on GitHub.
+2. Navigate to **Settings** > **Pages**.
+3. Under **Build and deployment** > **Source**, select **GitHub Actions**.
+4. Push to the `main` branch or trigger the workflow manually via the **Actions** tab (`Deploy to GitHub Pages` > **Run workflow**).
+5. GitHub Actions will run tests, build the static application, and publish to GitHub Pages.
 
 ## Learning Resources
 
